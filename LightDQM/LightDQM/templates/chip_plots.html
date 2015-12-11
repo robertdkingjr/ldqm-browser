@@ -1,0 +1,73 @@
+{% load staticfiles %}
+<form class="form-horizontal" action="/chamber/chip/" name="slot_id"  >
+<div class="form-group form-group-lg">
+  <label class="col-sm-4 control-label" for="selectSlot_id"> Select VFAT Slot </label>
+  <div class="col-sm-4">
+    <select class="form-control" id="selectSlot_id" name="selectSlot" onchange="this.form.submit();">
+      {% for slot in slot_list %}
+        {% ifequal slot selected_slot %}
+        <option value={{slot}} selected>VFAT Slot {{slot}}</option>
+        {% else %}
+        <option value={{slot}}>VFAT Slot {{slot}}</option>
+        {% endifequal %}
+      {% endfor %}
+    </select>
+  </div>
+</div>
+</form>
+
+{% block chip_plots %}
+<div class="container-fluid">
+  <div id="main_area">
+    <!-- Slider -->
+    <div class="row">
+      <div class="col-sm-6" id="slider-thumbs">
+        <!-- Bottom switcher of slider -->
+        <ul class="hide-bullets">
+          {% for hist in hist_list %}
+          <li class="col-sm-3">
+            <a class="thumbnail" id="carousel-selector-{{ forloop.counter0 }}">
+              <img src="{% static '' %}test/{{selected_slot}}/{{hist}}{{ selected_slot }}.png">
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="col-sm-6">
+        <div class="col-xs-12" id="slider">
+          <!-- Top part of the slider -->
+          <div class="row">
+            <div class="col-sm-12" id="carousel-bounding-box">
+              <div class="carousel slide container" style="width: auto; margin: 0 auto" id="myCarousel">
+                <!-- Carousel items -->
+                <div class="carousel-inner">
+                {% for hist in hist_list %}
+                  {% if forloop.first %}
+                  <div class="active item" data-slide-number="{{ forloop.counter0 }}">
+                    <img src="{% static '' %}test/{{selected_slot}}/{{hist}}{{ selected_slot }}.png">
+                  </div>
+                  {% else %}
+                  <div class="item" data-slide-number="{{ forloop.counter0 }}">
+                    <img src="{% static '' %}test/{{selected_slot}}/{{hist}}{{ selected_slot }}.png">
+                  </div>
+                  {% endif %}
+                {% endfor %}
+                </div>
+                <!-- Carousel nav -->
+                <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+                  <span class="glyphicon glyphicon-chevron-left"></span>
+                </a>
+                <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+                  <span class="glyphicon glyphicon-chevron-right"></span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--/Slider-->
+    </div>
+  
+  </div>
+</div>
+{% endblock %}

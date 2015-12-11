@@ -1,0 +1,24 @@
+{% extends "main.html" %}
+{% load staticfiles %}
+{% block all_plots %}
+<form class="form-horizontal" action="/all_plots/chip/" name="slot_id"  >
+<div class="form-group form-group-lg">
+  <label class="col-sm-4 control-label" for="selectSlot_id"> Select VFAT Slot </label>
+  <div class="col-sm-2">
+    <select class="form-control" id="selectSlot_id" name="selectSlot" onchange="this.form.submit();">
+      {% for slot in slot_list %}
+        {% ifequal slot selected_slot %}
+        <option value={{slot}} selected>VFAT Slot {{slot}}</option>
+        {% else %}
+        <option value={{slot}}>VFAT Slot {{slot}}</option>
+        {% endifequal %}
+      {% endfor %}
+    </select>
+  </div>
+</div>
+</form>
+{% block chip_plots %}
+{% endblock %}
+
+{% endblock %}
+
