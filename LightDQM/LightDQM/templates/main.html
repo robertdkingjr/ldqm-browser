@@ -34,7 +34,7 @@
 
   {% block main %}
 <div class="container-fluid">
-  <div class="col-sm-3">
+  <div class="col-sm-4">
     <div class="row">
       <div class="panel panel-default">
         <div class="panel-heading">
@@ -43,6 +43,7 @@
           </h4>
       
           </div>
+          <div class="span3">
           <table class="table table-fixed" id="table">
             <thead>
               <tr>
@@ -53,25 +54,25 @@
               </tr>
             </thead>
             <tbody>
-                <tr>
-                  <td class="col-xs-3">000001</td>
-                  <td class="col-xs-2">bench</td>
-                  <td class="col-xs-2">20Oct2015</td>
-                  <td class="col-xs-2">2015T</td>
+                {% for run_ in run_list %}
+                {% if run_.Number == run.Number and run_.Type == run.Type %}
+                  <tr class="selected">
+                {% else %}
+                  <tr >
+                {% endif %}
+                  <td class="col-xs-3">{{run_.Number}}</td>
+                  <td class="col-xs-2">{{run_.Type}}</td>
+                  <td class="col-xs-3">{{run_.Date}}</td>
+                  <td class="col-xs-2">{{run_.Period}}</td>
                 </tr>
-                <tr>
-                  <td class="col-xs-3">000002</td>
-                  <td class="col-xs-2">bench</td>
-                  <td class="col-xs-2">20Oct2015</td>
-                  <td class="col-xs-2">2015T</td>
-                </tr>
-
+               {% endfor %}
             </tbody>
           </table>
+          </div>
       </div>
     </div>
   </div>
-  <div class="col-lg-9">
+  <div class="col-lg-8">
     <div class="row">
       <div class="panel panel-default">
         <div class="panel-heading">
@@ -80,13 +81,6 @@
           </h4>
         </div>
         {% block chambers %}
-        {% endblock %}
-<!--
-        {% block canvases %}
-        {% endblock %}
-
--->
-        {% block all_plots %}
         {% endblock %}
       </div>
     </div>

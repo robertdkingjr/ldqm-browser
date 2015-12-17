@@ -20,11 +20,14 @@ from LightDQM.views import *
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^hello/', hello),
+    url(r'^help/', dqm_help),
     url(r'^dqm_canvases/', dqm_canvases),
     url(r'^all_plots/$', all_plots),
     url(r'^all_plots/chip/$', chip_plots),
     url(r'^main/$', main),
-    url(r'^chamber/$', chamber),
+    url(r'^main/chamber/$', chamber),
     url(r'^chamber/chip/$', chamber),
+    url(r'^run/chamber/$', chamber),
+    url(r'^main/([a-zA-Z]+)/run/(\d+)/$', chamber),
+    url(r'^main/([a-zA-Z]+)/run/(\d+)/([\w\+%_&\- ]+)/$', chamber_tabs),
 ]

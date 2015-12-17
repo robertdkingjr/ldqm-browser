@@ -1,5 +1,5 @@
 {% load staticfiles %}
-<form class="form-horizontal" action="/chamber/chip/" name="slot_id"  >
+<form class="form-horizontal" action="/main/{{run.Type}}/run/{{run.Number}}/{{chamber}}/" name="slot_id"  >
 <div class="form-group form-group-lg">
   <label class="col-sm-4 control-label" for="selectSlot_id"> Select VFAT Slot </label>
   <div class="col-sm-4">
@@ -27,7 +27,7 @@
           {% for hist in hist_list %}
           <li class="col-sm-3">
             <a class="thumbnail" id="carousel-selector-{{ forloop.counter0 }}">
-              <img src="{% static '' %}test/{{selected_slot}}/{{hist}}{{ selected_slot }}.png">
+              <img src="{% static '' %}test/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/{{selected_slot}}/{{hist}}{{ selected_slot }}.png">
             </a>
           </li>
           {% endfor %}
@@ -44,11 +44,11 @@
                 {% for hist in hist_list %}
                   {% if forloop.first %}
                   <div class="active item" data-slide-number="{{ forloop.counter0 }}">
-                    <img src="{% static '' %}test/{{selected_slot}}/{{hist}}{{ selected_slot }}.png">
+                    <img src="{% static '' %}test/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/{{selected_slot}}/{{hist}}{{ selected_slot }}.png">
                   </div>
                   {% else %}
                   <div class="item" data-slide-number="{{ forloop.counter0 }}">
-                    <img src="{% static '' %}test/{{selected_slot}}/{{hist}}{{ selected_slot }}.png">
+                    <img src="{% static '' %}test/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/{{selected_slot}}/{{hist}}{{ selected_slot }}.png">
                   </div>
                   {% endif %}
                 {% endfor %}

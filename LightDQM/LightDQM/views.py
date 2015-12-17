@@ -1,5 +1,6 @@
 from django.http import HttpResponse
 from django.shortcuts import render
+from ldqm_db.models import Run, AMC, GEB
 
 slot_list = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23];
 hist_list = ["2D CRC for VFAT chip Slot",
@@ -120,7 +121,7 @@ hist_list_long = ['CRC.png',
                   '2D CRC for VFAT chip Slot0.png', 
                   'Strips fired for VFAT chip Slot5.png']
 
-def hello(request):
+def dqm_help(request):
   return HttpResponse('Hello world')
 
 def dqm_canvases(request):
@@ -139,16 +140,39 @@ def chip_plots(request):
                                             'slot_list':slot_list,
                                             'hist_list':hist_list})
 def main(request):
-  return render(request,'chambers.html')
+  run_list = Run.objects.all()
+  return render(request,'main.html', {'run_list':run_list,})
 
-def chamber(request):
+def chamber(request, runType, runN):
+  run_list = Run.objects.all()
+  run = Run.objects.get(Type=runType, Number = runN)
   if 'selectSlot' in request.GET:
     slot=int(request.GET['selectSlot'])
     dqm_canvases_active=False
   else: 
     slot = 0
     dqm_canvases_active=False
-  return render(request,'chambers.html', {'selected_slot':int(slot), 
+  return render(request,'chambers.html', {'run_list':run_list,
+                                            'selected_slot':int(slot), 
                                             'slot_list':slot_list,
                                             'hist_list':hist_list,
-                                            'dqm_canvases_active':dqm_canvases_active})
+                                            'hist_list_long':hist_list_long,
+                                            'dqm_canvases_active':dqm_canvases_active,
+                                            'run':run})
+def chamber_tabs(request, runType, runN, chamber):
+  run_list = Run.objects.all()
+  run = Run.objects.get(Type=runType, Number = runN)
+  if 'selectSlot' in request.GET:
+    slot=int(request.GET['selectSlot'])
+    dqm_canvases_active=False
+  else: 
+    slot = 0
+    dqm_canvases_active=False
+  return render(request,'chamber-tabs.html', {'run_list':run_list,
+                                            'selected_slot':int(slot), 
+                                            'slot_list':slot_list,
+                                            'hist_list':hist_list,
+                                            'hist_list_long':hist_list_long,
+                                            'dqm_canvases_active':dqm_canvases_active,
+                                            'run':run,
+                                            'chamber':chamber})

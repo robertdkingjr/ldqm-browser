@@ -38,10 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'LightDQM',
+    'ldqm_db',
 ]
 
 MIDDLEWARE_CLASSES = [
-    'django.middleware.security.SecurityMiddleware',
+    #'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -56,6 +57,8 @@ ROOT_URLCONF = 'LightDQM.urls'
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'LightDQM/static'),
     '/home/mdalchen/work/django/LightDQM/LightDQM/',
+    '/Users/mexanick/work/ldqm-browser/LightDQM/',
+    '/Users/mexanick/work/ldqm-browser/LightDQM/LightDQM/',
     ]
 
 TEMPLATES = [
@@ -85,7 +88,7 @@ WSGI_APPLICATION = 'LightDQM.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(BASE_DIR, 'ldqm_db.sqlite3'),
     }
 }
 

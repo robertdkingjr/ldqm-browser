@@ -1,0 +1,9 @@
+!.gitignore
+*.pyc
+*.py~
+*.swp~
+*.swp
+*.py.swp
+.*.py.swp
+*.html~
+*.swo

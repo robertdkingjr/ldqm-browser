@@ -29,6 +29,31 @@ jQuery(document).ready(function($) {
 
 $("#table tr").click(function(){
    $(this).addClass('selected').siblings().removeClass('selected');    
-   var value=$(this).find('td:first').html();
-   alert(value);    
+   var runN=$(this).find('td').eq(0).html();
+   var runType=$(this).find('td').eq(1).html();
+   var ref=window.location.protocol;
+   ref+="//";
+   ref+=window.location.host;
+   ref+="/main/";
+   ref+=runType;
+   ref+="/run/";
+   ref+=runN;
+   window.document.location = ref;
 });
+
+//$(document).ready(function() {
+//        $("#gebButton1").click(function(){
+//        var ref="http://localhost:8000";
+//        ref += window.location.pathname;
+//        ref += $("#gebButton1").text();
+//        window.document.location = ref;
+//                        }); 
+//});
+//$(document).ready(function() {
+//        $("#gebButton2").click(function(){
+//        var ref="http://localhost:8000";
+//        ref += window.location.pathname;
+//        ref += $("#gebButton2").text();
+//        window.document.location = ref;
+//                        }); 
+//});

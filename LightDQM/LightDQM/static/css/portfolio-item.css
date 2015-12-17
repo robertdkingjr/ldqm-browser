@@ -132,3 +132,7 @@ td {cursor: pointer;}
   background-color: brown;
   color:#FFF;
 }
+.span3 {  
+      height: 550px !important;
+      overflow: scroll;
+}

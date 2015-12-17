@@ -1,24 +1,58 @@
-{% extends "main.html" %}
 {% load staticfiles %}
 {% block all_plots %}
-<form class="form-horizontal" action="/all_plots/chip/" name="slot_id"  >
-<div class="form-group form-group-lg">
-  <label class="col-sm-4 control-label" for="selectSlot_id"> Select VFAT Slot </label>
-  <div class="col-sm-4">
-    <select class="form-control" id="selectSlot_id" name="selectSlot" onchange="this.form.submit();">
-      {% for slot in slot_list %}
-        {% ifequal slot selected_slot %}
-        <option value={{slot}} selected>VFAT Slot {{slot}}</option>
-        {% else %}
-        <option value={{slot}}>VFAT Slot {{slot}}</option>
-        {% endifequal %}
-      {% endfor %}
-    </select>
+<div class="container-fluid">
+  <div id="all_plots_main_area">
+    <!-- Slider -->
+    <div class="row">
+      <div class="col-sm-6" id="all_plots_slider-thumbs">
+        <!-- Bottom switcher of slider -->
+        <ul class="hide-bullets">
+          {% for hist in hist_list_long %}
+          <li class="col-sm-3">
+            <a class="thumbnail" id="all_plots_carousel-selector-{{ forloop.counter0 }}">
+              <img src="{% static '' %}test/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/all_plots/{{hist}}">
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="col-sm-6">
+        <div class="col-xs-12" id="all_plots_slider">
+          <!-- Top part of the slider -->
+          <div class="row">
+            <div class="col-sm-12" id="all_plots_carousel-bounding-box">
+              <div class="carousel slide container" style="width: auto; margin: 0 auto" id="all_plots_myCarousel">
+                <!-- Carousel items -->
+                <div class="carousel-inner">
+                {% for hist in hist_list_long %}
+                  {% if forloop.first %}
+                  <div class="active item" data-slide-number="{{ forloop.counter0 }}">
+                    <img src="{% static '' %}test/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/all_plots/{{hist}}">
+                  </div>
+                  {% else %}
+                  <div class="item" data-slide-number="{{ forloop.counter0 }}">
+                    <img src="{% static '' %}test/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/all_plots/{{hist}}">
+                  </div>
+                  {% endif %}
+                {% endfor %}
+                </div>
+                <!-- Carousel nav -->
+                <a class="left carousel-control" href="#all_plots_myCarousel" role="button" data-slide="prev">
+                  <span class="glyphicon glyphicon-chevron-left"></span>
+                </a>
+                <a class="right carousel-control" href="#all_plots_myCarousel" role="button" data-slide="next">
+                  <span class="glyphicon glyphicon-chevron-right"></span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--/Slider-->
+    </div>
+  
   </div>
 </div>
-</form>
-{% block chip_plots %}
-{% endblock %}
 
 {% endblock %}
 
