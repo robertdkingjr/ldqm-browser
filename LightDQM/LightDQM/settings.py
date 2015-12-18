@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'LightDQM',
     'ldqm_db',
+    'bugtracker',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -65,6 +66,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join(BASE_DIR, 'LightDQM/templates'),
+          os.path.join(BASE_DIR, 'bugtracker/templates'),
           #replace('\\','/'),
           ],
         'APP_DIRS': True,
@@ -89,6 +91,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'ldqm_db.sqlite3'),
+    },
+    'bugtracker': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'bugtracker/bugtracker_db.sqlite3'),
     }
 }
 
@@ -130,3 +136,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
+
+from django.core.urlresolvers import reverse_lazy
+LOGIN_REDIRECT_URL = reverse_lazy('index')
