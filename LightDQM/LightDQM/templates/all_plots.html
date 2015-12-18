@@ -10,7 +10,7 @@
           {% for hist in hist_list_long %}
           <li class="col-sm-3">
             <a class="thumbnail" id="all_plots_carousel-selector-{{ forloop.counter0 }}">
-              <img src="{% static '' %}test/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/all_plots/{{hist}}">
+              <img src="{% static ""%}/data_dqm/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/all_plots/{{hist}}">
             </a>
           </li>
           {% endfor %}
@@ -27,11 +27,11 @@
                 {% for hist in hist_list_long %}
                   {% if forloop.first %}
                   <div class="active item" data-slide-number="{{ forloop.counter0 }}">
-                    <img src="{% static '' %}test/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/all_plots/{{hist}}">
+                    <img src="{% static ""%}/data_dqm/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/all_plots/{{hist}}">
                   </div>
                   {% else %}
                   <div class="item" data-slide-number="{{ forloop.counter0 }}">
-                    <img src="{% static '' %}test/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/all_plots/{{hist}}">
+                    <img src="{% static ""%}/data_dqm/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/all_plots/{{hist}}">
                   </div>
                   {% endif %}
                 {% endfor %}
