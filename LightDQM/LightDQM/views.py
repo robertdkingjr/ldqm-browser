@@ -1,6 +1,10 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from ldqm_db.models import Run, AMC, GEB
+from django.views.generic import ListView, DetailView, CreateView
+from django.core.urlresolvers import reverse_lazy
+from django.contrib.auth.forms import UserCreationForm
+from bugtracker.models import Ticket
 
 slot_list = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23];
 hist_list = ["2D CRC for VFAT chip Slot",
@@ -176,3 +180,25 @@ def chamber_tabs(request, runType, runN, chamber):
                                             'dqm_canvases_active':dqm_canvases_active,
                                             'run':run,
                                             'chamber':chamber})
+class BugListView(ListView):
+    model = Ticket
+    template_name = 'list.html'
+
+class BugDetailView(DetailView):
+    model = Ticket
+    template_name = 'detail.html'
+
+class RegisterView(CreateView):
+    form_class = UserCreationForm
+    template_name = 'register.html'
+    success_url = reverse_lazy('index')
+
+class BugCreateView(CreateView):
+    model = Ticket
+    template_name = 'add.html'
+    fields = ['title', 'text']
+    success_url = reverse_lazy('index')
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super(BugCreateView, self).form_valid(form)

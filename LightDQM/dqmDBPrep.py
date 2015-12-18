@@ -27,4 +27,3 @@ for filename in open("gtx0.log"):
   newrun.save()
   newrun.amcs.add(AMC.objects.get(id=3))
   idx+=1
-
