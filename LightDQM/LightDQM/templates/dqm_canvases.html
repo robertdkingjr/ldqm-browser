@@ -1,38 +1,40 @@
 {% load staticfiles %}
 {% block canvases %}
-  <!-- Page Content 
-  <div class="container-fluid">
-
-    <div class="row">
-        <div class="col-lg-8">
-            <h1 class="panel-heading">DQM canvases
-            </h1>
-        </div>
-    </div>
-     Portfolio Item Heading -->
-
+  <!-- JSROOT -->
+  <script src="{% static 'js/jsroot/JSRootCore.js' %}"></script>   
+        <div id="integrity">
+        <div id="occupancy">
+        <div id="clusterMult">
+        <div id="clusterSize">
+<!--
     <div class="carousel slide article-slide" id="article-photo-carousel">
-    
+-->    
       <!-- Wrapper for slides -->
+<!--
       <div class="carousel-inner cont-slider">
     
-        <div class="item active">
-          <img alt="" title="" src="{% static '' %}test/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/canvases/integrity.png">
+        <div class="item active" id="integrity">
+-->    
+          <!--<img alt="" title="" src="{% static '' %}test/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/canvases/integrity.png">-->
+<!--
         </div>
-        <div class="item">
-          <img alt="" title="" src="{% static '' %}test/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/canvases/occupancy.png">
+        <div class="item" id="occupancy">
+-->    
+          <!--<img alt="" title="" src="{% static '' %}test/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/canvases/occupancy.png">
         </div>
-        <div class="item">
+        <div class="item" id="clusterMult">
           <img alt="" title="" src="{% static '' %}test/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/canvases/clusterMult.png">
         </div>
-        <div class="item">
+        <div class="item" id="clusterSize">
           <img alt="" title="" src="{% static '' %}test/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/canvases/clusterSize.png">
         </div>
       </div>
+-->
       <!-- Indicators -->
+<!--
       <ol class="carousel-indicators">
         <li class="active" data-slide-to="0" data-target="#article-photo-carousel">
-          <img alt="" src="{% static '' %}test/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/canvases/integrity.png" width="200" height="200" >
+          -<img alt="" src="{% static '' %}test/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/canvases/integrity.png" width="200" height="200" >
         </li>
         <li class="" data-slide-to="1" data-target="#article-photo-carousel">
           <img alt="" src="{% static '' %}test/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/canvases/occupancy.png" width="200" height="200" >
@@ -45,6 +47,25 @@
         </li>
       </ol>
     </div>
+-->
+<script type="text/javascript">
+    console.log( "simpleHist01.js : START" );
+    var drawIdlist = ['integrity','occupancy', "clusterMult", "clusterSize"];
+
+    drawIdlist.forEach(function(drawId){
+        var file="{% static '' %}test/bench/run000001/TAMU/GEB-00-Long/canvases/";
+        file+=drawId;
+        //file = file.slice(0,-4);
+        file+=".json";
+        console.log( "simpleHist01.js : json file for div id "+ drawId +": " , file  );
+
+        JSROOT.NewHttpRequest(file, 'object', function(obj) {
+        //JSROOT.NewHttpRequest("{% static '' %}test/a.json", 'object', function(obj) {
+               JSROOT.draw( drawId, obj, "colz");
+               }).send();
+        });
+</script>
+
  <!-- </div>
    /.container -->
 {% endblock %}

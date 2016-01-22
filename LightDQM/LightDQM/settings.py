@@ -60,6 +60,7 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'LightDQM/static'),
     '/home/mdalchen/work/django/LightDQM/LightDQM/',
     '/Users/mexanick/work/ldqm-browser/LightDQM/',
     '/Users/mexanick/work/ldqm-browser/LightDQM/LightDQM/',
+    ('data_dqm', '/home/mdalchen/work/django/LightDQM/LightDQM/test/'),
     ]
 
 TEMPLATES = [
