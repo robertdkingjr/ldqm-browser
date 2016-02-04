@@ -1,10 +1,15 @@
 from django.db import models
 
 # Create your models here.
+class VFAT(models.Model):
+  ChipID = models.CharField(max_length=6, default='0xdead')
+  Status = models.CharField(max_length=1, default='0')
 
 class GEB(models.Model):
   Type = models.CharField(max_length=30)
   ChamberID = models.CharField(max_length=30)
+  Status = models.CharField(max_length=1, default='0')
+  vfats = models.ManyToManyField(VFAT)
 
   def __unicode__(self):
     return self.Type # or better id?
@@ -12,6 +17,7 @@ class GEB(models.Model):
 class AMC(models.Model):
   BoardID = models.CharField(max_length=30)
   Type = models.CharField(max_length=30)
+  Status = models.CharField(max_length=1, default='0')
   gebs = models.ManyToManyField(GEB)
   def __unicode__(self):
     return self.Type # or better id?
