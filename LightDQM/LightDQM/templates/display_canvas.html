@@ -1,0 +1,10 @@
+{% extends "gebs.html" %}
+{% load staticfiles %}
+
+
+{%block display_canvas %}
+
+<center><img width="70%" src="{% static '' %}test/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/canvases/{{canvas}}.png"></center>
+
+{%endblock %} <!-- display_canvas -->
+
