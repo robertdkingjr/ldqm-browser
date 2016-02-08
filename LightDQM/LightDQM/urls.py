@@ -30,6 +30,7 @@ urlpatterns = [
     url(r'^run/chamber/$', chamber),
     url(r'^main/([a-zA-Z]+)/run/(\d+)/$', chamber),
     url(r'^main/([a-zA-Z]+)/run/(\d+)/report/$', report),
+    url(r'^main/([a-zA-Z]+)/run/(\d+)/amc/([\w\+%_&\- ]+)/$', amc), #runType, runN, amc
     url(r'^main/([a-zA-Z]+)/run/(\d+)/([\w\+%_&\- ]+)/$', gebs), #runType, runN, chamber
     url(r'^main/([a-zA-Z]+)/run/(\d+)/([\w\+%_&\- ]+)/vfat/(\d+)/$', vfats), #runType, runN, chamber, vfatN
     url(r'^main/([a-zA-Z]+)/run/(\d+)/([\w\+%_&\- ]+)/vfat/(\d+)/([\w\+%_&\- ]+)/$', display_vfat), #runType, runN, chamber, vfatN, hist

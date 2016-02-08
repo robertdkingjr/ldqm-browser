@@ -26,7 +26,7 @@
       {% for amc in run.amcs.all %}
       <tr>
         <td class="col-xs-3" rowspan="{{run.amcs.all|length}}">{{run.Station}}</td>
-        <td class="col-xs-2">{{amc.Type}}-{{amc.BoardID}}</td>
+        <td class="col-xs-2"><a href="/main/{{run.Type}}/run/{{run.Number}}/amc/{{amc.Type}}-{{amc.BoardID}}" class="btn btn-success">{{amc.Type}}-{{amc.BoardID}}</a></td>
         {% for geb in amc.gebs.all %}
         <td class="col-xs-2"><a href="/main/{{run.Type}}/run/{{run.Number}}/GEB-{{geb.ChamberID}}-{{geb.Type}}" class="btn btn-{{geb_color}}">GEB-{{geb.ChamberID}}-{{geb.Type}}</a></td>
         {% endfor %}
@@ -37,8 +37,9 @@
 
 {%block gebs%}
 {%endblock%}
-  
 {%block dqm_report %}
+{%endblock %}
+{%block amc_report %}
 {%endblock %}
 
 </div>
