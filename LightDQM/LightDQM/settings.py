@@ -57,6 +57,8 @@ ROOT_URLCONF = 'LightDQM.urls'
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'LightDQM/static'),
+    '/home/kingr/ldqm-browser/LightDQM/LightDQM/',
+    '/home/kingr/ldqm-browser/LightDQM/LightDQM/static/',
     '/home/mdalchen/work/django/LightDQM/LightDQM/',
     '/Users/mexanick/work/ldqm-browser/LightDQM/',
     '/Users/mexanick/work/ldqm-browser/LightDQM/LightDQM/',

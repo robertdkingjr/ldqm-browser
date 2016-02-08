@@ -3,8 +3,23 @@
 
 
 {% block display_vfat %}
+<script src="{% static 'js/jsroot/JSRootCore.js' %}"></script>   
 
-<center><img width="50%" src="{% static '' %}test/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/{{vfat}}/{{hist}}.png"></center>
+<center><img width="70%" height="420px" src="{% static '' %}test/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/{{vfat}}/{{hist}}.png"></center>
+
+<div id={{hist}} style="width:70%; height:420px"> </div>
+
+
+<script type="text/javascript">
+
+var hist_ ="{{hist}}";
+JSROOT.NewHttpRequest("{% static '' %}test/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/{{vfat}}/{{hist}}.json", 'object', function(obj) {
+        //JSROOT.NewHttpRequest("/static/test/a.json", 'object', function(obj) {
+               JSROOT.draw( hist_, obj, "colz");
+               }).send();
+
+
+</script>
 
 {% endblock %} <!-- display_vfat -->
 
