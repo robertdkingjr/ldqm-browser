@@ -1,0 +1,49 @@
+{% extends "chambers.html" %}
+{% load staticfiles %}
+
+
+{% block gebs %}
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+      <b>{{chamber}}</b>
+  </div>
+
+  <table class="table">
+    <tbody>
+      <tr>
+	<td class="col-xs-1" rowspan="2">VFATs:</td>
+	{% for slot in slot_list %}
+	{% ifequal slot  '12' %}
+      </tr><tr>
+	{% endifequal %}
+	<td><a href="/main/{{run.Type}}/run/{{run.Number}}/{{chamber}}/vfat/{{slot}}" id="b{{slot}}" class="btn btn-success btn-xs">{{slot}}</a></td>
+	{% endfor %}
+      </tr>
+    </tbody>
+  </table>
+
+ <table class="table">
+    <tbody>
+      <tr>
+	<td class="col-xs-3">Summary/Error Canvases:</td>
+	{% for canvas in sum_can_names %}
+	<td><a href="/main/{{run.Type}}/run/{{run.Number}}/{{chamber}}/canvas/{{canvas}}" class="btn btn-primary btn-xs">{{canvas}}</a></td>
+	{% endfor %}
+      </tr>
+    </tbody>
+ </table>
+
+{%block vfats%}
+{%endblock%}
+
+{%block display_canvas %}
+{%endblock %}
+
+
+</div>
+
+
+
+
+{% endblock %} <!-- gebs -->

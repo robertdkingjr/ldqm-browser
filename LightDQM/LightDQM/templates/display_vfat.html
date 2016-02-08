@@ -1,0 +1,10 @@
+{% extends "vfats.html" %}
+{% load staticfiles %}
+
+
+{% block display_vfat %}
+
+<center><img width="50%" src="{% static '' %}test/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/{{vfat}}/{{hist}}.png"></center>
+
+{% endblock %} <!-- display_vfat -->
+
