@@ -32,7 +32,12 @@ urlpatterns = [
     url(r'^chamber/chip/$', chamber),
     url(r'^run/chamber/$', chamber),
     url(r'^main/([a-zA-Z]+)/run/(\d+)/$', chamber),
-    url(r'^main/([a-zA-Z]+)/run/(\d+)/([\w\+%_&\- ]+)/$', chamber_tabs),
+    url(r'^main/([a-zA-Z]+)/run/(\d+)/report/$', report),
+    #url(r'^main/([a-zA-Z]+)/run/(\d+)/([\w\+%_&\- ]+)/$', chamber_tabs),
+    url(r'^main/([a-zA-Z]+)/run/(\d+)/([\w\+%_&\- ]+)/$', gebs), #runType, runN, chamber
+    url(r'^main/([a-zA-Z]+)/run/(\d+)/([\w\+%_&\- ]+)/vfat/(\d+)/$', vfats), #runType, runN, chamber, vfatN
+    url(r'^main/([a-zA-Z]+)/run/(\d+)/([\w\+%_&\- ]+)/vfat/(\d+)/([\w\+%_&\- ]+)/$', display_vfat), #runType, runN, chamber, vfatN, hist
+    url(r'^main/([a-zA-Z]+)/run/(\d+)/([\w\+%_&\- ]+)/canvas/([a-zA-Z]+)/$', display_canvas), #runType, runN, chamber, canvas
 
 #for bugtracker
     url(r'^bugs/', include('bugtracker.urls')),

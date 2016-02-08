@@ -73,20 +73,13 @@
     </div>
   </div>
   <div class="col-lg-8">
-    <div class="row">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h4>
-            GEM chambers
-          </h4>
-        </div>
-        {% block chambers %}
-        {% endblock %}
-      </div>
+    <div class="row">      
+      {% block chambers %}
+      {% endblock %}
     </div>
   </div>
 </div>
-  {% endblock %}
+  {% endblock %} <!-- main  -->
 
   <!-- jQuery -->
   <script src="{% static 'js/jquery.js' %}"></script>
