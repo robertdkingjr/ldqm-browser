@@ -131,25 +131,6 @@ hist_list_long = ['CRC',
 def dqm_help(request):
   return render(request,'test.html', {'hist_list_long':hist_list_long,})
 
-def dqm_canvases(request):
-  return render(request, 'dqm_canvases.html')
-
-def all_plots(request):
-  
-  return render(request, 'all_plots.html', {'slot_list':slot_list, 
-                                            'selected_slot':-1})
-
-def chip_plots(request):
-  if 'selectSlot' in request.GET:
-    slot=int(request.GET['selectSlot'])
-  else: slot = -1
-  return render(request,'chip_plots.html', {'selected_slot':int(slot), 
-                                            'slot_list':slot_list,
-                                            'hist_list':hist_list})
-#def goto_main(request):
-
-  
-
 def main(request):
   run_list = Run.objects.all()
   return render(request,'main.html', {'run_list':run_list,})
@@ -157,10 +138,13 @@ def main(request):
 def report(request, runType, runN):
   run_list = Run.objects.all()
   run = Run.objects.get(Type=runType, Number = runN)
+  geb_color = "success"
+
   return render(request,'report.html', {'run_list':run_list,
                                         'hist_list':hist_list,
                                         'hist_list_long':hist_list_long,
-                                        'run':run})
+                                        'run':run,
+                                        'geb_color':geb_color})
 
 
 def chamber(request, runType, runN):
@@ -173,15 +157,34 @@ def chamber(request, runType, runN):
                                           'hist_list':hist_list,
                                           'hist_list_long':hist_list_long,
                                           'run':run,
-                                          'geb_color':geb_color}) # <-- Pass this down to child defs
+                                          'geb_color':geb_color})
+def amc(request, runType, runN, amc):
+  run_list = Run.objects.all()
+  run = Run.objects.get(Type=runType, Number = runN)
+  geb_color = "success"
+
+  vfat_color = "success"
+  # vfat_color = "warning"
+  # vfat_color = "danger"
+
+  return render(request,'amc.html', {'run_list':run_list,
+                                      'slot_list':slot_list,
+                                      'hist_list':hist_list,
+                                      'hist_list_long':hist_list_long,
+                                      'run':run,
+                                      'amc':amc,
+                                      'sum_can_names':sum_can_names,
+                                      'vfat_color':vfat_color,
+                                      'geb_color':geb_color})
 
 def gebs(request, runType, runN, chamber):
   run_list = Run.objects.all()
   run = Run.objects.get(Type=runType, Number = runN)
-  
-  color_code = "success"
-  # color_code = "warning"
-  # color_code = "danger"
+  geb_color = "success"
+
+  vfat_color = "success"
+  # vfat_color = "warning"
+  # vfat_color = "danger"
 
   return render(request,'gebs.html', {'run_list':run_list,
                                       'slot_list':slot_list,
@@ -190,12 +193,14 @@ def gebs(request, runType, runN, chamber):
                                       'run':run,
                                       'chamber':chamber,
                                       'sum_can_names':sum_can_names,
-                                      'color_code':color_code})
+                                      'vfat_color':vfat_color,
+                                      'geb_color':geb_color})
 
 def vfats(request, runType, runN, chamber, vfatN):
   run_list = Run.objects.all()
   run = Run.objects.get(Type=runType, Number = runN)
-  color_code = "success"
+  vfat_color = "success"
+  geb_color = "success"
 
   return render(request,'vfats.html', {'run_list':run_list,
                                        'slot_list':slot_list,
@@ -205,12 +210,14 @@ def vfats(request, runType, runN, chamber, vfatN):
                                        'chamber':chamber,
                                        'vfat':int(vfatN),
                                        'sum_can_names':sum_can_names,
-                                       'color_code':color_code})
+                                       'vfat_color':vfat_color,
+                                       'geb_color':geb_color})
 
 def summary(request, runType, runN, chamber, summaryN):
   run_list = Run.objects.all()
   run = Run.objects.get(Type=runType, Number = runN)
-  color_code = "success"
+  vfat_color = "success"
+  geb_color = "success"
 
   return render(request,'summary.html', {'run_list':run_list,
                                          'slot_list':slot_list,
@@ -220,11 +227,13 @@ def summary(request, runType, runN, chamber, summaryN):
                                          'chamber':chamber,
                                          'sum_can_names':sum_can_names,
                                          'sumN':summaryN,
-                                         'color_code':color_code})
+                                         'vfat_color':vfat_color,
+                                         'geb_color':geb_color})
 def display_vfat(request, runType, runN, chamber, vfatN, histN):
   run_list = Run.objects.all()
   run = Run.objects.get(Type=runType, Number = runN)  
-  color_code = "success"
+  vfat_color = "success"
+  geb_color = "success"
 
   return render(request,'display_vfat.html', {'run_list':run_list,
                                               'slot_list':slot_list,
@@ -235,12 +244,14 @@ def display_vfat(request, runType, runN, chamber, vfatN, histN):
                                               'sum_can_names':sum_can_names,
                                               'vfat':int(vfatN),
                                               'hist':histN,
-                                              'color_code':color_code})
+                                              'vfat_color':vfat_color,
+                                              'geb_color':geb_color})
 
 def display_canvas(request, runType, runN, chamber, canvas):
   run_list = Run.objects.all()
   run = Run.objects.get(Type=runType, Number = runN)
-  color_code = "success"
+  vfat_color = "success"
+  geb_color = "success"
 
   return render(request,'display_canvas.html', {'run_list':run_list,
                                                 'slot_list':slot_list,
@@ -250,7 +261,8 @@ def display_canvas(request, runType, runN, chamber, canvas):
                                                 'chamber':chamber,
                                                 'sum_can_names':sum_can_names,
                                                 'canvas':canvas,
-                                                'color_code':color_code})
+                                                'vfat_color':vfat_color,
+                                                'geb_color':geb_color})
 
 
 class BugListView(ListView):

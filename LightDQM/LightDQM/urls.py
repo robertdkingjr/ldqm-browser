@@ -24,16 +24,13 @@ admin.autodiscover()
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^help/', dqm_help),
-    url(r'^dqm_canvases/', dqm_canvases),
-    url(r'^all_plots/$', all_plots),
-    url(r'^all_plots/chip/$', chip_plots),
     url(r'^main/$', main),
     url(r'^main/chamber/$', chamber),
     url(r'^chamber/chip/$', chamber),
     url(r'^run/chamber/$', chamber),
     url(r'^main/([a-zA-Z]+)/run/(\d+)/$', chamber),
     url(r'^main/([a-zA-Z]+)/run/(\d+)/report/$', report),
-    #url(r'^main/([a-zA-Z]+)/run/(\d+)/([\w\+%_&\- ]+)/$', chamber_tabs),
+    url(r'^main/([a-zA-Z]+)/run/(\d+)/amc/([\w\+%_&\- ]+)/$', amc), #runType, runN, amc
     url(r'^main/([a-zA-Z]+)/run/(\d+)/([\w\+%_&\- ]+)/$', gebs), #runType, runN, chamber
     url(r'^main/([a-zA-Z]+)/run/(\d+)/([\w\+%_&\- ]+)/vfat/(\d+)/$', vfats), #runType, runN, chamber, vfatN
     url(r'^main/([a-zA-Z]+)/run/(\d+)/([\w\+%_&\- ]+)/vfat/(\d+)/([\w\+%_&\- ]+)/$', display_vfat), #runType, runN, chamber, vfatN, hist
