@@ -4,11 +4,15 @@ from django.db import models
 class HWstate(models.Model):
   HWID = models.CharField(max_length=30)
   State = models.CharField(max_length=1, default='0')
+  def __unicode__(self):
+    return self.HWID 
 
 class SystemState(models.Model):
   amcStates = models.ManyToManyField(HWstate, related_name='amc_states')
   gebStates = models.ManyToManyField(HWstate, related_name='geb_states')
   vfatStates = models.ManyToManyField(HWstate, related_name='vfat_states')
+  def __unicode__(self):
+    return str(self.id)
 
 class VFAT(models.Model):
   ChipID = models.CharField(max_length=6, default='0xdead')
@@ -19,7 +23,6 @@ class GEB(models.Model):
   Type = models.CharField(max_length=30)
   ChamberID = models.CharField(max_length=30)
   vfats = models.ManyToManyField(VFAT)
-
   def __unicode__(self):
     return self.Type # or better id?
 
