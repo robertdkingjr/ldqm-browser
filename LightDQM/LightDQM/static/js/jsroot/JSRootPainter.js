@@ -63,7 +63,7 @@
    JSROOT.Painter.readStyleFromURL = function(url) {
       var optimize = JSROOT.GetUrlOption("optimize", url);
       if (optimize=="") JSROOT.gStyle.OptimizeDraw = 2; else
-      if (optimize!=null) {
+      if (optimize!==null) {
          JSROOT.gStyle.OptimizeDraw = parseInt(optimize);
          if (isNaN(JSROOT.gStyle.OptimizeDraw)) JSROOT.gStyle.OptimizeDraw = 2;
       }
@@ -80,13 +80,13 @@
       }
 
       var col = JSROOT.GetUrlOption("col", url);
-      if (col!=null) {
+      if (col!==null) {
          col = parseInt(col);
          if (!isNaN(col) && (col>0) && (col<4)) JSROOT.gStyle.DefaultCol = col;
       }
 
       var mathjax = JSROOT.GetUrlOption("mathjax", url);
-      if ((mathjax!=null) && (mathjax!="0")) JSROOT.gStyle.MathJax = 1;
+      if ((mathjax!==null) && (mathjax!="0")) JSROOT.gStyle.MathJax = 1;
 
       if (JSROOT.GetUrlOption("nomenu", url)!=null) JSROOT.gStyle.ContextMenu = false;
       if (JSROOT.GetUrlOption("noprogress", url)!=null) JSROOT.gStyle.ProgressBox = false;
@@ -97,13 +97,16 @@
       JSROOT.gStyle.FitFormat = JSROOT.GetUrlOption("fitfmt", url, JSROOT.gStyle.FitFormat);
 
       var interpolate = JSROOT.GetUrlOption("interpolate", url);
-      if (interpolate!=null) JSROOT.gStyle.Interpolate = interpolate;
+      if (interpolate!==null) JSROOT.gStyle.Interpolate = interpolate;
 
       var palette = JSROOT.GetUrlOption("palette", url);
-      if (palette!=null) {
+      if (palette!==null) {
          palette = parseInt(palette);
          if (!isNaN(palette) && (palette>0) && (palette<113)) JSROOT.gStyle.Palette = palette;
       }
+
+      var embed3d = JSROOT.GetUrlOption("embed3d", url);
+      if (embed3d !== null) JSROOT.gStyle.Embed3DinSVG = parseInt(embed3d);
    }
 
    JSROOT.Painter.Coord = {
@@ -182,83 +185,114 @@
 
    // Initialize ROOT markers
    JSROOT.Painter.root_markers = new Array(
-         'fcircle', 'fcircle', 'oplus', 'oasterisk', 'ocircle',        // 0..4
-         'omult', 'fcircle', 'fcircle', 'fcircle', 'fcircle',          // 5..9
-         'fcircle', 'fcircle', 'fcircle', 'fcircle', 'fcircle',        // 10..14
-         'fcircle', 'fcircle', 'fcircle', 'fcircle', 'fcircle',        // 15..19
-         'fcircle', 'fsquare', 'ftriangle-down', 'ftriangle-up', 'ocircle', // 20..24
-         'osquare', 'otriangle-up', 'odiamond', 'ocross', 'fstar',     // 25..29
-         'ostar', 'dcross', 'otriangle-down', 'fdiamond', 'fcross');   // 30..34
+           0, 100,   8,   7,   0,  //  0..4
+           9, 100, 100, 100, 100,  //  5..9
+         100, 100, 100, 100, 100,  // 10..14
+         100, 100, 100, 100, 100,  // 15..19
+         100, 103, 105, 104,   0,  // 20..24
+           3,   4,   2,   1, 106,  // 25..29
+           6,   7,   5, 102, 101); // 30..34
 
    /** Function returns the ready to use marker for drawing */
    JSROOT.Painter.createAttMarker = function(attmarker, style) {
-
       if (style==null) style = attmarker['fMarkerStyle'];
 
-      var marker_name = (style < JSROOT.Painter.root_markers.length) ? JSROOT.Painter.root_markers[style] : "fcircle";
+      var marker_kind = ((style>0) && (style < JSROOT.Painter.root_markers.length)) ? JSROOT.Painter.root_markers[style] : 100;
 
-      var shape = 0, toFill = true;
+      var shape = marker_kind % 100, toFill = (marker_kind>=100);
 
-      if (typeof (marker_name) != 'undefined') {
-         if (marker_name.charAt(0) == '0') toFill = false;
-
-         switch (marker_name.substr(1)) {
-           case "circle":  shape = 0; break;
-           case "cross":   shape = 1; break;
-           case "diamond": shape = 2; break;
-           case "square":  shape = 3; break;
-           case "triangle-up": shape = 4; break;
-           case "triangle-down": shape = 5; break;
-           case "star":    shape = 6; break;
-           case "asterisk":  shape = 7; break;
-           case "plus":     shape = 8; break;
-           case "mult":     shape = 9; break;
-         }
+      var markerSize = attmarker['fMarkerSize'] * 8;
+      switch(style) {
+         case 1: markerSize = 1; break;
+         case 6: markerSize = 2; break;
+         case 7: markerSize = 3; break;
       }
-
-      var markerSize = attmarker['fMarkerSize'];
-
-      var markerScale = 64;
-      if (style == 1) markerScale = 1;
 
       var marker_color = JSROOT.Painter.root_colors[attmarker['fMarkerColor']];
 
       var res = { stroke: marker_color, fill: marker_color, marker: "" };
       if (!toFill) res['fill'] = 'none';
 
+      res['kind'] = 'svg:path';
+
+      var half = (markerSize/2).toFixed(1);
+
       switch(shape) {
+      case 0: // circle
+         res['kind'] = 'svg:circle';
+         res['size'] = half;
+         res.func = function(selection, d) {
+            return selection.style("fill", this.fill)
+                     .attr("cx", 0)
+                     .attr("cy", 0)
+                     .attr("r", this.size)
+                     .style("stroke", this.stroke)
+                     .style("pointer-events","visibleFill");
+         }.bind(res);
+         break;
+      case 1: // cross
+         var quat = (markerSize/6).toFixed(1);
+         res['marker'] = "M -" + quat+","+half+ " L " + quat+","+half + " L " + quat+","+quat +
+                        " L " + half+","+quat + " L " + half + ",-" + quat + " L " + quat+",-"+quat +
+                        " L " + quat+",-"+half + " L -" + quat+",-"+half + " L -" + quat+",-"+quat +
+                        " L -" + half+",-"+quat + " L -" + half+","+quat + " L -" + quat+","+quat + " z"; break;
+      case 2: // diamond
+         res['marker'] = "M -" + half + ",0  L 0,-" + half +
+                         " L " + half + ",0  L 0," + half + " z"; break;
+      case 3: // square
+         res['kind'] = 'svg:rect';
+         res['pos'] = "-" + half;
+         res['size'] = markerSize.toFixed(1);
+         res.func = function(selection) {
+            selection.style("fill", this.fill)
+                     .attr("x", this.pos)
+                     .attr("y", this.pos)
+                     .attr("width", this.size)
+                     .attr("height", this.size)
+                     .style("stroke", this.stroke)
+                     .style("pointer-events","visibleFill");
+         }.bind(res);
+         break;
+      case 4: // triangle-up
+         res['marker'] = "M 0," + half + " L -" + half + ",-" + half +
+                         " L " + half + ",-" + half + " z"; break;
+      case 5: // triangle-down
+         res['marker'] = "M 0,-" + half + " L -" + half + "," + half +
+                         " L " + half + "," + half + " z"; break;
       case 6: // star
-         res['marker'] = "M" + (-4*markerSize) + "," + (-1*markerSize) +
-                        " L" + 4*markerSize + "," + (-1*markerSize) +
-                        " L" + (-2.4*markerSize) + "," + 4*markerSize +
-                        " L0," + (-4*markerSize) +
-                        " L" + 2.8*markerSize + "," + 4*markerSize + " z"; break;
+         res['marker'] = "M -" + half + "," + (-markerSize/8).toFixed(1) +
+                        " L" + half + "," + (-markerSize/8).toFixed(1) +
+                        " L" + (-markerSize/3.3).toFixed(1) + "," + half +
+                        " L0,-" + half +
+                        " L" + (markerSize/2.8).toFixed(1) + "," + half + " z"; break;
       case 7: // asterisk
-         res['marker'] = "M " + (-4*markerSize) + "," + (-4*markerSize) +
-                        " L" + 4*markerSize + "," + 4*markerSize +
-                        " M 0," + (-4*markerSize) + " L 0," + 4*markerSize +
-                        " M "  + 4*markerSize + "," + (-4*markerSize) +
-                        " L " + (-4*markerSize) + "," + 4*markerSize +
-                        " M " + (-4*markerSize) + ",0 L " + 4*markerSize + ",0"; break;
+         res['marker'] = "M -" + half + ",-" + half +
+                        " L" + half + "," + half +
+                        " M 0,-" + half + " L 0," + half +
+                        " M "  + half + ",-" + half +
+                        " L -" + half + "," + half +
+                        " M -" + half + ",0 L " + half + ",0"; break;
       case 8: // plus
-         res['marker'] = "M 0," + (-4*markerSize) + " L 0," + 4*markerSize +
-                        " M " + (-4*markerSize) + ",0 L " + 4*markerSize + ",0"; break;
+         res['marker'] = "M 0,-" + half + " L 0," + half +
+                        " M -" + half + ",0 L " + half + ",0"; break;
       case 9: // mult
-         res['marker'] = "M " + (-4*markerSize) + "," + (-4*markerSize) +
-                        " L" + 4*markerSize + "," + 4*markerSize +
-                        " M "  + 4*markerSize + "," + (-4*markerSize) +
-                        " L " + (-4*markerSize) + "," + 4*markerSize; break;
+         res['marker'] = "M -" + half + ",-" + half +
+                        " L" + half + "," + half +
+                        " M "  + half + ",-" + half +
+                        " L -" + half + "," + half; break;
       default:
-         res['marker'] = d3.svg.symbol().type(d3.svg.symbolTypes[shape]).size(markerSize * markerScale);
+         res['marker'] = "M -" + half + ",0  L 0,-" + half +
+                         " L " + half + ",0  L 0," + half + " z"; break;
       }
 
-      res.SetMarker = function(selection) {
-         selection.style("fill", this.fill)
-                  .style("stroke", this.stroke)
-                  .style("pointer-events","visibleFill") // even if not filled, get events
-                  .attr("d", this.marker);
-      }
-      res.func = res.SetMarker.bind(res);
+      if (res['kind'] == 'svg:path')
+         res.func =
+            function(selection) {
+              selection.style("fill", this.fill)
+                       .style("stroke", this.stroke)
+                       .style("pointer-events","visibleFill") // even if not filled, get events
+                       .attr("d", this.marker);
+            }.bind(res);
 
       return res;
    }
@@ -785,10 +819,12 @@
       }
 
       if (typeof color != 'string') return "\\(" + str + "\\)";
-      color = color.replace(/rgb/g, "[RGB]")
-                   .replace(/\(/g, '{')
-                   .replace(/\)/g, '}');
-      return "\\(\\color " + color + str + "\\)";
+
+      if (color.indexOf("rgb(")>=0)
+         color = color.replace(/rgb/g, "[RGB]")
+                      .replace(/\(/g, '{')
+                      .replace(/\)/g, '}');
+      return "\\(\\color{" + color + '}' + str + "\\)";
    }
 
    // ==============================================================================
@@ -931,38 +967,18 @@
    /** function (re)creates svg:g element used for specific object drawings
      *  either one attached svg:g to pad (take_pad==true) or to the frame (take_pad==false)
      *  svg:g element can be attached to different layers */
-   JSROOT.TObjectPainter.prototype.RecreateDrawG = function(take_pad, layer, normalg) {
+   JSROOT.TObjectPainter.prototype.RecreateDrawG = function(take_pad, layer) {
       if (this.draw_g)
-         this.draw_g.selectAll("*").remove();
-
-      if (normalg == null) normalg = true;
+         return this.draw_g.selectAll("*").remove();
 
       if (take_pad) {
          if (layer==null) layer = ".text_layer";
-         if (!this.draw_g)
-            this.draw_g = this.svg_pad().select(layer).append("svg:g");
+         this.draw_g = this.svg_pad().select(layer).append("svg:g");
       } else {
-         var frame = this.svg_frame();
-
-         var w = frame.attr("width");
-         var h = frame.attr("height");
-
-         if (!this.draw_g) {
-            if (layer==null) layer = ".main_layer";
-            if (normalg)
-               this.draw_g = frame.select(layer).append("g");
-            else
-               this.draw_g = frame.select(layer).append("svg");
-         }
-
-         if (!normalg)
-            this.draw_g.attr("x", 0)
-                       .attr("y", 0)
-                       .attr("width",w)
-                       .attr("height", h)
-                       .attr("viewBox", "0 0 " + w + " " + h)
-                       .attr('overflow', 'hidden');
+         if (layer==null) layer = ".main_layer";
+         this.draw_g = this.svg_frame().select(layer).append("svg:g");
       }
+      return this.draw_g;
    }
 
    /** This is main graphical SVG element, where all Canvas drawing are performed */
@@ -1051,6 +1067,134 @@
       return isNaN(res) ? 0 : res;
    }
 
+   JSROOT.TObjectPainter.prototype.embed_3d = function() {
+      // returns embed mode for 3D drawings (three.js) inside SVG
+      // 0 - no embedding,  3D drawing take full size of canvas
+      // 1 - no embedding, canvas placed over svg with proper size (resize problem may appear)
+      // 2 - normall embedding via ForeginObject, works only with Firefox and WebKit
+
+      if (JSROOT.gStyle.Embed3DinSVG < 2) return JSROOT.gStyle.Embed3DinSVG;
+      if (JSROOT.browser.isFirefox || JSROOT.browser.isWebKit)
+         return JSROOT.gStyle.Embed3DinSVG; // use specified mode
+      return 1; // default is overlay
+   }
+
+   JSROOT.TObjectPainter.prototype.size_for_3d = function() {
+      // one uses frame sizes for the 3D drawing - like TH2/TH3 objects
+
+      var pad = this.svg_pad();
+      var frame = this.svg_frame();
+
+      if (pad.empty() && frame.empty()) return { x:0, y:0, width:100, height:100 };
+
+      var elem = pad;
+      if (this.embed_3d() == 0)
+         elem = this.svg_canvas();
+      else
+      if (!frame.empty()) elem = frame;
+
+      var size = { x: 0, y: 0,
+                   width: elem.property("draw_width"),
+                   height: elem.property("draw_height") };
+
+      if (elem === frame) {
+         size.x = frame.property("draw_x");
+         size.y = frame.property("draw_y");
+      }
+
+      if (frame.empty() && (this.embed_3d() > 0)) {
+         size.x = Math.floor(size.x + size.width*0.1);
+         size.y = Math.floor(size.y + size.height*0.1);
+         size.width = Math.floor(size.width*0.8);
+         size.height = Math.floor(size.height*0.8);
+      }
+
+      return size;
+   }
+
+   JSROOT.TObjectPainter.prototype.clear_3d_canvas = function() {
+
+      var can3d = this.svg_pad().property('can3d');
+      if (can3d == null) return;
+
+      this.svg_pad().property('can3d', null);
+
+      if (can3d == 0) {
+         d3.select(this.svg_canvas().node().nextSibling).remove(); // remove html5 canvas
+
+         this.svg_canvas().style('display', null); // show SVG canvas
+
+      } else {
+         if (this.svg_pad().empty()) return;
+
+         if (can3d>1) {
+            this.svg_pad().select(".frame_layer foreignObject").remove();
+         } else {
+            var name = this.pad_name;
+            if (name == "") name = 'canvas';
+            d3.select(this.svg_canvas().node().parentNode).select('.draw3d_' + name).remove();
+         }
+
+         this.svg_pad().select(".frame_layer").select(".root_frame").style('display', null);
+      }
+   }
+
+   JSROOT.TObjectPainter.prototype.add_3d_canvas = function(canv) {
+
+      var can3d = this.embed_3d();
+
+      if ((canv == null) || (can3d < 0)) return;
+
+      this.svg_pad().property('can3d', can3d);
+
+      if (can3d === 0) {
+         this.svg_canvas().style('display', 'none'); // hide SVG canvas
+
+         this.svg_canvas().node().parentNode.appendChild(canv); // add
+      } else {
+         if (this.svg_pad().empty()) return;
+
+         // first hide normal frame
+         var frame = this.svg_pad().select(".frame_layer").select(".root_frame");
+         frame.style('display', 'none');
+
+         var size = this.size_for_3d();
+
+         var fo;
+
+         if (can3d == 1) {
+            size = this.CalcAbsolutePosition(frame.empty() ? this.svg_pad() : frame, size);
+
+            // force redraw by resize
+            this.svg_canvas().property('redraw_by_resize', true);
+
+            var name = this.pad_name;
+            if (name == '') name = 'canvas';
+
+            fo = d3.select(this.svg_canvas().node().parentNode).append('div');
+            fo.attr('class','draw3d_' + name)
+              .style('position','absolute')
+              .style('left', size.x + 'px')
+              .style('top', size.y + 'px')
+              .style('width', size.width + 'px')
+              .style('height', size.height + 'px');
+         } else {
+            fo = this.svg_pad().select(".frame_layer").append("foreignObject");
+
+            // set frame dimensions
+            fo.attr('width', size.width)
+              .attr('height', size.height)
+              .attr('viewBox', "0 0 " + size.width + " " + size.height)
+              .attr('preserveAspectRatio','xMidYMid');
+
+            // and position
+            this.SetForeignObjectPosition(fo, size);
+         }
+
+         fo.node().appendChild(canv);
+      }
+   }
+
    /** Returns main pad painter - normally TH1/TH2 painter, which draws all axis */
    JSROOT.TObjectPainter.prototype.main_painter = function() {
       if (!this.main) {
@@ -1068,9 +1212,10 @@
       // Assigns id of top element (normally <div></div> where drawing is done
       // is_main - -1 - not add to painters list,
       //            0 - normal painter (default),
-      //            1 - major objects like TH1/TH2,
+      //            1 - major objects like TH1/TH2 (required canvas with frame)
       //            2 - if canvas missing, create it, but not set as main object
       //            3 - if canvas and (or) frame missing, create them, but not set as main object
+      //            4 - major objects like TH3 (required canvas, but no frame)
       // In some situations canvas may not exists - for instance object drawn as html, not as svg.
       // In such case the only painter will be assigned to the first element
 
@@ -1084,7 +1229,7 @@
       var svg_c = this.svg_canvas();
 
       if (svg_c.empty() && (is_main > 0)) {
-         JSROOT.Painter.drawCanvas(divid, null, (is_main==2 ? "noframe" : ""));
+         JSROOT.Painter.drawCanvas(divid, null, ((is_main == 2) || (is_main == 4)) ? "noframe" : "");
          svg_c = this.svg_canvas();
          this['create_canvas'] = true;
       }
@@ -1103,11 +1248,10 @@
 
       if (is_main < 0) return;
 
-      // create TFrame element if not exists when
+      // create TFrame element if not exists
       if (this.svg_frame().empty() && ((is_main == 1) || (is_main == 3))) {
          JSROOT.Painter.drawFrame(divid, null);
          if (this.svg_frame().empty()) return alert("Fail to draw dummy TFrame");
-         this['create_canvas'] = true;
       }
 
       var svg_p = this.svg_pad();
@@ -1116,30 +1260,35 @@
       if (svg_p.property('pad_painter') != this)
          svg_p.property('pad_painter').painters.push(this);
 
-      if ((is_main == 1) && (svg_p.property('mainpainter') == null))
+      if (((is_main == 1) || (is_main == 4)) && (svg_p.property('mainpainter') == null))
          // when this is first main painter in the pad
          svg_p.property('mainpainter', this);
    }
 
-   JSROOT.TObjectPainter.prototype.SetForeignObjectPosition = function(fo, x, y) {
+   JSROOT.TObjectPainter.prototype.CalcAbsolutePosition = function(sel, pos) {
+      while (!sel.empty() && sel.attr('class') != 'root_canvas') {
+         if ((sel.attr('class') == 'root_frame') || (sel.attr('class') == 'root_pad')) {
+           pos.x += sel.property("draw_x");
+           pos.y += sel.property("draw_y");
+         }
+         sel = d3.select(sel.node().parentNode);
+      }
+      return pos;
+   }
+
+   JSROOT.TObjectPainter.prototype.SetForeignObjectPosition = function(fo, pos) {
       // method used to set absolute coordinates for foreignObject
       // it is known problem of WebKit http://bit.ly/1wjqCQ9
 
-      var sel = fo;
+      if (!pos) pos = { x: 0, y: 0 };
 
       if (JSROOT.browser.isWebKit) {
          // force canvas redraw when foreign object used - it is not correctly scaled
          this.svg_canvas().property('redraw_by_resize', true);
-         while (sel && sel.attr('class') != 'root_canvas') {
-            if ((sel.attr('class') == 'root_frame') || (sel.attr('class') == 'root_pad')) {
-              x += parseInt(sel.attr("x"));
-              y += parseInt(sel.attr("y"));
-            }
-            sel = d3.select(sel.node().parentNode);
-         }
+         pos = this.CalcAbsolutePosition(fo, pos);
       }
 
-      fo.attr("x",x).attr("y",y);
+      fo.attr("x",pos.x).attr("y",pos.y);
    }
 
 
@@ -1658,6 +1807,7 @@
    }
 
    JSROOT.TObjectPainter.prototype.DrawText = function(align_arg, x, y, w, h, label, tcolor, latex_kind, draw_g) {
+
       if (!draw_g) draw_g = this.draw_g;
       var align;
 
@@ -1757,7 +1907,7 @@
                         .style("overflow", "hidden")
                         .style("position", "absolute")
                         .html(JSROOT.Painter.translateMath(label, latex_kind, tcolor));
-      document.body.appendChild(element)
+      document.body.appendChild(element);
 
       draw_g.property('mathjax_use', true);  // one need to know that mathjax is used
       fo_g.property('_element', element);
@@ -1874,7 +2024,15 @@
 
          // append for the moment three layers - for drawing and axis
          frame_g.append('svg:g').attr('class','grid_layer');
-         frame_g.append('svg:g').attr('class','main_layer');
+
+         frame_g.append('svg:svg').attr('class','main_layer')
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("width", Math.round(w))
+                .attr("height", Math.round(h))
+                .attr("viewBox", "0 0 " + Math.round(w) + " " + Math.round(h))
+                .attr('overflow', 'hidden');
+
          frame_g.append('svg:g').attr('class','axis_layer');
          frame_g.append('svg:g').attr('class','upper_layer');
       } else {
@@ -1899,6 +2057,10 @@
              .attr("y", tm)
              .attr("width", w)
              .attr("height", h)
+             .property('draw_x', lm)
+             .property('draw_y', tm)
+             .property('draw_width', w)
+             .property('draw_height', h)
              .attr("transform", "translate(" + lm + "," + tm + ")");
 
       top_rect.attr("x", 0)
@@ -2020,7 +2182,6 @@
          if (maxEX < 1.0e-300 && maxEY < 1.0e-300)
             this.draw_errors = false;
       }
-
    }
 
    JSROOT.TGraphPainter.prototype.CreateBins = function() {
@@ -2067,7 +2228,7 @@
 
       var xmin = 0, xmax = 1, ymin = 0, ymax = 1;
 
-      if (this.bins!=null) {
+      if (this.bins != null) {
          xmin = xmax = this.bins[0].x;
          ymin = ymax = this.bins[0].y;
          for (var n = 0; n < this.bins.length; ++n) {
@@ -2086,8 +2247,8 @@
          }
       }
 
-      if (xmin <= xmax) xmax=xmin+1;
-      if (ymin <= ymax) ymax=ymin+1;
+      if (xmin >= xmax) xmax = xmin+1;
+      if (ymin >= ymax) ymax = ymin+1;
       var dx = (xmax - xmin)*0.1;
       var dy = (ymax - ymin)*0.1;
       var uxmin = xmin - dx, uxmax = xmax + dx;
@@ -2106,14 +2267,14 @@
       histo.fXaxis.fXmax = uxmax;
       histo.fYaxis.fXmin = minimum;
       histo.fYaxis.fXmax = maximum;
-      histo.fXaxis.fMinimum = minimum;
-      histo.fXaxis.fMaximum = maximum;
+      histo.fMinimum = minimum;
+      histo.fMaximum = maximum;
       histo.fBits = histo.fBits | JSROOT.TH1StatusBits.kNoStats;
       return histo;
    }
 
    JSROOT.TGraphPainter.prototype.OptimizeBins = function(filter_func) {
-      if (this.bins.length < 30) return this.bins;
+      if ((this.bins.length < 30) && !filter_func) return this.bins;
 
       var selbins = null;
       if (typeof filter_func == 'function') {
@@ -2128,8 +2289,8 @@
       }
       if (selbins == null) selbins = this.bins;
 
-      if ((selbins.length < 2000) || (JSROOT.gStyle.OptimizeDraw == 0)) return selbins;
-      var step = Math.floor(selbins.length / 2000);
+      if ((selbins.length < 5000) || (JSROOT.gStyle.OptimizeDraw == 0)) return selbins;
+      var step = Math.floor(selbins.length / 5000);
       if (step < 2) step = 2;
       var optbins = [];
       for (var n = 0; n < selbins.length; n+=step)
@@ -2182,7 +2343,7 @@
    JSROOT.TGraphPainter.prototype.DrawBins = function() {
       var w = this.frame_width(), h = this.frame_height();
 
-      this.RecreateDrawG(false, ".main_layer", false);
+      this.RecreateDrawG(false, ".main_layer");
 
       var pthis = this;
       var pmain = this.main_painter();
@@ -2271,7 +2432,7 @@
          // do not add tooltip for line, when we wants to add markers
          if (JSROOT.gStyle.Tooltip && (this.optionMark==0))
             this.draw_g.selectAll("draw_line")
-                       .data(linebins).enter()
+                       .data(drawbins).enter()
                        .append("svg:circle")
                        .attr("cx", function(d) { return pmain.grx(d.x).toFixed(1); })
                        .attr("cy", function(d) { return pmain.gry(d.y).toFixed(1); })
@@ -2285,11 +2446,11 @@
 
       if (this.draw_errors || this.optionMark || this.optionRect || this.optionBrackets) {
 
-         if (drawbins==null)
+         if ((drawbins === null) || !this.out_of_range)
             drawbins = this.OptimizeBins(function(pnt) {
                var grx = pmain.grx(pnt.x);
                if ((grx<0) || (grx>w)) return true; // exclude point out of X range
-               if (this.out_of_range) return false; // allow to draw points out of Y range
+               if (pthis.out_of_range) return false; // allow to draw points out of Y range
                var gry = pmain.gry(pnt.y);
                return (gry<0) || (gry>h); // exclude point out of Y range
             });
@@ -2322,6 +2483,7 @@
                }
             }
          }
+
          // here are up to five elements are collected, try to group them
          nodes = this.draw_g.selectAll("g.node")
                      .data(drawbins)
@@ -2462,8 +2624,7 @@
          var style = (this.optionMark == 2) ? 3 : null;
 
          var marker = JSROOT.Painter.createAttMarker(this.graph, style);
-
-         nodes.append("svg:path").call(marker.func);
+         nodes.append(marker.kind).call(marker.func);
       }
    }
 
@@ -2746,7 +2907,6 @@
       painter.SetDivId(divid, -1); // just to get access to existing elements
 
       if (painter.main_painter() == null) {
-         console.log('draw histogram');
          if (graph['fHistogram']==null)
             graph['fHistogram'] = painter.CreateHistogram();
          JSROOT.Painter.drawHistogram1D(divid, graph['fHistogram'], "AXIS");
@@ -3254,6 +3414,8 @@
          .attr("viewBox", "0 0 " + w + " " + h)
          .attr("preserveAspectRatio", "none")  // we do not preserve relative ratio
          .property('height_factor', factor)
+         .property('draw_x', 0)
+         .property('draw_y', 0)
          .property('draw_width', w)
          .property('draw_height', h)
          .property('redraw_by_resize', false);
@@ -3295,11 +3457,10 @@
          svg_pad.append("svg:g").attr("class","stat_layer");
       }
 
-      svg_pad.attr("width", w) // this is for SVG drawing
-             .attr("height", h)
-             .attr("viewBox", x + " " + y + " " + (x+w) + " " + (y+h))
-             .attr("transform", "translate(" + x + "," + y + ")")
-             .property('draw_width', w) // this is to make similar with canvas
+      svg_pad.attr("transform", "translate(" + x + "," + y + ")")
+             .property('draw_x', x) // this is to make similar with canvas
+             .property('draw_y', y)
+             .property('draw_width', w)
              .property('draw_height', h);
 
       svg_rect.attr("x", 0)
@@ -3391,7 +3552,7 @@
       painter.SetDivId(divid);  // now add to painters list
 
       if (can==null) {
-         if (opt.indexOf("noframe")<0)
+         if (opt.indexOf("noframe") < 0)
             JSROOT.Painter.drawFrame(divid, null);
          return painter.DrawingReady();
       }
@@ -3777,8 +3938,8 @@
       if (l != -1) {
          chopt = chopt.replace('BOX', '   ');
          if (hdim > 1) {
-            Hoption.Scat = 0;
-            Hoption.Box = 1;
+            option.Scat = 0;
+            option.Box = 1;
             if (chopt[l + 3] == '1') {
                option.Box = 11;
                chopt[l + 3] = ' ';
@@ -3894,7 +4055,7 @@
       }
       l = chopt.indexOf('AITOFF');
       if (l != -1) {
-         Hoption.Proj = 1;
+         option.Proj = 1;
          chopt = chopt.replace('AITOFF', '      '); // Aitoff projection
       }
       l = chopt.indexOf('MERCATOR');
@@ -4035,25 +4196,39 @@
       this['zoom_zmin'] = 0;
       this['zoom_zmax'] = 0;
 
-      if ((pad!=null) && ('fUxmin' in pad) && !this.create_canvas) {
-         if (pad.fUxmin !== this['histo']['fXaxis']['fXmin'] ||
-             pad.fUxmax !== this['histo']['fXaxis']['fXmax']) {
-            this['zoom_xmin'] = pad.fUxmin;
-            this['zoom_xmax'] = pad.fUxmax;
-         }
-         if (pad.fUymin !== this['histo']['fYaxis']['fXmin'] ||
-             pad.fUymax !== this['histo']['fYaxis']['fXmax']) {
-            this['zoom_ymin'] = pad.fUymin;
-            this['zoom_ymax'] = pad.fUymax;
-         }
+      if ((pad==null) || !('fUxmin' in pad) || this.create_canvas) return;
+
+      var min = pad.fUxmin, max = pad.fUxmax;
+
+      // first check that non-default values are there
+      if ((min !== 0) || (max !== 1)) {
          if (pad.fLogx > 0) {
-            this['zoom_xmin'] = Math.exp(this['zoom_xmin'] * Math.log(10));
-            this['zoom_xmax'] = Math.exp(this['zoom_xmax'] * Math.log(10));
+            min = Math.exp(min * Math.log(10));
+            max = Math.exp(max * Math.log(10));
          }
+
+         if (min !== this['histo']['fXaxis']['fXmin'] || max !== this['histo']['fXaxis']['fXmax'])
+            if (min >= this['histo']['fXaxis']['fXmin'] && max <= this['histo']['fXaxis']['fXmax']) {
+               // set zoom values if only inside range
+               this['zoom_xmin'] = min;
+               this['zoom_xmax'] = max;
+            }
+      }
+
+      min = pad.fUymin; max = pad.fUymax;
+
+      if ((this.Dimension() > 1) && ((min !== 0) || (max !== 1))) {
          if (pad.fLogy > 0) {
-            this['zoom_ymin'] = Math.exp(this['zoom_ymin'] * Math.log(10));
-            this['zoom_ymax'] = Math.exp(this['zoom_ymax'] * Math.log(10));
+            min = Math.exp(min * Math.log(10));
+            max = Math.exp(max * Math.log(10));
          }
+
+         if (min !== this['histo']['fYaxis']['fXmin'] || max !== this['histo']['fYaxis']['fXmax'])
+            if (min >= this['histo']['fYaxis']['fXmin'] && max <= this['histo']['fYaxis']['fXmax']) {
+               // set zoom values if only inside range
+               this['zoom_ymin'] = min;
+               this['zoom_ymax'] = max;
+            }
       }
    }
 
@@ -4819,7 +4994,6 @@
    }
 
    JSROOT.THistPainter.prototype.FindStat = function() {
-
       if ('fFunctions' in this.histo)
          for (var i=0; i < this.histo.fFunctions.arr.length; ++i) {
             var func = this.histo.fFunctions.arr[i];
@@ -4834,9 +5008,11 @@
    JSROOT.THistPainter.prototype.CreateStat = function() {
 
       if (!this.draw_content) return null;
-      if (this.FindStat() != null) return null;
 
-      var stats = JSROOT.Create('TPaveStats');
+      var stats = this.FindStat();
+      if (stats != null) return stats;
+
+      stats = JSROOT.Create('TPaveStats');
       JSROOT.extend(stats, { _AutoCreated: true,
                              fName : 'stats',
                              fOptStat: JSROOT.gStyle.OptStat,
@@ -4854,7 +5030,7 @@
       if (!'fFunctions' in this.histo)
          this.histo['fFunctions'] = JSROOT.Create("TList");
 
-      this.histo.fFunctions.arr.push(stats);
+      this.histo.fFunctions.Add(stats,"");
 
       return stats;
    }
@@ -4898,14 +5074,6 @@
       }
 
       this.DrawNextFunction(indx+1, callback);
-   }
-
-   JSROOT.THistPainter.prototype.Redraw = function() {
-      this.CreateXY();
-      this.DrawAxes();
-      this.DrawGrids();
-      this.DrawBins();
-      if (this.create_canvas) this.DrawTitle();
    }
 
    JSROOT.THistPainter.prototype.Unzoom = function(dox, doy, doz) {
@@ -5376,10 +5544,10 @@
             var file_name = "d3_canvas";
             if (typeof (this.histo.fName) != 'undefined')
                file_name = this.histo.fName;
-            var el = d3.select("#" + this['divid']);
-            if (el && el[0][0]['firstChild'])
+            var top = this.svg_canvas().node();
+            if (top != null)
                JSROOT.AssertPrerequisites("savepng", function() {
-                  saveSvgAsPng(el[0][0]['firstChild'], file_name + ".png");
+                  saveSvgAsPng(top, file_name + ".png");
                });
          });
 
@@ -5874,7 +6042,7 @@
       if (this.options.Mark > 0) {
          // draw markers also when e2 option was specified
          var marker = JSROOT.Painter.createAttMarker(this.histo);
-         nodes.append("svg:path").call(marker.func);
+         nodes.append(marker.kind).call(marker.func, null, true);
       }
    }
 
@@ -5887,7 +6055,7 @@
          return;
       }
 
-      this.RecreateDrawG(false, ".main_layer", false);
+      this.RecreateDrawG(false, ".main_layer");
 
       if ((this.options.Error > 0) || (this.options.Mark > 0))
          return this.DrawAsMarkers(width, height);
@@ -5979,6 +6147,14 @@
 
       // check if it makes sense to zoom inside specified axis range
       return false;
+   }
+
+   JSROOT.TH1Painter.prototype.Redraw = function() {
+      this.CreateXY();
+      this.DrawAxes();
+      this.DrawGrids();
+      this.DrawBins();
+      if (this.create_canvas) this.DrawTitle();
    }
 
    JSROOT.Painter.drawHistogram1D = function(divid, histo, opt) {
@@ -6146,7 +6322,7 @@
          if (this.text['fTextColor'] == 0) this.text['fTextColor'] = 1;
       }
 
-      this.RecreateDrawG(use_pad, use_pad ? ".text_layer" : ".upper_layer", true);
+      this.RecreateDrawG(use_pad, use_pad ? ".text_layer" : ".upper_layer");
 
       var tcolor = JSROOT.Painter.root_colors[this.text['fTextColor']];
 
@@ -6286,41 +6462,6 @@
       return true;
    }
 
-   JSROOT.Painter.StreamerInfoHierarchy = function(folder, lst) {
-      folder['_childs'] = [];
-
-      for ( var i = 0; i < lst.arr.length; ++i) {
-         var entry = lst.arr[i]
-
-         if (entry._typename == "TList") continue;
-
-         if (typeof (entry['fName']) == 'undefined') {
-            JSROOT.console("strange element in StreamerInfo with type " + entry._typename);
-            continue;
-         }
-
-         var item = {
-            _name : entry['fName'],
-            _kind : "",
-            _childs : []
-         };
-
-         folder._childs.push(item);
-
-         item._childs.push({ _name : 'Checksum: ' + entry['fCheckSum'] });
-         item._childs.push({ _name : 'Class version: ' + entry['fClassVersion'] });
-         if (entry['fTitle'] != '') item._childs.push({ _name : 'Title: ' + entry['fTitle'] });
-         if (typeof entry['fElements'] == 'undefined') continue;
-         for ( var l = 0; l < entry['fElements']['arr'].length; ++l) {
-            var elem = entry['fElements']['arr'][l];
-            if ((elem == null) || (typeof (elem['fName']) == 'undefined')) continue;
-            var info = elem['fTypeName'] + " " + elem['fName'] + ";";
-            if (elem['fTitle'] != '') info += " // " + elem['fTitle'];
-            item._childs.push({ _name : info });
-         }
-      }
-   }
-
    JSROOT.Painter.ObjectHierarchy = function(top, obj, nosimple) {
       if ((top==null) || (obj==null)) return false;
 
@@ -6430,7 +6571,7 @@
             item['_vclass'] = 'h_value_num';
          } else
          if (typeof fld == 'string') {
-            simple = true;
+            simple = (key != 'fName');
             item['_value'] = '"' + fld + '"';
             item['_vclass'] = 'h_value_str';
          } else {
@@ -7752,11 +7893,45 @@
       });
    }
 
-   JSROOT.Painter.drawStreamerInfo = function(divid, obj) {
+   JSROOT.Painter.drawStreamerInfo = function(divid, lst) {
       var painter = new JSROOT.HierarchyPainter('sinfo', divid, 'white');
 
-      painter.h = { _name : "StreamerInfo" };
-      JSROOT.Painter.StreamerInfoHierarchy(painter.h, obj);
+      painter.h = { _name : "StreamerInfo", _childs : [] };
+
+      for ( var i = 0; i < lst.arr.length; ++i) {
+         var entry = lst.arr[i]
+
+         if (entry._typename == "TList") continue;
+
+         if (typeof (entry.fName) == 'undefined') {
+            JSROOT.console("strange element in StreamerInfo with type " + entry._typename);
+            continue;
+         }
+
+         var item = {
+            _name : entry.fName + ";" + entry.fClassVersion,
+            _kind : "class " + entry.fName,
+            _title : "class:" + entry.fName + ' version:' + entry.fClassVersion + ' checksum:' + entry.fCheckSum,
+            _icon: "img_class",
+            _childs : []
+         };
+
+         if (entry.fTitle != '') item._title += '  ' + entry.fTitle;
+
+         painter.h._childs.push(item);
+
+         if (typeof entry.fElements == 'undefined') continue;
+         for ( var l = 0; l < entry.fElements.arr.length; ++l) {
+            var elem = entry.fElements.arr[l];
+            if ((elem == null) || (typeof (elem.fName) == 'undefined')) continue;
+            var info = elem.fTypeName + " " + elem.fName + ";";
+            if (elem.fTitle != '') info += " // " + elem.fTitle;
+            item._childs.push({ _name : info, _title: elem.fTypeName, _kind:elem.fTypeName, _icon: (elem.fTypeName == 'BASE') ? "img_class" : "img_member" });
+         }
+         if (item._childs.length == 0) delete item._childs;
+      }
+
+
       painter.RefreshHtml(function() {
          painter.SetDivId(divid);
          painter.DrawingReady();
@@ -8111,52 +8286,52 @@
       window.addEventListener('resize', ProcessResize);
    }
 
-   JSROOT.addDrawFunc({ name: "TCanvas", icon: "img_canvas", func:JSROOT.Painter.drawCanvas });
-   JSROOT.addDrawFunc({ name: "TPad", icon: "img_canvas", func:JSROOT.Painter.drawPad });
-   JSROOT.addDrawFunc({ name: "TFrame", icon: "img_frame", func:JSROOT.Painter.drawFrame });
-   JSROOT.addDrawFunc({ name: "TPaveText", icon: "img_pavetext", func:JSROOT.Painter.drawPaveText });
-   JSROOT.addDrawFunc({ name: "TPaveStats", icon: "img_pavetext", func:JSROOT.Painter.drawPaveText });
-   JSROOT.addDrawFunc({ name: "TLatex", icon:"img_text", func:JSROOT.Painter.drawText });
-   JSROOT.addDrawFunc({ name: "TMathText", icon:"img_text", func:JSROOT.Painter.drawText });
-   JSROOT.addDrawFunc({ name: "TText", icon:"img_text", func:JSROOT.Painter.drawText });
-   JSROOT.addDrawFunc({ name: "TPaveLabel", icon: "img_pavelabel", func:JSROOT.Painter.drawText });
-   JSROOT.addDrawFunc({ name: /^TH1/, icon: "img_histo1d", func:JSROOT.Painter.drawHistogram1D, opt:";P;P0;E;E1;E2;same"});
-   JSROOT.addDrawFunc({ name: "TProfile", icon: "img_profile", func:JSROOT.Painter.drawHistogram1D, opt:";E0;E1;E2;p;hist"});
-   JSROOT.addDrawFunc({ name: /^TH2/, icon: "img_histo2d", prereq: "more2d", func:"JSROOT.Painter.drawHistogram2D", opt:";COL;COLZ;COL0Z;COL3;LEGO;same" });
+   JSROOT.addDrawFunc({ name: "TCanvas", icon: "img_canvas", func: JSROOT.Painter.drawCanvas });
+   JSROOT.addDrawFunc({ name: "TPad", icon: "img_canvas", func: JSROOT.Painter.drawPad });
+   JSROOT.addDrawFunc({ name: "TFrame", icon: "img_frame", func: JSROOT.Painter.drawFrame });
+   JSROOT.addDrawFunc({ name: "TPaveText", icon: "img_pavetext", func: JSROOT.Painter.drawPaveText });
+   JSROOT.addDrawFunc({ name: "TPaveStats", icon: "img_pavetext", func: JSROOT.Painter.drawPaveText });
+   JSROOT.addDrawFunc({ name: "TLatex", icon:"img_text", func: JSROOT.Painter.drawText });
+   JSROOT.addDrawFunc({ name: "TMathText", icon:"img_text", func: JSROOT.Painter.drawText });
+   JSROOT.addDrawFunc({ name: "TText", icon:"img_text", func: JSROOT.Painter.drawText });
+   JSROOT.addDrawFunc({ name: "TPaveLabel", icon: "img_pavelabel", func: JSROOT.Painter.drawText });
+   JSROOT.addDrawFunc({ name: /^TH1/, icon: "img_histo1d", func: JSROOT.Painter.drawHistogram1D, opt:";P;P0;E;E1;E2;same"});
+   JSROOT.addDrawFunc({ name: "TProfile", icon: "img_profile", func: JSROOT.Painter.drawHistogram1D, opt:";E0;E1;E2;p;hist"});
+   JSROOT.addDrawFunc({ name: /^TH2/, icon: "img_histo2d", prereq: "more2d", func: "JSROOT.Painter.drawHistogram2D", opt:";COL;COLZ;COL0Z;COL3;LEGO;same" });
    JSROOT.addDrawFunc({ name: /^TH3/, icon: 'img_histo3d', prereq: "3d", func: "JSROOT.Painter.drawHistogram3D" });
    JSROOT.addDrawFunc({ name: "TPolyMarker3D", icon: 'img_histo3d', prereq: "3d", func: "JSROOT.Painter.drawPolyMarker3D" });
-   JSROOT.addDrawFunc({ name: /^TGraph/, icon:"img_graph", func:JSROOT.Painter.drawGraph, opt:";L;P"});
-   JSROOT.addDrawFunc({ name: "TCutG", icon:"img_graph", func:JSROOT.Painter.drawGraph, opt:";L;P"});
-   JSROOT.addDrawFunc({ name: /^RooHist/, icon:"img_graph", func:JSROOT.Painter.drawGraph, opt:";L;P" });
-   JSROOT.addDrawFunc({ name: /^RooCurve/, icon:"img_graph", func:JSROOT.Painter.drawGraph, opt:";L;P" });
+   JSROOT.addDrawFunc({ name: /^TGraph/, icon:"img_graph", func: JSROOT.Painter.drawGraph, opt:";L;P"});
+   JSROOT.addDrawFunc({ name: "TCutG", icon:"img_graph", func: JSROOT.Painter.drawGraph, opt:";L;P"});
+   JSROOT.addDrawFunc({ name: /^RooHist/, icon:"img_graph", func: JSROOT.Painter.drawGraph, opt:";L;P" });
+   JSROOT.addDrawFunc({ name: /^RooCurve/, icon:"img_graph", func: JSROOT.Painter.drawGraph, opt:";L;P" });
    JSROOT.addDrawFunc({ name: "THStack", prereq: "more2d", func: "JSROOT.Painter.drawHStack" });
-   JSROOT.addDrawFunc({ name: "TMultiGraph", prereq: "more2d", func: "JSROOT.Painter.drawMultiGraph" });
-   JSROOT.addDrawFunc({ name: "TStreamerInfoList", icon:'img_question', func:JSROOT.Painter.drawStreamerInfo });
+   JSROOT.addDrawFunc({ name: "TMultiGraph", icon:"img_mgraph", prereq: "more2d", func: "JSROOT.Painter.drawMultiGraph" });
+   JSROOT.addDrawFunc({ name: "TStreamerInfoList", icon:'img_question', func: JSROOT.Painter.drawStreamerInfo });
    JSROOT.addDrawFunc({ name: "TPaletteAxis", icon: "img_colz", prereq: "more2d", func: "JSROOT.Painter.drawPaletteAxis" });
-   JSROOT.addDrawFunc({ name: "kind:Text", icon:"img_text", func:JSROOT.Painter.drawRawText });
-   JSROOT.addDrawFunc({ name: "TF1", icon: "img_graph", prereq: "math;more2d", func:"JSROOT.Painter.drawFunction" });
+   JSROOT.addDrawFunc({ name: "kind:Text", icon:"img_text", func: JSROOT.Painter.drawRawText });
+   JSROOT.addDrawFunc({ name: "TF1", icon: "img_graph", prereq: "math;more2d", func: "JSROOT.Painter.drawFunction" });
    JSROOT.addDrawFunc({ name: "TEllipse", icon: 'img_graph', prereq: "more2d", func: "JSROOT.Painter.drawEllipse" });
    JSROOT.addDrawFunc({ name: "TLine", icon: 'img_graph', prereq: "more2d", func: "JSROOT.Painter.drawLine" });
    JSROOT.addDrawFunc({ name: "TArrow", icon: 'img_graph', prereq: "more2d", func: "JSROOT.Painter.drawArrow" });
-   JSROOT.addDrawFunc({ name: "TLegend", prereq: "more2d", func: "JSROOT.Painter.drawLegend" });
-   JSROOT.addDrawFunc({ name: "TGeoVolume", icon: 'img_histo3d', prereq: "geom", func: "JSROOT.Painter.drawGeometry", expand: "JSROOT.expandGeoVolume", painter_kind : "base", opt:"all;" });
-   JSROOT.addDrawFunc({ name: "TEveGeoShapeExtract", icon: 'img_histo3d', prereq: "geom", func: "JSROOT.Painter.drawGeometry", painter_kind : "base"  });
+   JSROOT.addDrawFunc({ name: "TLegend", icon: "img_pavelabel", prereq: "more2d", func: "JSROOT.Painter.drawLegend" });
+   JSROOT.addDrawFunc({ name: "TGeoVolume", icon: 'img_histo3d', prereq: "geom", func: "JSROOT.Painter.drawGeometry", expand: "JSROOT.expandGeoVolume", painter_kind : "base", opt:"all;count;limit;maxlvl2;" });
+   JSROOT.addDrawFunc({ name: "TEveGeoShapeExtract", icon: 'img_histo3d', prereq: "geom", func: "JSROOT.Painter.drawGeometry", painter_kind : "base", opt: ";count;limit;maxlvl2"  });
    JSROOT.addDrawFunc({ name: "TGeoManager", icon: 'img_histo3d', prereq: "geom", expand: "JSROOT.expandGeoManagerHierarchy" });
    // these are not draw functions, but provide extra info about correspondent classes
-   JSROOT.addDrawFunc({ name: "kind:Command", icon:"img_execute", execute: true });
-   JSROOT.addDrawFunc({ name: "TFolder", icon:"img_folder", icon2:"img_folderopen", noinspect:true });
-   JSROOT.addDrawFunc({ name: "TTree", icon:"img_tree", noinspect:true });
-   JSROOT.addDrawFunc({ name: "TNtuple", icon:"img_tree", noinspect:true });
-   JSROOT.addDrawFunc({ name: "TBranch", icon:"img_branch", noinspect:true });
-   JSROOT.addDrawFunc({ name: /^TLeaf/, icon:"img_leaf" });
-   JSROOT.addDrawFunc({ name: "TList", icon:"img_list" });
-   JSROOT.addDrawFunc({ name: "TObjArray", icon:"img_list" });
-   JSROOT.addDrawFunc({ name: "TColor", icon:"img_color" });
-   JSROOT.addDrawFunc({ name: "TFile", icon:"img_file", noinspect:true });
-   JSROOT.addDrawFunc({ name: "TMemFile", icon:"img_file", noinspect:true });
-   JSROOT.addDrawFunc({ name: "Session", icon:"img_globe" });
-   JSROOT.addDrawFunc({ name: "kind:TopFolder", icon:"img_base" });
-   JSROOT.addDrawFunc({ name: "kind:Folder", icon:"img_folder", icon2:"img_folderopen", noinspect:true });
+   JSROOT.addDrawFunc({ name: "kind:Command", icon: "img_execute", execute: true });
+   JSROOT.addDrawFunc({ name: "TFolder", icon: "img_folder", icon2: "img_folderopen", noinspect: true });
+   JSROOT.addDrawFunc({ name: "TTree", icon: "img_tree", noinspect:true });
+   JSROOT.addDrawFunc({ name: "TNtuple", icon: "img_tree", noinspect:true });
+   JSROOT.addDrawFunc({ name: "TBranch", icon: "img_branch", noinspect:true });
+   JSROOT.addDrawFunc({ name: /^TLeaf/, icon: "img_leaf" });
+   JSROOT.addDrawFunc({ name: "TList", icon: "img_list" });
+   JSROOT.addDrawFunc({ name: "TObjArray", icon: "img_list" });
+   JSROOT.addDrawFunc({ name: "TColor", icon: "img_color" });
+   JSROOT.addDrawFunc({ name: "TFile", icon: "img_file", noinspect:true });
+   JSROOT.addDrawFunc({ name: "TMemFile", icon: "img_file", noinspect:true });
+   JSROOT.addDrawFunc({ name: "Session", icon: "img_globe" });
+   JSROOT.addDrawFunc({ name: "kind:TopFolder", icon: "img_base" });
+   JSROOT.addDrawFunc({ name: "kind:Folder", icon: "img_folder", icon2: "img_folderopen", noinspect:true });
 
    JSROOT.getDrawHandle = function(kind, selector) {
       // return draw handle for specified item kind

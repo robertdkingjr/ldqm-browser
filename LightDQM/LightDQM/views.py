@@ -131,7 +131,6 @@ hist_list_long = ['CRC',
 def dqm_help(request):
   return render(request,'test.html', {'hist_list_long':hist_list_long,})
 
-
 def main(request):
   run_list = Run.objects.all()
   return render(request,'main.html', {'run_list':run_list,})
@@ -177,7 +176,6 @@ def amc(request, runType, runN, amc):
                                       'sum_can_names':sum_can_names,
                                       'vfat_color':vfat_color,
                                       'geb_color':geb_color})
-
 
 def gebs(request, runType, runN, chamber):
   run_list = Run.objects.all()
