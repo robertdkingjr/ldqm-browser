@@ -8,7 +8,7 @@
     <tr>
       <td class="col-xs-1">VFAT {{vfat}}:</td>
       {% for hist in hist_list %}
-      <td><a href="/main/{{run.Type}}/run/{{run.Number}}/{{chamber}}/vfat/{{vfat}}/{{hist}}{{vfat}}" id="b{{slot}}" class="btn btn-success btn-xs">{{hist}}{{vfat}}</a></td>
+      <td><a href="/main/{{run.Type}}/run/{{run.Number}}/{{chamber}}/vfat/{{vfat}}/{{hist}}{{vfat}}" id="b{{slot}}" class="btn btn-{{selected_vfat.3}} btn-xs">{{hist}}{{vfat}}</a></td>
       {% endfor %}
     </tr>
   </tbody>

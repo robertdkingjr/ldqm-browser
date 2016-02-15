@@ -1,14 +1,23 @@
 from django.http import HttpResponse
 from django.shortcuts import render
-from ldqm_db.models import Run, AMC, GEB
+from ldqm_db.models import Run, AMC, GEB, VFAT, HWstate, SystemState
 from django.views.generic import ListView, DetailView, CreateView
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth.forms import UserCreationForm
 from bugtracker.models import Ticket
+from django.template import Template, Context
+import csv
 
 slot_list = ['00','01','02','03','04','05','06','07','08','09','10','11',
              '12','13','14','15','16','17','18','19','20','21','22','23'];
 lslot_list = ["a","b","c","d"];
+
+vfat_address = [];
+with open('/home/kingr/ldqm-browser/LightDQM/LightDQM/test/config/slot_table_TAMUv2.csv', 'rd') as csvfile:
+  vfat_ids = csv.reader(csvfile, delimiter=',')
+  for num in vfat_ids:
+      vfat_address.extend(num)
+
 hist_list = ["2D CRC for VFAT chip Slot",
              "Strips fired for VFAT chip Slot",
              "Channels fired for VFAT chip Slot"];
@@ -163,9 +172,6 @@ def amc(request, runType, runN, amc):
   run = Run.objects.get(Type=runType, Number = runN)
   geb_color = "success"
 
-  vfat_color = "success"
-  # vfat_color = "warning"
-  # vfat_color = "danger"
 
   return render(request,'amc.html', {'run_list':run_list,
                                       'slot_list':slot_list,
@@ -174,17 +180,44 @@ def amc(request, runType, runN, amc):
                                       'run':run,
                                       'amc':amc,
                                       'sum_can_names':sum_can_names,
-                                      'vfat_color':vfat_color,
                                       'geb_color':geb_color})
 
 def gebs(request, runType, runN, chamber):
   run_list = Run.objects.all()
   run = Run.objects.get(Type=runType, Number = runN)
-  geb_color = "success"
-
-  vfat_color = "success"
-  # vfat_color = "warning"
-  # vfat_color = "danger"
+  try:
+    state = run.State
+    amc_state = state.amcStates.all()
+    geb_state = state.gebStates.all()
+    vfat_state = state.vfatStates.all()
+  except:
+    print "Could not locate states for %s in Database" % chamber
+  
+  vfats = []
+  for s in slot_list: #initialize vfats to work if no states in DB
+    vfats.insert(int(s),[s, vfat_address[int(s)], 0, 'default', False])
+  for s in slot_list:
+    try:
+      code = int(next((x for x in vfat_state if x.HWID==vfat_address[int(s)]),None).State)
+      if code==0:
+        del vfats[int(s)]
+        vfats.insert(int(s),[s, vfat_address[int(s)], code, 'success', False])
+      elif code==1:
+        del vfats[int(s)]
+        vfats.insert(int(s),[s, vfat_address[int(s)], code, 'warning', False])
+      elif code==9:
+        del vfats[int(s)]
+        vfats.insert(int(s),[s, vfat_address[int(s)], code, 'default', True])
+      elif code==3:
+        del vfats[int(s)]
+        vfats.insert(int(s),[s, vfat_address[int(s)], code, 'danger', False])
+      else:
+        del vfats[int(s)]
+        vfats.insert(int(s),[s, vfat_address[int(s)], code, 'danger', False])
+    except:
+      print "Could not locate vfat: ",vfat_address[int(s)]
+  
+  geb_color='success' # need to figure out how to pick which geb to color
 
   return render(request,'gebs.html', {'run_list':run_list,
                                       'slot_list':slot_list,
@@ -193,15 +226,44 @@ def gebs(request, runType, runN, chamber):
                                       'run':run,
                                       'chamber':chamber,
                                       'sum_can_names':sum_can_names,
-                                      'vfat_color':vfat_color,
-                                      'geb_color':geb_color})
+                                      'geb_color':geb_color,
+                                      'vfats':vfats})
 
 def vfats(request, runType, runN, chamber, vfatN):
   run_list = Run.objects.all()
   run = Run.objects.get(Type=runType, Number = runN)
-  vfat_color = "success"
-  geb_color = "success"
-
+  try:
+    state = run.State
+    amc_state = state.amcStates.all()
+    geb_state = state.gebStates.all()
+    vfat_state = state.vfatStates.all()
+  except:
+    print "Could not locate states for %s in Database" % chamber
+  vfats = []
+  for s in slot_list: #initialize vfats to work if no states in DB
+    vfats.insert(int(s),[s, vfat_address[int(s)], 0, 'default', False])
+  for s in slot_list:
+    try:
+      code = int(next((x for x in vfat_state if x.HWID==vfat_address[int(s)]),None).State)
+      if code==0:
+        del vfats[int(s)]
+        vfats.insert(int(s),[s, vfat_address[int(s)], code, 'success', False])
+      elif code==1:
+        del vfats[int(s)]
+        vfats.insert(int(s),[s, vfat_address[int(s)], code, 'warning', False])
+      elif code==9:
+        del vfats[int(s)]
+        vfats.insert(int(s),[s, vfat_address[int(s)], code, 'default', True])
+      elif code==3:
+        del vfats[int(s)]
+        vfats.insert(int(s),[s, vfat_address[int(s)], code, 'danger', False])
+      else:
+        del vfats[int(s)]
+        vfats.insert(int(s),[s, vfat_address[int(s)], code, 'danger', False])
+    except:
+      print "Could not locate vfat: ",vfat_address[int(s)]
+  selected_vfat = vfats[int(vfatN)]
+  geb_color='success' # need to figure out how to pick which geb to color
   return render(request,'vfats.html', {'run_list':run_list,
                                        'slot_list':slot_list,
                                        'hist_list':hist_list,
@@ -210,14 +272,14 @@ def vfats(request, runType, runN, chamber, vfatN):
                                        'chamber':chamber,
                                        'vfat':int(vfatN),
                                        'sum_can_names':sum_can_names,
-                                       'vfat_color':vfat_color,
+                                       'vfats':vfats,
+                                       'selected_vfat':selected_vfat,
                                        'geb_color':geb_color})
 
 def summary(request, runType, runN, chamber, summaryN):
   run_list = Run.objects.all()
   run = Run.objects.get(Type=runType, Number = runN)
-  vfat_color = "success"
-  geb_color = "success"
+  geb_color='success'
 
   return render(request,'summary.html', {'run_list':run_list,
                                          'slot_list':slot_list,
@@ -227,13 +289,44 @@ def summary(request, runType, runN, chamber, summaryN):
                                          'chamber':chamber,
                                          'sum_can_names':sum_can_names,
                                          'sumN':summaryN,
-                                         'vfat_color':vfat_color,
                                          'geb_color':geb_color})
+
 def display_vfat(request, runType, runN, chamber, vfatN, histN):
   run_list = Run.objects.all()
   run = Run.objects.get(Type=runType, Number = runN)  
-  vfat_color = "success"
-  geb_color = "success"
+  try:
+    state = run.State
+    amc_state = state.amcStates.all()
+    geb_state = state.gebStates.all()
+    vfat_state = state.vfatStates.all()
+  except:
+    print "Could not locate states for %s in Database" % chamber
+  vfats = []
+  for s in slot_list: #initialize vfats to work if no states in DB
+    vfats.insert(int(s),[s, vfat_address[int(s)], 0, 'default', False])
+  for s in slot_list:
+    try:
+      code = int(next((x for x in vfat_state if x.HWID==vfat_address[int(s)]),None).State)
+      if code==0:
+        del vfats[int(s)]
+        vfats.insert(int(s),[s, vfat_address[int(s)], code, 'success', False])
+      elif code==1:
+        del vfats[int(s)]
+        vfats.insert(int(s),[s, vfat_address[int(s)], code, 'warning', False])
+      elif code==9:
+        del vfats[int(s)]
+        vfats.insert(int(s),[s, vfat_address[int(s)], code, 'default', True])
+      elif code==3:
+        del vfats[int(s)]
+        vfats.insert(int(s),[s, vfat_address[int(s)], code, 'danger', False])
+      else:
+        del vfats[int(s)]
+        vfats.insert(int(s),[s, vfat_address[int(s)], code, 'danger', False])
+    except:
+      print "Could not locate vfat: ",vfat_address[int(s)]
+  
+  selected_vfat = vfats[int(vfatN)]
+  geb_color='success' # need to figure out how to pick which geb to color
 
   return render(request,'display_vfat.html', {'run_list':run_list,
                                               'slot_list':slot_list,
@@ -244,15 +337,45 @@ def display_vfat(request, runType, runN, chamber, vfatN, histN):
                                               'sum_can_names':sum_can_names,
                                               'vfat':int(vfatN),
                                               'hist':histN,
-                                              'vfat_color':vfat_color,
+                                              'vfats':vfats,
+                                              'selected_vfat':selected_vfat,
                                               'geb_color':geb_color})
 
 def display_canvas(request, runType, runN, chamber, canvas):
   run_list = Run.objects.all()
   run = Run.objects.get(Type=runType, Number = runN)
-  vfat_color = "success"
-  geb_color = "success"
-
+  try:
+    state = run.State
+    amc_state = state.amcStates.all()
+    geb_state = state.gebStates.all()
+    vfat_state = state.vfatStates.all()
+  except:
+    print "Could not locate states for %s in Database" % chamber
+  vfats = []
+  for s in slot_list: #initialize vfats to work if no states in DB
+    vfats.insert(int(s),[s, vfat_address[int(s)], 0, 'default', False])
+  for s in slot_list:
+    try:
+      code = int(next((x for x in vfat_state if x.HWID==vfat_address[int(s)]),None).State)
+      if code==0:
+        del vfats[int(s)]
+        vfats.insert(int(s),[s, vfat_address[int(s)], code, 'success', False])
+      elif code==1:
+        del vfats[int(s)]
+        vfats.insert(int(s),[s, vfat_address[int(s)], code, 'warning', False])
+      elif code==9:
+        del vfats[int(s)]
+        vfats.insert(int(s),[s, vfat_address[int(s)], code, 'default', True])
+      elif code==3:
+        del vfats[int(s)]
+        vfats.insert(int(s),[s, vfat_address[int(s)], code, 'danger', False])
+      else:
+        del vfats[int(s)]
+        vfats.insert(int(s),[s, vfat_address[int(s)], code, 'danger', False])
+    except:
+      print "Could not locate vfat: ",vfat_address[int(s)]
+  
+  geb_color='success' # need to figure out how to pick which geb to color
   return render(request,'display_canvas.html', {'run_list':run_list,
                                                 'slot_list':slot_list,
                                                 'hist_list':hist_list,
@@ -261,7 +384,7 @@ def display_canvas(request, runType, runN, chamber, canvas):
                                                 'chamber':chamber,
                                                 'sum_can_names':sum_can_names,
                                                 'canvas':canvas,
-                                                'vfat_color':vfat_color,
+                                                'vfats':vfats,
                                                 'geb_color':geb_color})
 
 

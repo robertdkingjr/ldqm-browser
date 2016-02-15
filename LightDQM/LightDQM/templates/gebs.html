@@ -13,12 +13,18 @@
     <tbody>
       <tr>
 	<td class="col-xs-1" rowspan="2">VFATs:</td>
-	{% for slot in slot_list %}
-      	{% ifequal slot  '12' %}
-      </tr><tr>
+
+	{% for v in vfats %}
+      	{% ifequal v.0 '12' %}
+        </tr><tr>
       	{% endifequal %}
-	<td><a href="/main/{{run.Type}}/run/{{run.Number}}/{{chamber}}/vfat/{{slot}}" id="b{{slot}}" class="btn btn-{{vfat_color}} btn-xs">{{slot}}</a></td>
+	<td><a href="/main/{{run.Type}}/run/{{run.Number}}/{{chamber}}/vfat/{{v.0}}" id="b{{v.0}}" 
+	       {% if v.4 %} class="btn btn-{{v.3}} btn-xs disabled"
+	       {% else %}  class="btn btn-{{v.3}} btn-xs"
+	       {% endif %}>{{v.0}}</a></td>
 	{% endfor %}
+
+
       </tr>
     </tbody>
   </table>
