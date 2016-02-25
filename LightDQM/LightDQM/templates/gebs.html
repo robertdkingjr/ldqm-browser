@@ -1,6 +1,6 @@
 {% extends "chambers.html" %}
 {% load staticfiles %}
-
+{% load extras %}
 
 {% block gebs %}
 
@@ -12,16 +12,16 @@
   <table class="table">	<!-- VFAT buttons -->
     <tbody>
       <tr>
-	<td class="col-xs-1" rowspan="2">VFATs:</td>
+	<td class="col-xs-1" rowspan="3">VFATs:</td>
 
 	{% for v in vfats %}
-      	{% ifequal v.0 '12' %}
+      	{% if v.0 == '08' or v.0 == '16' %}
         </tr><tr>
-      	{% endifequal %}
+      	{% endif %}
 	<td><a href="/main/{{run.Type}}/run/{{run.Number}}/{{chamber}}/vfat/{{v.0}}" id="b{{v.0}}" 
 	       {% if v.4 %} class="btn btn-{{v.3}} btn-xs disabled"
 	       {% else %}  class="btn btn-{{v.3}} btn-xs"
-	       {% endif %}>{{v.0}}</a></td>
+	       {% endif %}>Slot{{v.0}} - {{v.1}}</a></td>
 	{% endfor %}
 
 
