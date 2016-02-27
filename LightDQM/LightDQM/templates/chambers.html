@@ -1,5 +1,6 @@
 {% extends "main.html" %}
 {% load staticfiles %}
+{% load extras %}
   <!-- JSROOT -->
   <script src="{% static 'js/jsroot/JSRootCore.js' %}"></script>   
 {% block chambers %}
@@ -23,12 +24,16 @@
     </tr>
   </thead>
   <tbody>
-      {% for amc in run.amcs.all %}
       <tr>
         <td class="col-xs-3" rowspan="{{run.amcs.all|length}}">{{run.Station}}</td>
-        <td class="col-xs-2"><a href="/main/{{run.Type}}/run/{{run.Number}}/amc/{{amc.Type}}-{{amc.BoardID}}" class="btn btn-success">{{amc.Type}}-{{amc.BoardID}}</a></td>
+	{% for amc in run.amcs.all %}
+        <td class="col-xs-2"><a href="/main/{{run.Type}}/run/{{run.Number}}/amc/{{amc.Type}}-{{amc.BoardID}}" 
+				class="btn btn-{{amc_color|get_index:forloop.counter0}}">{{amc.Type}}-{{amc.BoardID}}</a></td>
         {% for geb in amc.gebs.all %}
-        <td class="col-xs-2"><a href="/main/{{run.Type}}/run/{{run.Number}}/GEB-{{geb.ChamberID}}-{{geb.Type}}" class="btn btn-{{geb_color}}">GEB-{{geb.ChamberID}}-{{geb.Type}}</a></td>
+        <td class="col-xs-2"><a href="/main/{{run.Type}}/run/{{run.Number}}/GEB-{{geb.ChamberID}}-{{geb.Type}}" 
+				{%if forloop.counter0 == 0 %} class="btn btn-{{geb_color|get_first:forloop.parentloop.counter0}}"> {%endif%}
+	                        {%if forloop.counter0 == 1 %} class="btn btn-{{geb_color|get_second:forloop.parentloop.counter0}}"> {%endif%}
+	    GEB-{{geb.ChamberID}}-{{geb.Type}}</a></td>
         {% endfor %}
       </tr>
       {% endfor %}

@@ -36,7 +36,7 @@
 
 <!-- Navigation -->
 <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-  <a href="#menu-toggle" class="navbar-brand pull-left" id="menu-toggle">Toggle Run List</a>
+  <a href="#menu-toggle" class="navbar-brand pull-left" id="menu-toggle" style="color:#006080"><b>Toggle Run List</b></a>
 
   <div class="container">
 
@@ -57,6 +57,8 @@
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Services <span class="caret"></span></a>
             <ul class="dropdown-menu">
+              <li><a href="/main/">LightDQM</a></li>
+              <li><a href="/gemsupervisor/">WebDAQ</a></li>
               <li><a href="/admin/">Administration</a></li>
               <li><a href="{% url 'index' %}">Submit a ticket</a></li>
             </ul>
