@@ -79,10 +79,14 @@
     {% csrf_token %}
     {{ form}}
     {%if state == "halted"%}
-      <button class="btn btn-primary" type="submit">Configure</button>
+      <button class="btn btn-primary" type="submit" name="configure">Configure</button>
     {%endif%}
     {%if state == "configured"%}
-      <button class="btn btn-disabled" disabled>Configure</button>
+      <button class="btn btn-primary" name="halt">Halt</button>
+    {%endif%}
+
+    {%if state == "running"%}
+      <button class="btn btn-disabled" disabled name="halt">Halt</button>
     {%endif%}
 </form> 
 <br>
@@ -90,6 +94,13 @@
 {%if state == "configured"%}
   <div class="container" style="background-color:#ffffff">
     <div class="row">
+      <form class="form-inline" method="post">
+        {% csrf_token %}
+        <label for="ntriggers">Number of triggers to take</label>
+        <input type="number" class="form-control" id="ntriggers" name="nevents" value=100>
+        <button type="submit" class="btn btn-primary" name="run">Run</button>
+      </form>
+      <br>
       <div class="col-lg-6">
         <div class="panel panel-default">
           <div class="panel-heading">
@@ -116,7 +127,7 @@
       </div>
       <div class="col-lg-6">
         {%block amcstatus%}
-          {%include "amc13status.html"%}
+          {%include "amcstatus.html"%}
         {%endblock%}
       </div>
     </div>
