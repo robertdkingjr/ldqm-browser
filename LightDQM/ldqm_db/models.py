@@ -16,6 +16,7 @@ class SystemState(models.Model):
 
 class VFAT(models.Model):
   ChipID = models.CharField(max_length=6, default='0xdead')
+  Slot = models.PositiveSmallIntegerField(default=255)
   def __unicode__(self):
     return self.ChipID
 

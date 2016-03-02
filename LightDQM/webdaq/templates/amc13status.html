@@ -17,23 +17,12 @@ td.null { background-color:lightgrey;} </style></head><body>
 <table border="1" ><tr><th class="name">Control</th><th>DAQ</th><th>FAKE</th><th>LTRIG</th><th>RUN</th><th>TTCLOOP</th></tr>
 <tr><th>REG_1</th><td title="'1' enables DAQLSC" class="null">0</td><td title="if '1', generate fake event upon receiving L1A" class="null">0</td><td title="if '1', uses internally generated L1A" class="nonerror">1</td><td title="run mode" class="nonerror">1</td><td title="if '1', TTS output is 80MHz clock which can be looped back to TTC input" class="nonerror">1</td></tr>
 </table>
-<table border="1" ><tr><th class="name">AMC_Links</th><th>AMC10</th><th>ANY</th></tr>
-<tr><th>AMC13_BAD_LENGTH</th><td title="AMC bad event length counter" class="nonerror">0x10</td><td> </td></tr>
-<tr><th>AMC13_BCN_MISMATCH</th><td title="HTR event BCN mismatch counter" class="nonerror">0x64</td><td> </td></tr>
-<tr><th>AMC13_EVN_MISMATCH</th><td title="HTR event EVN mismatch counter" class="nonerror">0x64</td><td> </td></tr>
-<tr><th>AMC13_ORN_MISMATCH</th><td title="HTR event OCN mismatch counter" class="nonerror">0x64</td><td> </td></tr>
-<tr><th>AMC_BAD_LENGTH</th><td title="AMC bad event length counter" class="nonerror">0x D</td><td> </td></tr>
-<tr><th>AMC_BCN_MISMATCH</th><td title="AMC BcN mismatch counter" class="nonerror">0x64</td><td> </td></tr>
-<tr><th>AMC_EVENTS</th><td title="AMC received event counter" class="nonerror">0x64</td><td> </td></tr>
-<tr><th>AMC_EVN_ERRORS</th><td title="event number error counter at link input" class="error">   1</td><td> </td></tr>
-<tr><th>AMC_EVN_MISMATCH</th><td title="AMC Evn mismatch counter" class="nonerror">0x64</td><td> </td></tr>
-<tr><th>AMC_LINK_READY</th><td title="'1' indicates AMC1..12 Link Ready" class="nonerror">   1</td><td> </td></tr>
-<tr><th>AMC_ORN_MISMATCH</th><td title="AMC OrN mismatch counter" class="nonerror">0x64</td><td> </td></tr>
-<tr><th>AMC_TRAILER_EVN_BAD</th><td title="AMC event trailer Evn mismatch error counter" class="error">0x12</td><td> </td></tr>
-<tr><th>BP_ERR</th><td title="Backplane link CRC error" class="error">   9</td><td> </td></tr>
-<tr><th>CRC_ERR</th><td> </td><td title="AMC even CRC error detected" class="error">1</td></tr>
-<tr><th>LINK_OK</th><td title="'0' AMC1..12 loss of sync" class="nonerror">   1</td><td> </td></tr>
-<tr><th>LINK_VERS_WRONG</th><td title="'1' AMC1..12 link version wrong" class="nonerror">   1</td><td> </td></tr>
+<table border="1" ><tr><th class="name">AMC_Links</th><th>AMC10</th></tr>
+<tr><th>AMC_BAD_LENGTH</th><td title="AMC bad event length counter" class="nonerror">3</td></tr>
+<tr><th>AMC_LINK_READY</th><td title="'1' indicates AMC1..12 Link Ready" class="nonerror">1</td></tr>
+<tr><th>AMC_TRAILER_EVN_BAD</th><td title="AMC event trailer Evn mismatch error counter" class="error">4</td></tr>
+<tr><th>LINK_OK</th><td title="'0' AMC1..12 loss of sync" class="nonerror">1</td></tr>
+<tr><th>LINK_VERS_WRONG</th><td title="'1' AMC1..12 link version wrong" class="nonerror">1</td></tr>
 </table>
 <table border="1" ><tr><th class="name">DT_Trig</th><th>TRIG0</th><th>TRIG1</th><th>VALUE</th></tr>
 <tr><th>INPUT_DELAY</th><td title="Set delay in 1/8 BX steps for TRIG0 input" class="null">0</td><td title="Set delay in 1/8 BX steps for TRIG1 input" class="null">0</td><td> </td></tr>
@@ -41,14 +30,14 @@ td.null { background-color:lightgrey;} </style></head><body>
 <tr><th>SAMPLE_BUFFER_ENABLE</th><td> </td><td> </td><td title="Trigger time alignment sample buffer when 1" class="null">0</td></tr>
 <tr><th>TRIGGER_ENABLE</th><td> </td><td> </td><td title="Enable DT LUT trigger" class="null">0</td></tr>
 </table>
-<table border="1" ><tr><th class="name">Event_Builder</th><th>COUNT</th><th>RATEHZ</th></tr>
-<tr><th>L1A</th><td title="L1A counter" class="nonerror">0x64</td><td title="L1A rate in Hz" class="nonerror">6</td></tr>
+<table border="1" ><tr><th class="name">Event_Builder</th><th>COUNT</th></tr>
+<tr><th>L1A</th><td title="L1A counter" class="null">0</td></tr>
 </table>
 <table border="1" ><tr><th class="name">State_Timers</th><th>COUNT</th></tr>
-<tr><th>BUSY</th><td title="busy time counter" class="nonerror">0x   7DB75</td></tr>
-<tr><th>OVERFLOW_WARNING</th><td title="L1A overflow warning time counter" class="nonerror">         1</td></tr>
-<tr><th>READY</th><td title="ready time counter" class="nonerror">0xD6AF499E</td></tr>
-<tr><th>RUN</th><td title="run time counter" class="nonerror">0xD6B72490</td></tr>
+<tr><th>BUSY</th><td title="busy time counter" class="nonerror">0x DC4CD</td></tr>
+<tr><th>OVERFLOW_WARNING</th><td title="L1A overflow warning time counter" class="nonerror">       3</td></tr>
+<tr><th>READY</th><td title="ready time counter" class="nonerror">0x9018C4</td></tr>
+<tr><th>RUN</th><td title="run time counter" class="nonerror">0x9DDD90</td></tr>
 </table>
 <table border="1" ><tr><th class="name">TTC_Rx</th><th>ENC</th><th>RAW</th></tr>
 <tr><th>STATE</th><td title="encoded TTS from enabled AMCs" class="nonerror">RDY (0x0)</td><td title="Current T1 overall TTS state" class="nonerror">RDY (0x8)</td></tr>

@@ -14,6 +14,9 @@ class AMC13manager:
     self.device = amc13.AMC13(self.connection) # connect to amc13
     #reset amc13
     self.device.AMCInputEnable(0x0)
+    self.reset()
+
+  def reset(self):
     self.device.reset(self.device.Board.T1)
     self.device.reset(self.device.Board.T2)
     self.device.resetCounters()
