@@ -16,6 +16,7 @@ from glib_system_info_uhal import *
 from glib_user_functions_uhal import *
 from amcmanager import AMCmanager
 import datetime
+from subprocess import call
 
 state = 'halted'
 m_AMC13manager = AMC13manager()
@@ -46,9 +47,11 @@ def gemsupervisor(request):
         uhal.setLogLevelTo(uhal.LogLevel.ERROR)
         #configure GLIB. Currently supports only one GLIB
         try:
+          m_AMC13manager.connect(str(amc13N))
+          m_AMC13manager.configureInputs(str(amcN))
+          m_AMC13manager.reset()
           m_AMCmanager.connect(amcN)
           m_AMCmanager.reset()
-          m_AMC13manager.connect(str(amc13N))
           m_AMCmanager.activateGTX()
           # retrieve VFAT slot numberd and ChipIDs from HW
           chipids = m_AMCmanager.getVFATs(0)
@@ -114,7 +117,7 @@ def gemsupervisor(request):
           for a in a_list:
             newrun.amcs.add(a)
 
-          m_AMC13manager.configureInputs(str(amcN))
+          #m_AMC13manager.configureInputs(str(amcN))
           #m_AMC13manager.configureTrigger()
           m_AMC13manager.configureTrigger(True,2,1,int(trigger_rate),0)
           #m_AMC13manager.startDataTaking(options.ofile,options.n_events)
@@ -144,6 +147,14 @@ def gemsupervisor(request):
       form = ConfigForm()
       nevents = int(request.POST['nevents'])
       m_AMC13manager.startDataTaking("/home/mdalchen/work/tmp/"+m_filename+".dat",nevents)
+
+#call root converter
+      print "hello"
+      call_command =  os.getenv('BUILD_HOME')+'/gem-light-dqm/gemtreewriter/bin/'+os.getenv('XDAQ_OS')+'/'+os.getenv('XDAQ_PLATFORM')+'/unpacker'
+      print call_command
+      command_args = "/home/mdalchen/work/tmp/"+m_filename+".dat"
+      print command_args
+      call([call_command+' '+command_args],shell=True)
       status = m_AMC13manager.device.getStatus()
       status.SetHTML()
       # Create pipe and dup2() the write end of it on top of stdout, saving a copy

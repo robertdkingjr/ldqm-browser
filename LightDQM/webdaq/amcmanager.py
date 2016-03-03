@@ -32,7 +32,7 @@ class AMCmanager:
     elif c == 1:
       writeRegister(self.glib, "GLIB.DAQ.CONTROL", 0x181)# enable GTX link 0
     elif c == 2:
-      writeRegister(self.glib, "GLIB.DAQ.CONTROL", 0x381)# enable both GTX links
+      writeRegister(self.glib, "GLIB.DAQ.CONTROL", 0x181)# enable both GTX links
 
   def getVFATs(self,gtx):
     return getAllChipIDs(self.glib,gtx)

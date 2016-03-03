@@ -35,22 +35,34 @@ class AMC13manager:
       self.device.startContinuousL1A()
     #submit work loop here
     c = 1
-    with open (ofile, "wb") as compdata:
-      while True:
-        nevt = self.device.read(self.device.Board.T1, 'STATUS.MONITOR_BUFFER.UNREAD_EVENTS')
-        #print "Trying to read %s events" % nevt
-        for i in range(nevt):
-          pEvt = self.device.readEvent()
-          for word in pEvt:
-            #print hex(word)
-            compdata.write(struct.pack('Q',word))
-          c += 1
-          if c > nevents:
-            break
+    #with open (ofile, "wb") as compdata:
+    datastring = ''
+    packer = struct.Struct('Q')
+    pEvt = []
+    read_event = self.device.readEvent
+    while True:
+      nevt = self.device.read(self.device.Board.T1, 'STATUS.MONITOR_BUFFER.UNREAD_EVENTS')
+      #print "Trying to read %s events" % nevt
+      for i in range(nevt):
+        pEvt += read_event()
+        #pEvt += self.device.readEvent()
+        #pEvt = self.device.readEvent()
+        #for word in pEvt:
+        #  #print hex(word)
+        #  #compdata.write(struct.pack('Q',word))
+        #  #datastring += struct.pack('Q',word)
+        #  datastring += packer.pack(word)
+        c += 1
         if c > nevents:
           break
-      if self.localTrigger:
-        self.device.stopContinuousL1A()
+      if c > nevents:
+        break
+    if self.localTrigger:
+      self.device.stopContinuousL1A()
+    for word in pEvt:
+      datastring += packer.pack(word)
+    with open (ofile, "wb") as compdata:
+      compdata.write(datastring)
 
   def stopDataTaking(self, ofile):
     if self.localTrigger:
