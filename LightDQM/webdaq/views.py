@@ -149,12 +149,31 @@ def gemsupervisor(request):
       m_AMC13manager.startDataTaking("/home/mdalchen/work/tmp/"+m_filename+".dat",nevents)
 
 #call root converter
-      print "hello"
       call_command =  os.getenv('BUILD_HOME')+'/gem-light-dqm/gemtreewriter/bin/'+os.getenv('XDAQ_OS')+'/'+os.getenv('XDAQ_PLATFORM')+'/unpacker'
-      print call_command
       command_args = "/home/mdalchen/work/tmp/"+m_filename+".dat"
-      print command_args
       call([call_command+' '+command_args],shell=True)
+#call create dirs in tmp
+      for i in range (24):
+        call(["mkdir -p /tmp/dqm_hists/%s"%(i)],shell=True)
+      call(["mkdir -p /tmp/dqm_hists/OtherData"],shell=True)
+      call(["mkdir -p /tmp/dqm_hists/canvases"],shell=True)
+#call dqm
+      call_command =  os.getenv('BUILD_HOME')+'/gem-light-dqm/dqm-root/bin/'+os.getenv('XDAQ_OS')+'/'+os.getenv('XDAQ_PLATFORM')+'/rundqm'
+      command_args = "/home/mdalchen/work/tmp/"+m_filename+".raw.root"
+      os.system(call_command+' '+command_args)
+      #call([call_command+' '+command_args],shell=True)
+# move results to DQM display form
+      call_command = "mkdir -p /home/mdalchen/work/ldqm-browser/LightDQM/LightDQM/test/"
+      call_command += m_filename[10:15]
+      call_command += "/"
+      call_command += m_filename[:9]
+      call_command += "/"
+      call_command += "TAMU/GEB-OHv2aM-Long/"
+      print call_command
+      call([call_command],shell=True)
+      call(["cp -r /tmp/dqm_hists/* "+call_command],shell=True)
+
+
       status = m_AMC13manager.device.getStatus()
       status.SetHTML()
       # Create pipe and dup2() the write end of it on top of stdout, saving a copy

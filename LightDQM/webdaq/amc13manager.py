@@ -54,11 +54,12 @@ class AMC13manager:
         #  datastring += packer.pack(word)
         c += 1
         if c > nevents:
+          self.device.stopContinuousL1A()
           break
       if c > nevents:
         break
-    if self.localTrigger:
-      self.device.stopContinuousL1A()
+    #if self.localTrigger:
+    #  self.device.stopContinuousL1A()
     for word in pEvt:
       datastring += packer.pack(word)
     with open (ofile, "wb") as compdata:

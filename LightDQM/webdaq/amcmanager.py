@@ -23,7 +23,7 @@ class AMCmanager:
 
   def activateGTX(self):
     c = 0
-    for l in (0,0):#(0,1): currently hack to have only single OH connected twice
+    for l in (0,1):#(0,1): currently hack to have only single OH connected twice
       fwv = readRegister(self.glib,"GLIB.OptoHybrid_%d.OptoHybrid.STATUS.FW"%(l))
       if fwv != 0x0:
         c += 1
@@ -32,7 +32,7 @@ class AMCmanager:
     elif c == 1:
       writeRegister(self.glib, "GLIB.DAQ.CONTROL", 0x181)# enable GTX link 0
     elif c == 2:
-      writeRegister(self.glib, "GLIB.DAQ.CONTROL", 0x181)# enable both GTX links
+      writeRegister(self.glib, "GLIB.DAQ.CONTROL", 0x381)# enable both GTX links
 
   def getVFATs(self,gtx):
     return getAllChipIDs(self.glib,gtx)
