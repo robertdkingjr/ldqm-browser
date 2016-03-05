@@ -31,7 +31,7 @@
 
 </head>
 
-<body>
+<body onload="monitor_()">
   
 
 
@@ -91,14 +91,25 @@
 </form> 
 <br>
 </div>
-{%if state == "configured"%}
+{%if state in "configured,running" %}
+  {%if state == "running"%}
+  <form name="monitor" id="monitor" method="post">
+    {% csrf_token %}
+    <input hidden type="text" name="monitoring" value="submit"/>
+  </form>
+  {%endif%}
   <div class="container" style="background-color:#ffffff">
     <div class="row">
       <form class="form-inline" method="post">
         {% csrf_token %}
         <label for="ntriggers">Number of triggers to take</label>
         <input type="number" class="form-control" id="ntriggers" name="nevents" value=100>
-        <button type="submit" class="btn btn-primary" name="run">Run</button>
+        {%if state == "configured"%}
+          <button type="submit" class="btn btn-primary" name="run">Run</button>
+        {%endif%}
+        {%if state == "running"%}
+          <button type="submit" class="btn btn-primary" disabled id="stop" name="stop">Stop</button>
+        {%endif%}
       </form>
       <br>
       <div class="col-lg-6">
@@ -133,6 +144,27 @@
     </div>
   </div>
 {%endif%}
+  <!-- Form autosubmit -->
+  <script type="text/javascript">
+    function monitor_(){
+
+      document.getElementById("stop").disabled = false;
+      var auto = setTimeout(function(){ if (document.readyState !== 'complete') return; autoRefresh(); }, 100);
+      
+      function submitform(){
+        //alert('test');
+        if (document.readyState !== 'complete') return;
+        document.forms["monitor"].submit();
+        document.getElementById("stop").disabled = true;
+      }
+      
+      function autoRefresh(){
+        clearTimeout(auto);
+        auto = setTimeout(function(){ submitform(); autoRefresh(); }, 10000);
+      }
+    }
+  </script>
+
   <!-- jQuery -->
   <script src="{% static 'js/jquery.js' %}"></script>
   <!-- Bootstrap Core JavaScript -->

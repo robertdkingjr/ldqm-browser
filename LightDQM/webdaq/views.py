@@ -17,12 +17,16 @@ from glib_user_functions_uhal import *
 from amcmanager import AMCmanager
 import datetime
 from subprocess import call
+import threading
+from time import sleep
 
 state = 'halted'
 m_AMC13manager = AMC13manager()
 m_AMCmanager = AMCmanager()
 verbosity = 1
 m_filename = "test"
+form = ConfigForm()
+m_monitor = False
 
 def gemsupervisor(request):
   global state
@@ -30,6 +34,47 @@ def gemsupervisor(request):
   global m_AMCmanager
   global verbosity
   global m_filename
+  global form
+  global m_monitor
+
+  def updateStatus():
+    status = m_AMC13manager.device.getStatus()
+    status.SetHTML()
+    # Create pipe and dup2() the write end of it on top of stdout, saving a copy
+    # of the old stdout
+    out = OutputGrabber()
+    out.start()
+    status.Report(verbosity)
+    out.stop()
+    shtml = out.capturedtext
+    with open("webdaq/templates/amc13status.html", "w") as text_file:
+      text_file.write(shtml)
+    with open("webdaq/templates/amcstatus.html", "w") as text_file:
+        text_file.write(m_AMCmanager.getStatus(verbosity))
+
+  def parkData():
+#call root converter
+    call_command =  os.getenv('BUILD_HOME')+'/gem-light-dqm/gemtreewriter/bin/'+os.getenv('XDAQ_OS')+'/'+os.getenv('XDAQ_PLATFORM')+'/unpacker'
+    command_args = "/home/mdalchen/work/tmp/"+m_filename+".dat"
+    call([call_command+' '+command_args],shell=True)
+#create dirs in tmp
+    for i in range (24):
+      call(["mkdir -p /tmp/dqm_hists/%s"%(i)],shell=True)
+    call(["mkdir -p /tmp/dqm_hists/OtherData"],shell=True)
+    call(["mkdir -p /tmp/dqm_hists/canvases"],shell=True)
+#call dqm
+    call_command =  os.getenv('BUILD_HOME')+'/gem-light-dqm/dqm-root/bin/'+os.getenv('XDAQ_OS')+'/'+os.getenv('XDAQ_PLATFORM')+'/rundqm'
+    command_args = "/home/mdalchen/work/tmp/"+m_filename+".raw.root"
+    os.system(call_command+' '+command_args)
+#copy results to DQM display form
+    call_command = "/home/mdalchen/work/ldqm-browser/LightDQM/LightDQM/test/"
+    call_command += m_filename[10:15]
+    call_command += "/"
+    call_command += m_filename[:9]
+    call_command += "/"
+    call_command += "TAMU/GEB-OHv2aM-Long/"
+    call(["mkdir -p "+call_command],shell=True)
+    call(["cp -r /tmp/dqm_hists/* "+call_command],shell=True)
 
   if request.POST:
     if 'configure' in request.POST:
@@ -47,7 +92,7 @@ def gemsupervisor(request):
         uhal.setLogLevelTo(uhal.LogLevel.ERROR)
         #configure GLIB. Currently supports only one GLIB
         try:
-          m_AMC13manager.connect(str(amc13N))
+          m_AMC13manager.connect(str(amc13N),verbosity)
           m_AMC13manager.configureInputs(str(amcN))
           m_AMC13manager.reset()
           m_AMCmanager.connect(amcN)
@@ -116,24 +161,8 @@ def gemsupervisor(request):
           newrun.save()
           for a in a_list:
             newrun.amcs.add(a)
-
-          #m_AMC13manager.configureInputs(str(amcN))
-          #m_AMC13manager.configureTrigger()
           m_AMC13manager.configureTrigger(True,2,1,int(trigger_rate),0)
-          #m_AMC13manager.startDataTaking(options.ofile,options.n_events)
-          status = m_AMC13manager.device.getStatus()
-          status.SetHTML()
-          # Create pipe and dup2() the write end of it on top of stdout, saving a copy
-          # of the old stdout
-          out = OutputGrabber()
-          out.start()
-          status.Report(verbosity)
-          out.stop()
-          shtml = out.capturedtext
-          with open("webdaq/templates/amc13status.html", "w") as text_file:
-            text_file.write(shtml)
-          with open("webdaq/templates/amcstatus.html", "w") as text_file:
-            text_file.write(m_AMCmanager.getStatus(verbosity))
+          updateStatus()
           state = 'configured'
         except ValueError,e:
           print colors.YELLOW,e,colors.ENDC
@@ -144,52 +173,26 @@ def gemsupervisor(request):
       state = 'halted'
     elif 'run' in request.POST:
       print "running"
-      form = ConfigForm()
+      #form = ConfigForm()
+      updateStatus()
       nevents = int(request.POST['nevents'])
-      m_AMC13manager.startDataTaking("/home/mdalchen/work/tmp/"+m_filename+".dat",nevents)
+      t = threading.Thread(target = m_AMC13manager.startDataTaking, args = ["/home/mdalchen/work/tmp/"+m_filename+".dat"])
+      t.start()
+      state = 'running'
 
-#call root converter
-      call_command =  os.getenv('BUILD_HOME')+'/gem-light-dqm/gemtreewriter/bin/'+os.getenv('XDAQ_OS')+'/'+os.getenv('XDAQ_PLATFORM')+'/unpacker'
-      command_args = "/home/mdalchen/work/tmp/"+m_filename+".dat"
-      call([call_command+' '+command_args],shell=True)
-#call create dirs in tmp
-      for i in range (24):
-        call(["mkdir -p /tmp/dqm_hists/%s"%(i)],shell=True)
-      call(["mkdir -p /tmp/dqm_hists/OtherData"],shell=True)
-      call(["mkdir -p /tmp/dqm_hists/canvases"],shell=True)
-#call dqm
-      call_command =  os.getenv('BUILD_HOME')+'/gem-light-dqm/dqm-root/bin/'+os.getenv('XDAQ_OS')+'/'+os.getenv('XDAQ_PLATFORM')+'/rundqm'
-      command_args = "/home/mdalchen/work/tmp/"+m_filename+".raw.root"
-      os.system(call_command+' '+command_args)
-      #call([call_command+' '+command_args],shell=True)
-# move results to DQM display form
-      call_command = "mkdir -p /home/mdalchen/work/ldqm-browser/LightDQM/LightDQM/test/"
-      call_command += m_filename[10:15]
-      call_command += "/"
-      call_command += m_filename[:9]
-      call_command += "/"
-      call_command += "TAMU/GEB-OHv2aM-Long/"
-      print call_command
-      call([call_command],shell=True)
-      call(["cp -r /tmp/dqm_hists/* "+call_command],shell=True)
-
-
-      status = m_AMC13manager.device.getStatus()
-      status.SetHTML()
-      # Create pipe and dup2() the write end of it on top of stdout, saving a copy
-      # of the old stdout
-      out = OutputGrabber()
-      out.start()
-      status.Report(verbosity)
-      out.stop()
-      shtml = out.capturedtext
-      with open("webdaq/templates/amc13status.html", "w") as text_file:
-        text_file.write(shtml)
-      with open("webdaq/templates/amcstatus.html", "w") as text_file:
-          text_file.write(m_AMCmanager.getStatus(verbosity))
+    elif 'stop' in request.POST:
+      m_AMC13manager.stopDataTaking()
+      updateStatus()
+      sleep(1)
+      t_p = threading.Thread(target = parkData)
+      t_p.start()
       state = 'configured'
+    elif "monitoring" in request.POST:
+      #pass
+      updateStatus()
   else:
     form = ConfigForm()
     state = 'halted'
   return render(request, 'gemsupervisor.html',{'form':form,
                                                'state':state})
+

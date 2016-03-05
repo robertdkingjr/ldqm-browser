@@ -23,7 +23,7 @@ class AMCmanager:
 
   def activateGTX(self):
     c = 0
-    for l in (0,1):#(0,1): currently hack to have only single OH connected twice
+    for l in (0,0):#(0,1): currently hack to have only single OH connected twice
       fwv = readRegister(self.glib,"GLIB.OptoHybrid_%d.OptoHybrid.STATUS.FW"%(l))
       if fwv != 0x0:
         c += 1
