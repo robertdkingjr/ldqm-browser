@@ -55,7 +55,7 @@ def gemsupervisor(request):
   def parkData():
 #call root converter
     call_command =  os.getenv('BUILD_HOME')+'/gem-light-dqm/gemtreewriter/bin/'+os.getenv('XDAQ_OS')+'/'+os.getenv('XDAQ_PLATFORM')+'/unpacker'
-    command_args = "/home/mdalchen/work/tmp/"+m_filename+".dat"
+    command_args = "/tmp/"+m_filename+".dat"
     call([call_command+' '+command_args],shell=True)
 #create dirs in tmp
     for i in range (24):
@@ -64,15 +64,16 @@ def gemsupervisor(request):
     call(["mkdir -p /tmp/dqm_hists/canvases"],shell=True)
 #call dqm
     call_command =  os.getenv('BUILD_HOME')+'/gem-light-dqm/dqm-root/bin/'+os.getenv('XDAQ_OS')+'/'+os.getenv('XDAQ_PLATFORM')+'/rundqm'
-    command_args = "/home/mdalchen/work/tmp/"+m_filename+".raw.root"
+    command_args = "/tmp/"+m_filename+".raw.root"
     os.system(call_command+' '+command_args)
 #copy results to DQM display form
-    call_command = "/home/mdalchen/work/ldqm-browser/LightDQM/LightDQM/test/"
+    #call_command = "/home/mdalchen/work/ldqm-browser/LightDQM/LightDQM/test/"
+    call_command = os.getenv('LDQM_STATIC')+'/'
     call_command += m_filename[10:15]
     call_command += "/"
     call_command += m_filename[:9]
     call_command += "/"
-    call_command += "TAMU/GEB-OHv2aM-Long/"
+    call_command += "TAMU/GEB-GTX0-Long/"
     call(["mkdir -p "+call_command],shell=True)
     call(["cp -r /tmp/dqm_hists/* "+call_command],shell=True)
 
@@ -81,7 +82,11 @@ def gemsupervisor(request):
       form = ConfigForm(request.POST)
       if form.is_valid():
         amc13N = form.cleaned_data['amc13_choice']
-        amcN = form.cleaned_data['amc_list']
+        amc_list = form.cleaned_data['amc_list']
+        amc_str = ""
+        for amcN in amc_list:
+          amc_str += str(amcN) + ","
+        amc_str = amc_str[:-1]
         trigger_type = form.cleaned_data['trigger_type']
         if trigger_type == 'local':
           lt=True
@@ -93,62 +98,68 @@ def gemsupervisor(request):
         #configure GLIB. Currently supports only one GLIB
         try:
           m_AMC13manager.connect(str(amc13N),verbosity)
-          m_AMC13manager.configureInputs(str(amcN))
+          m_AMC13manager.configureInputs(amc_str)
           m_AMC13manager.reset()
-          m_AMCmanager.connect(amcN)
-          m_AMCmanager.reset()
-          m_AMCmanager.activateGTX()
-          # retrieve VFAT slot numberd and ChipIDs from HW
-          chipids = m_AMCmanager.getVFATs(0)
-          # retrieve VFAT slot numberd and ChipIDs from DB
-          vfats = VFAT.objects.all()
-          # Check if the VFATs are in DB, add if not
-          v_list = []
-          for chip in chipids.keys():
-            t_chipid = "0x%04x"%(chipids[chip])
-            if t_chipid in vfats.filter(Slot=chip).values_list("ChipID", flat=True):
+          for amcN in amc_list:
+            m_AMCmanager.connect(int(amcN))
+            m_AMCmanager.reset()
+            n_gtx = m_AMCmanager.activateGTX()
+            print "N GTX links %s" %(n_gtx)
+            # retrieve VFAT slot numberd and ChipIDs from HW
+            for gtx in range(n_gtx):
+              chipids = m_AMCmanager.getVFATs(gtx)
+              # retrieve VFAT slot numberd and ChipIDs from DB
+              vfats = VFAT.objects.all()
+              # Check if the VFATs are in DB, add if not
+              v_list = []
+              for chip in chipids.keys():
+                t_chipid = "0x%04x"%(chipids[chip])
+                if t_chipid in vfats.filter(Slot=chip).values_list("ChipID", flat=True):
+                  pass
+                else:
+                  print "Adding VFAT(ChipID = %s, Slot = %d)"%(t_chipid,chip)
+                  v = VFAT(ChipID = t_chipid, Slot = chip)
+                  v.save()
+                v_list.append(VFAT.objects.get(ChipID = t_chipid, Slot = chip))
+              #t_chamberID = 'OHv2aM'#hard code now, read from HW later when available
+              t_chamberID = 'GTX'+str(gtx) #use gtx link number now, read from HW later when available
+              print "t_chamberID = %s" %(t_chamberID)
+              g_list = []
+              gebs = GEB.objects.filter(ChamberID=t_chamberID)
+              t_flag = False
+              for geb in gebs:
+                if v_list == list(geb.vfats.all()):
+                  t_flag = True
+                  g_list.append(geb)
+                  break
+              if t_flag:
+                pass
+              else:
+                print "Update DB"
+                g = GEB(Type="Long",ChamberID = t_chamberID)
+                g.save()
+                for v in v_list:
+                  g.vfats.add(v)
+                  g_list.append(g)
+
+            t_flag = False
+            #t_boardID = "47-20120013"#hard code now, read from HW later when available
+            t_boardID = "AMC"+str(amcN)#hard code now, read from HW later when available
+            a_list = []
+            amcs = AMC.objects.filter(BoardID = t_boardID)
+            for amc in amcs:
+              if g_list == list(amc.gebs.all()):
+                t_flag = True
+                a_list.append(amc)
+            if t_flag:
               pass
             else:
-              print "Adding VFAT(ChipID = %s, Slot = %d)"%(t_chipid,chip)
-              v = VFAT(ChipID = t_chipid, Slot = chip)
-              v.save()
-            v_list.append(VFAT.objects.get(ChipID = t_chipid, Slot = chip))
-          t_chamberID = 'OHv2aM'#hard code now, read from HW later when available
-          g_list = []
-          gebs = GEB.objects.filter(ChamberID=t_chamberID)
-          t_flag = False
-          for geb in gebs:
-            if v_list == list(geb.vfats.all()):
-              t_flag = True
-              g_list.append(geb)
-              break
-          if t_flag:
-            pass
-          else:
-            print "Update DB"
-            g = GEB(Type="Long",ChamberID = t_chamberID)
-            g.save()
-            for v in v_list:
-              g.vfats.add(v)
-              g_list.append(g)
-
-          t_flag = False
-          t_boardID = "47-20120013"#hard code now, read from HW later when available
-          a_list = []
-          amcs = AMC.objects.filter(BoardID = t_boardID)
-          for amc in amcs:
-            if g_list == list(amc.gebs.all()):
-              t_flag = True
-              a_list.append(amc)
-          if t_flag:
-            pass
-          else:
-            print "Update DB"
-            a = AMC(Type="GLIB",BoardID = t_boardID)
-            a.save()
-            for g in g_list:
-              a.gebs.add(g)
-              a_list.append(a)
+              print "Update DB"
+              a = AMC(Type="GLIB",BoardID = t_boardID)
+              a.save()
+              for g in g_list:
+                a.gebs.add(g)
+                a_list.append(a)
 
           # create a new run. Some values are hard-coded for now
           runs = Run.objects.filter(Period = "2016T", Type = "bench", Station = "TAMU")
@@ -176,7 +187,7 @@ def gemsupervisor(request):
       #form = ConfigForm()
       updateStatus()
       nevents = int(request.POST['nevents'])
-      t = threading.Thread(target = m_AMC13manager.startDataTaking, args = ["/home/mdalchen/work/tmp/"+m_filename+".dat"])
+      t = threading.Thread(target = m_AMC13manager.startDataTaking, args = ["/tmp/"+m_filename+".dat"])
       t.start()
       state = 'running'
 
