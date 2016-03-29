@@ -6,7 +6,8 @@ from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth.forms import UserCreationForm
 from bugtracker.models import Ticket
 from django.template import Template, Context
-
+from django.contrib.staticfiles.templatetags.staticfiles import static
+import os
 
 
 
@@ -17,7 +18,9 @@ slot_list = ['00','01','02','03','04','05','06','07','08','09','10','11',
 lslot_list = ["a","b","c","d"];
 
 vfat_address = []; #hex ID
-with open('/home/kingr/ldqm-browser/LightDQM/LightDQM/test/config/slot_table_TAMUv2.csv', 'rd') as csvfile:
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+csvfilename = os.path.join(BASE_DIR,'LightDQM/test/config/slot_table_TAMUv2.csv')
+with open(csvfilename, 'rd') as csvfile:
   vfat_ids = csv.reader(csvfile, delimiter=',')
   for num in vfat_ids:
       vfat_address.extend(num)

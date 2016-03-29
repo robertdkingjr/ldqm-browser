@@ -37,9 +37,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'crispy_forms',
+    'bootstrap_toolkit',
     'LightDQM',
     'ldqm_db',
     'bugtracker',
+    'webdaq',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -56,6 +59,7 @@ MIDDLEWARE_CLASSES = [
 ROOT_URLCONF = 'LightDQM.urls'
 
 STATIC_URL = '/static/'
+#STATIC_ROOT = os.path.join(BASE_DIR, 'LightDQM/')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'LightDQM/static'),
     os.path.join(BASE_DIR, 'LightDQM'),
     '/home/kingr/ldqm-browser/LightDQM/LightDQM/',
@@ -71,6 +75,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join(BASE_DIR, 'LightDQM/templates'),
           os.path.join(BASE_DIR, 'bugtracker/templates'),
+          os.path.join(BASE_DIR, 'webdaq/templates'),
           #replace('\\','/'),
           ],
         'APP_DIRS': True,
@@ -143,3 +148,6 @@ STATIC_URL = '/static/'
 
 from django.core.urlresolvers import reverse_lazy
 LOGIN_REDIRECT_URL = reverse_lazy('index')
+
+import django
+django.setup()

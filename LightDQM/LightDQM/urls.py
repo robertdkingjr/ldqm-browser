@@ -19,6 +19,7 @@ from .views import BugListView, BugDetailView, RegisterView, BugCreateView
 from django.core.urlresolvers import reverse_lazy
 from django.contrib import admin
 from LightDQM.views import *
+from webdaq.views import *
 admin.autodiscover()
 
 urlpatterns = [
@@ -38,4 +39,6 @@ urlpatterns = [
 
 #for bugtracker
     url(r'^bugs/', include('bugtracker.urls')),
+# for gemsupervisot
+    url(r'^gemsupervisor/', include('webdaq.urls')),
 ]
