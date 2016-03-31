@@ -25,9 +25,10 @@ with open(csvfilename, 'rd') as csvfile:
   for num in vfat_ids:
       vfat_address.extend(num)
 
-hist_list = ["2D CRC for VFAT chip Slot",
-             "Strips fired for VFAT chip Slot",
-             "Channels fired for VFAT chip Slot"];
+#NEEDS REDOING
+hist_list = ["b1010",
+             "b1100",
+             "b1110"];
 sum_can_names  = ["integrity", "occupancy", "clusterMult", "clusterSize"];
 hist_list_long = ['CRC', 
                   'Channels_fired_for_VFAT_chip_Slot15',
@@ -247,7 +248,7 @@ def chamber(request, runType, runN):
                                           'amc_color':amc_color,
                                           'geb_color':geb_color})
 
-def amc(request, runType, runN, amc):
+def amc(request, runType, runN, amc_boardid):
   run_list = Run.objects.all()
   run = Run.objects.get(Type=runType, Number = runN)
   try:
@@ -292,12 +293,12 @@ def amc(request, runType, runN, amc):
                                      'hist_list':hist_list,
                                      'hist_list_long':hist_list_long,
                                      'run':run,
-                                     'amc':amc,
+                                     'amc_boardid':amc_boardid,
                                      'sum_can_names':sum_can_names,
                                      'amc_color':amc_color,
                                      'geb_color':geb_color})
 
-def gebs(request, runType, runN, chamber):
+def gebs(request, runType, runN, amc_boardid, geb_chamberid):
   run_list = Run.objects.all()
   run = Run.objects.get(Type=runType, Number = runN)
   try:
@@ -306,7 +307,7 @@ def gebs(request, runType, runN, chamber):
     geb_state = state.gebStates.all()
     vfat_state = state.vfatStates.all()
   except:
-    print "gebs: Could not locate states for %s in Database" % chamber
+    print "Could not locate GEB states in Database";
   
   amc_color = []
   geb_color = []
@@ -358,13 +359,14 @@ def gebs(request, runType, runN, chamber):
                                       'hist_list':hist_list,
                                       'hist_list_long':hist_list_long,
                                       'run':run,
-                                      'chamber':chamber,
+                                      'amc_boardid':amc_boardid,
+                                      'geb_chamberid':geb_chamberid,
                                       'sum_can_names':sum_can_names,
                                       'amc_color':amc_color,
                                       'geb_color':geb_color,
                                       'vfats':vfats})
 
-def vfats(request, runType, runN, chamber, vfatN):
+def vfats(request, runType, runN, amc_boardid, geb_chamberid, vfatN):
   run_list = Run.objects.all()
   run = Run.objects.get(Type=runType, Number = runN)
   try:
@@ -435,7 +437,8 @@ def vfats(request, runType, runN, chamber, vfatN):
                                        'hist_list':hist_list,
                                        'hist_list_long':hist_list_long,
                                        'run':run,
-                                       'chamber':chamber,
+                                       'amc_boardid':amc_boardid,
+                                       'geb_chamberid':geb_chamberid,
                                        'vfat':int(vfatN),
                                        'sum_can_names':sum_can_names,
                                        'vfats':vfats,
@@ -452,7 +455,7 @@ def summary(request, runType, runN, chamber, summaryN):
     geb_state = state.gebStates.all()
     vfat_state = state.vfatStates.all()
   except:
-    print "Could not locate states for %s in Database" % chamber
+    print "Could not locate states for %s in Database" % geb_chamberid
 
   amc_color = []
   geb_color = []
@@ -497,7 +500,7 @@ def summary(request, runType, runN, chamber, summaryN):
                                          'amc_color':amc_color,
                                          'geb_color':geb_color})
 
-def display_vfat(request, runType, runN, chamber, vfatN, histN):
+def display_vfat(request, runType, runN, amc_boardid, geb_chamberid, vfatN, histN):
   run_list = Run.objects.all()
   run = Run.objects.get(Type=runType, Number = runN)  
   try:
@@ -506,7 +509,7 @@ def display_vfat(request, runType, runN, chamber, vfatN, histN):
     geb_state = state.gebStates.all()
     vfat_state = state.vfatStates.all()
   except:
-    print "Could not locate states for %s in Database" % chamber
+    print "Could not locate states for %s in Database" % geb_chamberid
   amc_color = []
   geb_color = []
   for i, amc in enumerate(run.amcs.all()):
@@ -570,7 +573,8 @@ def display_vfat(request, runType, runN, chamber, vfatN, histN):
                                               'hist_list':hist_list,
                                               'hist_list_long':hist_list_long,
                                               'run':run,
-                                              'chamber':chamber,
+                                              'amc_boardid':amc_boardid,
+                                              'geb_chamberid':geb_chamberid,
                                               'sum_can_names':sum_can_names,
                                               'vfat':int(vfatN),
                                               'hist':histN,
@@ -579,7 +583,8 @@ def display_vfat(request, runType, runN, chamber, vfatN, histN):
                                               'amc_color':amc_color,
                                               'geb_color':geb_color})
 
-def display_canvas(request, runType, runN, chamber, canvas):
+
+def display_canvas(request, runType, runN, amc_boardid, geb_chamberid, canvas):
   run_list = Run.objects.all()
   run = Run.objects.get(Type=runType, Number = runN)
   try:
@@ -652,6 +657,8 @@ def display_canvas(request, runType, runN, chamber, canvas):
                                                 'hist_list':hist_list,
                                                 'hist_list_long':hist_list_long,
                                                 'run':run,
+                                                'amc_boardid':amc_boardid,
+                                                'geb_chamberid':geb_chamberid,
                                                 'chamber':chamber,
                                                 'sum_can_names':sum_can_names,
                                                 'canvas':canvas,

@@ -18,10 +18,11 @@
       	{% if v.0 == '08' or v.0 == '16' %}
         </tr><tr>
       	{% endif %}
-	<td><a href="/main/{{run.Type}}/run/{{run.Number}}/{{chamber}}/vfat/{{v.0}}" id="b{{v.0}}" 
+	<!-- <td><a href="/main/{{run.Type}}/run/{{run.Number}}/{{chamber}}/vfat/{{v.0}}" id="b{{v.0}}"  -->
+	<td><a href="/main/{{run.Type}}/run/{{run.Number}}/AMC13-1/{{amc_boardid}}/{{geb_chamberid}}/VFAT-{{v.0}}/" id="b{{v.0}}"
 	       {% if v.4 %} class="btn btn-{{v.3}} btn-xs disabled"
 	       {% else %}  class="btn btn-{{v.3}} btn-xs"
-	       {% endif %}>Slot{{v.0}} - {{v.1}}</a></td>
+	       {% endif %}>Slot{{v.0}}</a></td>
 	{% endfor %}
 
 
@@ -34,7 +35,8 @@
       <tr>
 	<td class="col-xs-3">Summary/Error Canvases:</td>
 	{% for canvas in sum_can_names %}
-	<td><a href="/main/{{run.Type}}/run/{{run.Number}}/{{chamber}}/canvas/{{canvas}}" class="btn btn-primary btn-xs">{{canvas}}</a></td>
+	<!-- <td><a href="/main/{{run.Type}}/run/{{run.Number}}/{{chamber}}/canvas/{{canvas}}" class="btn btn-primary btn-xs">{{canvas}}</a></td> -->
+	<td><a href="/main/{{run.Type}}/run/{{run.Number}}/AMC13-1/{{amc_boardid}}/{{geb_chamberid}}/canvas/{{canvas}}" class="btn btn-primary btn-xs">{{canvas}}</a></td>
 	{% endfor %}
       </tr>
     </tbody>

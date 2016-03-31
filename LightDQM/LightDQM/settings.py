@@ -62,6 +62,7 @@ STATIC_URL = '/static/'
 #STATIC_ROOT = os.path.join(BASE_DIR, 'LightDQM/')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'LightDQM/static'),
     os.path.join(BASE_DIR, 'LightDQM'),
+    '/tmp/',
     '/home/kingr/ldqm-browser/LightDQM/LightDQM/',
     '/home/kingr/ldqm-browser/LightDQM/LightDQM/static/',
     '/home/mdalchen/work/django/LightDQM/LightDQM/',

@@ -63,19 +63,23 @@ def gemsupervisor(request):
     call(["mkdir -p /tmp/dqm_hists/OtherData"],shell=True)
     call(["mkdir -p /tmp/dqm_hists/canvases"],shell=True)
 #call dqm
-    call_command =  os.getenv('BUILD_HOME')+'/gem-light-dqm/dqm-root/bin/'+os.getenv('XDAQ_OS')+'/'+os.getenv('XDAQ_PLATFORM')+'/rundqm'
+    call_command =  os.getenv('BUILD_HOME')+'/gem-light-dqm/dqm-root/bin/'+os.getenv('XDAQ_OS')+'/'+os.getenv('XDAQ_PLATFORM')+'/dqm'
     command_args = "/tmp/"+m_filename+".raw.root"
+    os.system(call_command+' '+command_args)
+#call dqm printer
+    call_command =  os.getenv('BUILD_HOME')+'/gem-light-dqm/dqm-root/bin/'+os.getenv('XDAQ_OS')+'/'+os.getenv('XDAQ_PLATFORM')+'/gtprinter'
+    command_args = "/tmp/"+m_filename+".analyzed.root"
     os.system(call_command+' '+command_args)
 #copy results to DQM display form
     #call_command = "/home/mdalchen/work/ldqm-browser/LightDQM/LightDQM/test/"
     call_command = os.getenv('LDQM_STATIC')+'/'
-    call_command += m_filename[10:15]
-    call_command += "/"
-    call_command += m_filename[:9]
-    call_command += "/"
-    call_command += "TAMU/GEB-GTX0-Long/"
+    # call_command += m_filename[10:15]
+    # call_command += "/"
+    # call_command += m_filename[:9]
+    # call_command += "/"
+    # call_command += "TAMU/GEB-GTX0-Long/"
     call(["mkdir -p "+call_command],shell=True)
-    call(["cp -r /tmp/dqm_hists/* "+call_command],shell=True)
+    call(["cp -r /tmp/"+m_filename+" "+call_command],shell=True)
 
   if request.POST:
     if 'configure' in request.POST:
@@ -122,7 +126,7 @@ def gemsupervisor(request):
                   v.save()
                 v_list.append(VFAT.objects.get(ChipID = t_chipid, Slot = chip))
               #t_chamberID = 'OHv2aM'#hard code now, read from HW later when available
-              t_chamberID = 'GTX'+str(gtx) #use gtx link number now, read from HW later when available
+              t_chamberID = 'GTX-'+str(gtx) #use gtx link number now, read from HW later when available
               print "t_chamberID = %s" %(t_chamberID)
               g_list = []
               gebs = GEB.objects.filter(ChamberID=t_chamberID)
@@ -144,7 +148,7 @@ def gemsupervisor(request):
 
             t_flag = False
             #t_boardID = "47-20120013"#hard code now, read from HW later when available
-            t_boardID = "AMC"+str(amcN)#hard code now, read from HW later when available
+            t_boardID = "AMC-"+str(amcN)#hard code now, read from HW later when available
             a_list = []
             amcs = AMC.objects.filter(BoardID = t_boardID)
             for amc in amcs:
