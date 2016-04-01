@@ -1,0 +1,33 @@
+{% extends "gebs.html" %}
+{% load staticfiles %}
+
+
+{% block display_geb %}
+
+    <script src="{% static 'js/jsroot/JSRootCore.js' %}"></script>   
+
+    <center><div id={{hist}} style="width:90%"> 
+
+
+
+	<script type="text/javascript">
+
+	  var hist_ ="{{hist}}";
+	  JSROOT.NewHttpRequest("{% static '' %}{{run.Name}}/AMC13-1/{{amc_boardid}}/{{geb_chamberid}}/{{hist}}.json", 'object', function(obj) {
+          //JSROOT.NewHttpRequest("/static/test/a.json", 'object', function(obj) {
+          JSROOT.draw( hist_, obj, "colz");
+          }).send();
+
+
+	</script>
+
+    </div></center>
+  </div>
+</div>
+
+{% endblock %} <!-- display_geb -->
+
+
+
+
+

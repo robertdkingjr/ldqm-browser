@@ -45,7 +45,7 @@ urlpatterns = [
 
     url(r'^main/([a-zA-Z]+)/run/(\d+)/AMC13-1/(AMC[\w\+%_&\- ]+)/(GTX[\w\+%_&\- ]+)/VFAT-(\d+)/hist/([\w\+%_&\- ]+)/$', display_vfat),
     url(r'^main/([a-zA-Z]+)/run/(\d+)/AMC13-1/(AMC[\w\+%_&\- ]+)/(GTX[\w\+%_&\- ]+)/VFAT-(\d+)/$', vfats),
-    #url(r'^main/([a-zA-Z]+)/run/(\d+)/AMC13-1/([\w\+%_&\- ]+)/([\w\+%_&\- ]+)/hist/([\w\+%_&\- ]+)/$', display_geb),
+    url(r'^main/([a-zA-Z]+)/run/(\d+)/AMC13-1/(AMC[\w\+%_&\- ]+)/(GTX[\w\+%_&\- ]+)/hist/([\w\+%_&\- ]+)/$', display_geb),
     url(r'^main/([a-zA-Z]+)/run/(\d+)/AMC13-1/(AMC[\w\+%_&\- ]+)/(GTX[\w\+%_&\- ]+)/$', gebs),
     url(r'^main/([a-zA-Z]+)/run/(\d+)/AMC13-1/([\w\+%_&\- ]+)/hist/([\w\+%_&\- ]+)/$', display_amc),
     url(r'^main/([a-zA-Z]+)/run/(\d+)/AMC13-1/(AMC[\w\+%_&\- ]+)/$', amc),
