@@ -25,10 +25,62 @@ with open(csvfilename, 'rd') as csvfile:
   for num in vfat_ids:
       vfat_address.extend(num)
 
-hist_list = ["2D CRC for VFAT chip Slot",
-             "Strips fired for VFAT chip Slot",
-             "Channels fired for VFAT chip Slot"];
-sum_can_names  = ["integrity", "occupancy", "clusterMult", "clusterSize"];
+#NEEDS REDOING
+hist_list = ["b1010",
+             "b1100",
+             "b1110",
+             "BC",
+             "EC",
+             "Flag",
+             "ChipID",
+             "FiredChannels",
+             "crc",
+             "crc_calc"];
+amc13_hist_list = ["Control_Bit5",
+                   "Control_BitA",
+                   "Evt_ty",
+                   "LV1_id",
+                   "Bx_id",
+                   "Source_id",
+                   "CalTyp",
+                   "nAMC",
+                   "OrN",
+                   "CRC_amc13",
+                   "Blk_Not",
+                   "LV1_idT",
+                   "BX_idT",
+                   "EvtLength",
+                   "CRC_cdf"];
+amc_hist_list = ["AMCnum",
+                 "L1A",
+                 "BX",
+                 "Dlength",
+                 "FV",
+                 "Rtype",
+                 "Param1",
+                 "Param2",
+                 "Param3",
+                 "Onum",
+                 "BID",
+                 "GEMDAV",
+                 "Bstatus",
+                 "GDcount",
+                 "Tstate",
+                 "ChamT",
+                 "OOSG",
+                 "CRC",
+                 "L1AT",
+                 "DlengthT"];
+
+geb_hist_list = ["Errors",
+                 "InputID",
+                 "OHCRC",
+                 "Vwh",
+                 "Vwt",
+                 "Warnings",
+                 "ZeroSup"];
+
+sum_can_list  = ["integrity", "occupancy", "clusterMult", "clusterSize"];
 hist_list_long = ['CRC', 
                   'Channels_fired_for_VFAT_chip_Slot15',
                   'CRC_2D_for_VFAT_chip_Slot13',
@@ -147,6 +199,10 @@ hist_list_long = ['CRC',
 def dqm_help(request):
   return render(request,'test.html', {'hist_list_long':hist_list_long,})
 
+def runs(request):
+  run_list = Run.objects.all()
+  return render(request,'runs.html', {'run_list':run_list,})
+
 def main(request):
   run_list = Run.objects.all()
   return render(request,'main.html', {'run_list':run_list,})
@@ -247,7 +303,108 @@ def chamber(request, runType, runN):
                                           'amc_color':amc_color,
                                           'geb_color':geb_color})
 
-def amc(request, runType, runN, amc):
+def amc_13(request, runType, runN):
+  run_list = Run.objects.all()
+  run = Run.objects.get(Type=runType, Number = runN)
+  try:
+    state = run.State
+    amc_state = state.amcStates.all()
+    geb_state = state.gebStates.all()
+    vfat_state = state.vfatStates.all()
+  except:
+    print "Could not locate states for %s in Database" % run.Name
+  amc_color = []
+  geb_color = []
+  for i, amc in enumerate(run.amcs.all()):
+    amc_color.insert(i,'default')
+    geb_color.insert(i,['default','default'])
+  for i, amc in enumerate(run.amcs.all()):
+    try:
+      code = int(next((x for x in amc_state if x.HWID==amc.BoardID),None).State)
+      #print "AMC %s Code: " % amc.BoardID, code
+      del amc_color[i]
+      if code==0: amc_color.insert(i,'success')
+      elif code==1: amc_color.insert(i,'warning')
+      elif code==9: amc_color.insert(i,'default')
+      elif code==3: amc_color.insert(i,'danger')
+      else: amc_color.insert(i,'danger')
+    except:
+      print "Error locating AMC: ", amc.BoardID, amc.Type
+    for j, geb in enumerate(amc.gebs.all()):
+      try:
+        code = int(next((x for x in geb_state if x.HWID==geb.ChamberID),None).State)
+        #print "GEB %s Code: " % geb.BoardID, code
+        del geb_color[i][j]
+        if code==0: geb_color[i].insert(j,'success')
+        elif code==1: geb_color[i].insert(j,'warning')
+        elif code==9: geb_color[i].insert(j,'default')
+        elif code==3: geb_color[i].insert(j,'danger')
+        else: geb_color[i].insert(j,'danger')
+      except:
+        print "Error locating GEB: ", geb.ChamberID, geb.Type  
+
+  return render(request,'amc_13.html', {'run_list':run_list,
+                                        'slot_list':slot_list,
+                                        'hist_list':hist_list,
+                                        'hist_list_long':hist_list_long,
+                                        'amc13_hist_list':amc13_hist_list,
+                                        'run':run,
+                                        'sum_can_list':sum_can_list,
+                                        'amc_color':amc_color,
+                                        'geb_color':geb_color})
+
+def display_amc_13(request, runType, runN, hist):
+  run_list = Run.objects.all()
+  run = Run.objects.get(Type=runType, Number = runN)
+  try:
+    state = run.State
+    amc_state = state.amcStates.all()
+    geb_state = state.gebStates.all()
+    vfat_state = state.vfatStates.all()
+  except:
+    print "Could not locate states for %s in Database" % run.Name
+  amc_color = []
+  geb_color = []
+  for i, amc in enumerate(run.amcs.all()):
+    amc_color.insert(i,'default')
+    geb_color.insert(i,['default','default'])
+  for i, amc in enumerate(run.amcs.all()):
+    try:
+      code = int(next((x for x in amc_state if x.HWID==amc.BoardID),None).State)
+      #print "AMC %s Code: " % amc.BoardID, code
+      del amc_color[i]
+      if code==0: amc_color.insert(i,'success')
+      elif code==1: amc_color.insert(i,'warning')
+      elif code==9: amc_color.insert(i,'default')
+      elif code==3: amc_color.insert(i,'danger')
+      else: amc_color.insert(i,'danger')
+    except:
+      print "Error locating AMC: ", amc.BoardID, amc.Type
+    for j, geb in enumerate(amc.gebs.all()):
+      try:
+        code = int(next((x for x in geb_state if x.HWID==geb.ChamberID),None).State)
+        #print "GEB %s Code: " % geb.BoardID, code
+        del geb_color[i][j]
+        if code==0: geb_color[i].insert(j,'success')
+        elif code==1: geb_color[i].insert(j,'warning')
+        elif code==9: geb_color[i].insert(j,'default')
+        elif code==3: geb_color[i].insert(j,'danger')
+        else: geb_color[i].insert(j,'danger')
+      except:
+        print "Error locating GEB: ", geb.ChamberID, geb.Type  
+
+  return render(request,'display_amc_13.html', {'run_list':run_list,
+                                        'slot_list':slot_list,
+                                        'hist_list':hist_list,
+                                        'hist_list_long':hist_list_long,
+                                        'amc13_hist_list':amc13_hist_list,
+                                        'hist':hist,
+                                        'run':run,
+                                        'sum_can_list':sum_can_list,
+                                        'amc_color':amc_color,
+                                        'geb_color':geb_color})
+
+def amc(request, runType, runN, amc_boardid):
   run_list = Run.objects.all()
   run = Run.objects.get(Type=runType, Number = runN)
   try:
@@ -291,13 +448,14 @@ def amc(request, runType, runN, amc):
                                      'slot_list':slot_list,
                                      'hist_list':hist_list,
                                      'hist_list_long':hist_list_long,
+                                     'amc_hist_list':amc_hist_list,
                                      'run':run,
-                                     'amc':amc,
-                                     'sum_can_names':sum_can_names,
+                                     'amc_boardid':amc_boardid,
+                                     'sum_can_list':sum_can_list,
                                      'amc_color':amc_color,
                                      'geb_color':geb_color})
 
-def gebs(request, runType, runN, chamber):
+def display_amc(request, runType, runN, amc_boardid, hist):
   run_list = Run.objects.all()
   run = Run.objects.get(Type=runType, Number = runN)
   try:
@@ -306,7 +464,61 @@ def gebs(request, runType, runN, chamber):
     geb_state = state.gebStates.all()
     vfat_state = state.vfatStates.all()
   except:
-    print "gebs: Could not locate states for %s in Database" % chamber
+    print "Could not locate states for %s in Database" % chamber
+  amc_color = []
+  geb_color = []
+  for i, amc in enumerate(run.amcs.all()):
+    amc_color.insert(i,'default')
+    geb_color.insert(i,['default','default'])
+  for i, amc in enumerate(run.amcs.all()):
+    try:
+      code = int(next((x for x in amc_state if x.HWID==amc.BoardID),None).State)
+      #print "AMC %s Code: " % amc.BoardID, code
+      del amc_color[i]
+      if code==0: amc_color.insert(i,'success')
+      elif code==1: amc_color.insert(i,'warning')
+      elif code==9: amc_color.insert(i,'default')
+      elif code==3: amc_color.insert(i,'danger')
+      else: amc_color.insert(i,'danger')
+    except:
+      print "Error locating AMC: ", amc.BoardID, amc.Type
+    for j, geb in enumerate(amc.gebs.all()):
+      try:
+        code = int(next((x for x in geb_state if x.HWID==geb.ChamberID),None).State)
+        #print "GEB %s Code: " % geb.BoardID, code
+        del geb_color[i][j]
+        if code==0: geb_color[i].insert(j,'success')
+        elif code==1: geb_color[i].insert(j,'warning')
+        elif code==9: geb_color[i].insert(j,'default')
+        elif code==3: geb_color[i].insert(j,'danger')
+        else: geb_color[i].insert(j,'danger')
+      except:
+        print "Error locating GEB: ", geb.ChamberID, geb.Type  
+
+  return render(request,'display_amc.html', {'run_list':run_list,
+                                     'slot_list':slot_list,
+                                     'hist_list':hist_list,
+                                     'hist_list_long':hist_list_long,
+                                     'amc_hist_list':amc_hist_list,
+                                     'run':run,
+                                     'hist':hist,
+                                     'amc_boardid':amc_boardid,
+                                     'sum_can_list':sum_can_list,
+                                     'amc_color':amc_color,
+                                     'geb_color':geb_color})
+
+
+
+def gebs(request, runType, runN, amc_boardid, geb_chamberid):
+  run_list = Run.objects.all()
+  run = Run.objects.get(Type=runType, Number = runN)
+  try:
+    state = run.State
+    amc_state = state.amcStates.all()
+    geb_state = state.gebStates.all()
+    vfat_state = state.vfatStates.all()
+  except:
+    print "Could not locate GEB states in Database";
   
   amc_color = []
   geb_color = []
@@ -357,14 +569,87 @@ def gebs(request, runType, runN, chamber):
                                       'slot_list':slot_list,
                                       'hist_list':hist_list,
                                       'hist_list_long':hist_list_long,
+                                      'geb_hist_list':geb_hist_list,
                                       'run':run,
-                                      'chamber':chamber,
-                                      'sum_can_names':sum_can_names,
+                                      'amc_boardid':amc_boardid,
+                                      'geb_chamberid':geb_chamberid,
+                                      'sum_can_list':sum_can_list,
                                       'amc_color':amc_color,
                                       'geb_color':geb_color,
                                       'vfats':vfats})
 
-def vfats(request, runType, runN, chamber, vfatN):
+def display_geb(request, runType, runN, amc_boardid, geb_chamberid, hist):
+  run_list = Run.objects.all()
+  run = Run.objects.get(Type=runType, Number = runN)
+  try:
+    state = run.State
+    amc_state = state.amcStates.all()
+    geb_state = state.gebStates.all()
+    vfat_state = state.vfatStates.all()
+  except:
+    print "Could not locate GEB states in Database";
+  
+  amc_color = []
+  geb_color = []
+  for i, amc in enumerate(run.amcs.all()):
+    amc_color.insert(i,'default')
+    geb_color.insert(i,['default','default'])
+  for i, amc in enumerate(run.amcs.all()):
+    try:
+      code = int(next((x for x in amc_state if x.HWID==amc.BoardID),None).State)
+      #print "AMC %s Code: " % amc.BoardID, code
+      del amc_color[i]
+      if code==0: amc_color.insert(i,'success')
+      elif code==1: amc_color.insert(i,'warning')
+      elif code==9: amc_color.insert(i,'default')
+      elif code==3: amc_color.insert(i,'danger')
+      else: amc_color.insert(i,'danger')
+    except:
+      print "Error locating AMC: ", amc.BoardID, amc.Type
+    for j, geb in enumerate(amc.gebs.all()):
+      try:
+        code = int(next((x for x in geb_state if x.HWID==geb.ChamberID),None).State)
+        #print "GEB %s Code: " % geb.BoardID, code
+        del geb_color[i][j]
+        if code==0: geb_color[i].insert(j,'success')
+        elif code==1: geb_color[i].insert(j,'warning')
+        elif code==9: geb_color[i].insert(j,'default')
+        elif code==3: geb_color[i].insert(j,'danger')
+        else: geb_color[i].insert(j,'danger')
+      except:
+        print "Error locating GEB: ", geb.ChamberID, geb.Type
+
+  vfats = []
+  for s in slot_list: #initialize vfats to work if no states in DB
+    vfats.insert(int(s),[s, vfat_address[int(s)], 0, 'default', False])
+  for s in slot_list:
+    try:
+      code = int(next((x for x in vfat_state if x.HWID==vfat_address[int(s)]),None).State)
+      del vfats[int(s)]
+      if code==0: vfats.insert(int(s),[s, vfat_address[int(s)], code, 'success', False])
+      elif code==1: vfats.insert(int(s),[s, vfat_address[int(s)], code, 'warning', False])
+      elif code==9: vfats.insert(int(s),[s, vfat_address[int(s)], code, 'default', True])
+      elif code==3: vfats.insert(int(s),[s, vfat_address[int(s)], code, 'danger', False])
+      else: vfats.insert(int(s),[s, vfat_address[int(s)], code, 'danger', False])
+    except:
+      print "Error locating vfat: ",vfat_address[int(s)]
+  
+  return render(request,'display_geb.html', {'run_list':run_list,
+                                      'slot_list':slot_list,
+                                      'hist_list':hist_list,
+                                      'hist_list_long':hist_list_long,
+                                      'geb_hist_list':geb_hist_list,
+                                      'hist':hist,
+                                      'run':run,
+                                      'amc_boardid':amc_boardid,
+                                      'geb_chamberid':geb_chamberid,
+                                      'sum_can_list':sum_can_list,
+                                      'amc_color':amc_color,
+                                      'geb_color':geb_color,
+                                      'vfats':vfats})
+
+
+def vfats(request, runType, runN, amc_boardid, geb_chamberid, vfatN):
   run_list = Run.objects.all()
   run = Run.objects.get(Type=runType, Number = runN)
   try:
@@ -434,10 +719,12 @@ def vfats(request, runType, runN, chamber, vfatN):
                                        'slot_list':slot_list,
                                        'hist_list':hist_list,
                                        'hist_list_long':hist_list_long,
+                                       'geb_hist_list':geb_hist_list,
                                        'run':run,
-                                       'chamber':chamber,
+                                       'amc_boardid':amc_boardid,
+                                       'geb_chamberid':geb_chamberid,
                                        'vfat':int(vfatN),
-                                       'sum_can_names':sum_can_names,
+                                       'sum_can_list':sum_can_list,
                                        'vfats':vfats,
                                        'selected_vfat':selected_vfat,
                                        'amc_color':amc_color,
@@ -452,7 +739,7 @@ def summary(request, runType, runN, chamber, summaryN):
     geb_state = state.gebStates.all()
     vfat_state = state.vfatStates.all()
   except:
-    print "Could not locate states for %s in Database" % chamber
+    print "Could not locate states for %s in Database" % geb_chamberid
 
   amc_color = []
   geb_color = []
@@ -490,14 +777,15 @@ def summary(request, runType, runN, chamber, summaryN):
                                          'slot_list':slot_list,
                                          'hist_list':hist_list,
                                          'hist_list_long':hist_list_long,
+                                         'geb_hist_list':geb_hist_list,
                                          'run':run,
                                          'chamber':chamber,
-                                         'sum_can_names':sum_can_names,
+                                         'sum_can_list':sum_can_list,
                                          'sumN':summaryN,
                                          'amc_color':amc_color,
                                          'geb_color':geb_color})
 
-def display_vfat(request, runType, runN, chamber, vfatN, histN):
+def display_vfat(request, runType, runN, amc_boardid, geb_chamberid, vfatN, histN):
   run_list = Run.objects.all()
   run = Run.objects.get(Type=runType, Number = runN)  
   try:
@@ -506,7 +794,7 @@ def display_vfat(request, runType, runN, chamber, vfatN, histN):
     geb_state = state.gebStates.all()
     vfat_state = state.vfatStates.all()
   except:
-    print "Could not locate states for %s in Database" % chamber
+    print "Could not locate states for %s in Database" % geb_chamberid
   amc_color = []
   geb_color = []
   for i, amc in enumerate(run.amcs.all()):
@@ -569,9 +857,11 @@ def display_vfat(request, runType, runN, chamber, vfatN, histN):
                                               'slot_list':slot_list,
                                               'hist_list':hist_list,
                                               'hist_list_long':hist_list_long,
+                                              'geb_hist_list':geb_hist_list,
                                               'run':run,
-                                              'chamber':chamber,
-                                              'sum_can_names':sum_can_names,
+                                              'amc_boardid':amc_boardid,
+                                              'geb_chamberid':geb_chamberid,
+                                              'sum_can_list':sum_can_list,
                                               'vfat':int(vfatN),
                                               'hist':histN,
                                               'vfats':vfats,
@@ -579,7 +869,8 @@ def display_vfat(request, runType, runN, chamber, vfatN, histN):
                                               'amc_color':amc_color,
                                               'geb_color':geb_color})
 
-def display_canvas(request, runType, runN, chamber, canvas):
+
+def display_canvas(request, runType, runN, amc_boardid, geb_chamberid, canvas):
   run_list = Run.objects.all()
   run = Run.objects.get(Type=runType, Number = runN)
   try:
@@ -651,9 +942,12 @@ def display_canvas(request, runType, runN, chamber, canvas):
                                                 'slot_list':slot_list,
                                                 'hist_list':hist_list,
                                                 'hist_list_long':hist_list_long,
+                                                'geb_hist_list':geb_hist_list,
                                                 'run':run,
+                                                'amc_boardid':amc_boardid,
+                                                'geb_chamberid':geb_chamberid,
                                                 'chamber':chamber,
-                                                'sum_can_names':sum_can_names,
+                                                'sum_can_list':sum_can_list,
                                                 'canvas':canvas,
                                                 'vfats':vfats,
                                                 'amc_color':amc_color,

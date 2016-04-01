@@ -4,50 +4,106 @@
 
 {% block gebs %}
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-      <b>{{chamber}}</b>
-  </div>
-
-  <table class="table">	<!-- VFAT buttons -->
-    <tbody>
-      <tr>
-	<td class="col-xs-1" rowspan="3">VFATs:</td>
-
-	{% for v in vfats %}
-      	{% if v.0 == '08' or v.0 == '16' %}
-        </tr><tr>
-      	{% endif %}
-	<td><a href="/main/{{run.Type}}/run/{{run.Number}}/{{chamber}}/vfat/{{v.0}}" id="b{{v.0}}" 
-	       {% if v.4 %} class="btn btn-{{v.3}} btn-xs disabled"
-	       {% else %}  class="btn btn-{{v.3}} btn-xs"
-	       {% endif %}>Slot{{v.0}} - {{v.1}}</a></td>
-	{% endfor %}
+<!-- <div class="panel panel-default"> -->
+<!--   <div class="panel-heading"> -->
+<!--     <b>{{geb_chamberid}}</b> -->
+<!--   </div> -->
+<!-- </div> -->
 
 
-      </tr>
-    </tbody>
-  </table>
+<div class="container-fluid">
+  <div class="row-fluid">
+    <div class="col-md-2">
+      <center><b>GEB Histograms</b></center>
+      {% for hist in geb_hist_list %}
+      <div class="row">
+	<div class="col-md-12">
+	  <center>
+	    <a href="/main/{{run.Type}}/run/{{run.Number}}/AMC13-1/{{amc_boardid}}/{{geb_chamberid}}/hist/{{hist}}"
+	       class="btn btn-sm btn-info btn-block">{{hist}}</a>
+	  </center>
+	</div>
+      </div>
+      {% endfor %}
+      {% for canvas in sum_can_list %}
+      <div class="row">
+	<div class="col-md-12">
+	  <center>
+	    <a href="/main/{{run.Type}}/run/{{run.Number}}/AMC13-1/{{amc_boardid}}/{{geb_chamberid}}/hist/{{canvas}}"
+	       class="btn btn-sm btn-primary btn-block">{{canvas}}</a>
+	  </center>
+	</div>
+      </div>
+      {% endfor %}
+    </div>
+    
+    <div class="col-md-8">
+      <div class="row">
 
- <table class="table"> <!-- Summary canvas buttons -->
-    <tbody>
-      <tr>
-	<td class="col-xs-3">Summary/Error Canvases:</td>
-	{% for canvas in sum_can_names %}
-	<td><a href="/main/{{run.Type}}/run/{{run.Number}}/{{chamber}}/canvas/{{canvas}}" class="btn btn-primary btn-xs">{{canvas}}</a></td>
-	{% endfor %}
-      </tr>
-    </tbody>
- </table>
+	<div class="row-fluid"> <!-- VFAT buttons -->
+	  <div class="col-md-2">
+	    <div class="pull-right">
+	    <b>VFATs:</b>
+	    </div>
+	  </div>
+	  <div class="col-md-10">
+	    <div class="row">
+	      {% for v in vfats %}
+	      {% if v.0 == '08' or v.0 == '16' %}
+	    </div><div class="row">
+      	      {% endif %}
 
-{%block vfats%}
-{%endblock%}
+	      <div class="col-md-1">
+	      <a href="/main/{{run.Type}}/run/{{run.Number}}/AMC13-1/{{amc_boardid}}/{{geb_chamberid}}/VFAT-{{v.0}}/" id="b{{v.0}}"
+		 {% if v.4 %} class="btn btn-{{v.3}} btn-xs disabled"
+		 {% else %}  class="btn btn-{{v.3}} btn-xs"
+		 {% endif %}>Slot{{v.0}}</a>
+	      </div>
+	      {% endfor %}
+	    </div>
+	  </div>
+	</div>
 
-{%block display_canvas %}
-{%endblock %}
+	<!-- <table class="table">	<\!-- VFAT buttons -\-> -->
+	<!--   <tr> -->
+	<!--     <th class="col-xs-1" rowspan="3">VFATs:</th> -->
+	<!--     {% for v in vfats %} -->
+      	<!--     {% if v.0 == '08' or v.0 == '16' %} -->
+	<!--   </tr><tr> -->
+      	<!--     {% endif %} -->
+	<!--     <\!-- <td><a href="/main/{{run.Type}}/run/{{run.Number}}/{{chamber}}/vfat/{{v.0}}" id="b{{v.0}}"  -\-> -->
+	<!-- 	 <td><a href="/main/{{run.Type}}/run/{{run.Number}}/AMC13-1/{{amc_boardid}}/{{geb_chamberid}}/VFAT-{{v.0}}/" id="b{{v.0}}" -->
+	<!-- 		{% if v.4 %} class="btn btn-{{v.3}} btn-xs disabled" -->
+	<!-- 		{% else %}  class="btn btn-{{v.3}} btn-xs" -->
+	<!-- 		{% endif %}>Slot{{v.0}}</a></td> -->
+	<!-- 	 {% endfor %} -->
+	<!--   </tr> -->
+	<!-- </table> -->
 
+      </div>
+      <div class="row">
+	<center><font color="white">...</font></center>
+      </div>
 
-</div>
+      <div class="row">
+
+	{%block display_geb%}
+	{%endblock%}
+
+	{%block display_vfat %}
+	{%endblock %}
+
+	{%block display_canvas %}
+	{%endblock %}
+
+      </div>
+    </div>
+    <div class="col-md-2">
+      {%block vfats%}
+      {%endblock%}
+    </div>
+  </div>   <!-- row-fluid -->
+</div>	   <!-- container-fluid -->
 
 
 

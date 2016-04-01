@@ -10,25 +10,27 @@ td.null { background-color:lightgrey;} </style></head><body>
 <tr><th>INFO</th><td> </td><td title="Serial Number Low eight bitsSerial Number High one bit" class="nonerror">83</td><td title="read only Virtex firmware version" class="nonerror">0x4036</td><td title="T2 Firmware Version Number" class="nonerror">0x2D</td><td title="T2 Serial Number" class="nonerror">0x53</td></tr>
 <tr><th>OUTPUT</th><td title="SLINK ID(bits 15-14 always '0')" class="nonerror">0x1234</td><td> </td><td> </td><td> </td><td> </td></tr>
 </table>
-<table border="1" ><tr><th class="name">Config</th><th>SRCID</th></tr>
-<tr><th>ID</th><td title="CMS Source ID for SFP2 output data" class="null">0</td></tr>
-<tr><th>OUTPUT</th><td title="CMS Source ID for output data" class="null">0</td></tr>
+<table border="1" ><tr><th class="name">Config</th><th>FAKE_SIZE</th><th>SRCID</th></tr>
+<tr><th>AMC_LINKS</th><td title="Number of 64 bit words send for fake event payload" class="nonerror">0x400</td><td> </td></tr>
+<tr><th>ID</th><td> </td><td title="CMS Source ID for SFP2 output data" class="null">0</td></tr>
+<tr><th>OUTPUT</th><td> </td><td title="CMS Source ID for output data" class="null">0</td></tr>
 </table>
 <table border="1" ><tr><th class="name">Control</th><th>DAQ</th><th>FAKE</th><th>LTRIG</th><th>RUN</th><th>TTCLOOP</th></tr>
-<tr><th>REG_1</th><td title="'1' enables DAQLSC" class="null">0</td><td title="if '1', generate fake event upon receiving L1A" class="null">0</td><td title="if '1', uses internally generated L1A" class="nonerror">1</td><td title="run mode" class="nonerror">1</td><td title="if '1', TTS output is 80MHz clock which can be looped back to TTC input" class="nonerror">1</td></tr>
+<tr><th>REG_1</th><td title="'1' enables DAQLSC" class="null">0</td><td title="if '1', generate fake event upon receiving L1A" class="null">0</td><td title="if '1', uses internally generated L1A" class="nonerror">1</td><td title="run mode " class="nonerror">1</td><td title="if '1', TTS output is 80MHz clock which can be looped back to TTC input" class="nonerror">1</td></tr>
 </table>
 <table border="1" ><tr><th class="name">AMC_Links</th><th>AMC10</th></tr>
-<tr><th>AMC13_BCN_MISMATCH</th><td title="HTR event BCN mismatch counter" class="nonerror">0x77</td></tr>
-<tr><th>AMC13_EVN_MISMATCH</th><td title="HTR event EVN mismatch counter" class="nonerror">0x77</td></tr>
-<tr><th>AMC13_ORN_MISMATCH</th><td title="HTR event OCN mismatch counter" class="nonerror">0x77</td></tr>
-<tr><th>AMC_BCN_MISMATCH</th><td title="AMC BcN mismatch counter" class="nonerror">0x77</td></tr>
-<tr><th>AMC_EVENTS</th><td title="AMC received event counter" class="nonerror">0x77</td></tr>
-<tr><th>AMC_EVN_ERRORS</th><td title="event number error counter at link input" class="error">   1</td></tr>
-<tr><th>AMC_EVN_MISMATCH</th><td title="AMC Evn mismatch counter" class="nonerror">0x77</td></tr>
-<tr><th>AMC_LINK_READY</th><td title="'1' indicates AMC1..12 Link Ready" class="nonerror">   1</td></tr>
-<tr><th>AMC_ORN_MISMATCH</th><td title="AMC OrN mismatch counter" class="nonerror">0x77</td></tr>
-<tr><th>LINK_OK</th><td title="'0' AMC1..12 loss of sync" class="nonerror">   1</td></tr>
-<tr><th>LINK_VERS_WRONG</th><td title="'1' AMC1..12 link version wrong" class="nonerror">   1</td></tr>
+<tr><th>AMC13_BCN_MISMATCH</th><td title="HTR event BCN mismatch counter" class="nonerror">0x158</td></tr>
+<tr><th>AMC13_EVN_MISMATCH</th><td title="HTR event EVN mismatch counter" class="nonerror">0x158</td></tr>
+<tr><th>AMC13_ORN_MISMATCH</th><td title="HTR event OCN mismatch counter" class="nonerror">0x158</td></tr>
+<tr><th>AMC_BCN_MISMATCH</th><td title="AMC BcN mismatch counter" class="nonerror">0x158</td></tr>
+<tr><th>AMC_EVENTS</th><td title="AMC received event counter" class="nonerror">0x158</td></tr>
+<tr><th>AMC_EVN_ERRORS</th><td title="event number error counter at link input" class="error">    1</td></tr>
+<tr><th>AMC_EVN_MISMATCH</th><td title="AMC Evn mismatch counter" class="nonerror">0x158</td></tr>
+<tr><th>AMC_LINK_READY</th><td title="'1' indicates AMC1..12 Link Ready" class="nonerror">    1</td></tr>
+<tr><th>AMC_ORN_MISMATCH</th><td title="AMC OrN mismatch counter" class="nonerror">0x158</td></tr>
+<tr><th>AMC_TRAILER_EVN_BAD</th><td title="AMC event trailer Evn mismatch error counter" class="error">0x4C0</td></tr>
+<tr><th>LINK_OK</th><td title="'0' AMC1..12 loss of sync" class="nonerror">    1</td></tr>
+<tr><th>LINK_VERS_WRONG</th><td title="'1' AMC1..12 link version wrong" class="nonerror">    1</td></tr>
 </table>
 <table border="1" ><tr><th class="name">DT_Trig</th><th>TRIG0</th><th>TRIG1</th><th>VALUE</th></tr>
 <tr><th>INPUT_DELAY</th><td title="Set delay in 1/8 BX steps for TRIG0 input" class="null">0</td><td title="Set delay in 1/8 BX steps for TRIG1 input" class="null">0</td><td> </td></tr>
@@ -37,16 +39,16 @@ td.null { background-color:lightgrey;} </style></head><body>
 <tr><th>TRIGGER_ENABLE</th><td> </td><td> </td><td title="Enable DT LUT trigger" class="null">0</td></tr>
 </table>
 <table border="1" ><tr><th class="name">Event_Builder</th><th>COUNT</th><th>RATEHZ</th></tr>
-<tr><th>L1A</th><td title="L1A counter" class="nonerror">0x77</td><td title="L1A rate in Hz" class="nonerror">9</td></tr>
+<tr><th>L1A</th><td title="L1A counter" class="nonerror">0x158</td><td title="L1A rate in Hz" class="nonerror">8</td></tr>
 </table>
 <table border="1" ><tr><th class="name">State_Timers</th><th>COUNT</th></tr>
-<tr><th>BUSY</th><td title="busy time counter" class="nonerror">0x    E4928</td></tr>
+<tr><th>BUSY</th><td title="busy time counter" class="nonerror">0x    E8DDB</td></tr>
 <tr><th>OVERFLOW_WARNING</th><td title="L1A overflow warning time counter" class="nonerror">          1</td></tr>
-<tr><th>READY</th><td title="ready time counter" class="nonerror">0x176B5C06B</td></tr>
-<tr><th>RUN</th><td title="run time counter" class="nonerror">0x176C40990</td></tr>
+<tr><th>READY</th><td title="ready time counter" class="nonerror">0x3CA5BC138</td></tr>
+<tr><th>RUN</th><td title="run time counter" class="nonerror">0x3CA6A4F10</td></tr>
 </table>
 <table border="1" ><tr><th class="name">TTC_Rx</th><th>ENC</th><th>RAW</th></tr>
 <tr><th>STATE</th><td title="encoded TTS from enabled AMCs" class="nonerror">RDY (0x0)</td><td title="Current T1 overall TTS state" class="nonerror">RDY (0x8)</td></tr>
 </table>
-<table><tr><td>SVN</td><td>40604</td></tr></table>
+<table><tr><td>SVN</td><td>42790</td></tr></table>
 </body></html>

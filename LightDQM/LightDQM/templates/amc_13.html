@@ -1,17 +1,17 @@
 {% extends "chambers.html" %}
 {% load staticfiles %}
 
-{%block amc_report %}
+{%block amc13_report %}
 
 <div class="container-fluid">
   <div class="row-fluid">
     <div class="col-md-2">
-      <center><b>AMC Histograms</b></center>
-      {% for hist in amc_hist_list %}
+      <center><b>AMC13 Histograms</b></center>
+      {% for hist in amc13_hist_list %}
       <div class="row">
 	<div class="col-md-12">
 	  <center>
-	    <a href="/main/{{run.Type}}/run/{{run.Number}}/AMC13-1/{{amc_boardid}}/hist/{{hist}}"
+	    <a href="/main/{{run.Type}}/run/{{run.Number}}/AMC13-1/hist/{{hist}}"
 	     class="btn btn-xs btn-info btn-block">{{hist}}</a>
 	  </center>
 	</div>
@@ -20,7 +20,7 @@
     </div>
 
     <div class="col-md-10">
-      {% block display_amc %}
+      {% block display_amc_13 %}
       {% endblock %}
     </div>
   </div>
