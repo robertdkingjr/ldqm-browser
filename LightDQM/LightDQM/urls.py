@@ -25,31 +25,33 @@ admin.autodiscover()
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^help/', dqm_help),
+    url(r'^runs/$', runs),
     url(r'^main/$', main),
     url(r'^main/chamber/$', chamber),
     url(r'^chamber/chip/$', chamber),
     url(r'^run/chamber/$', chamber),
     url(r'^main/([a-zA-Z]+)/run/(\d+)/$', chamber),
     url(r'^main/([a-zA-Z]+)/run/(\d+)/report/$', report),
-    url(r'^main/([a-zA-Z]+)/run/(\d+)/amc/([\w\+%_&\- ]+)/$', amc), #runType, runN, amc
-    url(r'^main/([a-zA-Z]+)/run/(\d+)/([\w\+%_&\- ]+)/$', gebs), #runType, runN, chamber
-    url(r'^main/([a-zA-Z]+)/run/(\d+)/([\w\+%_&\- ]+)/vfat/(\d+)/$', vfats), #runType, runN, chamber, vfatN
-    url(r'^main/([a-zA-Z]+)/run/(\d+)/([\w\+%_&\- ]+)/vfat/(\d+)/([\w\+%_&\- ]+)/$', display_vfat), #runType, runN, chamber, vfatN, hist
-    url(r'^main/([a-zA-Z]+)/run/(\d+)/([\w\+%_&\- ]+)/canvas/([a-zA-Z]+)/$', display_canvas), #runType, runN, chamber, canvas
+    #url(r'^main/([a-zA-Z]+)/run/(\d+)/amc/([\w\+%_&\- ]+)/$', amc), #runType, runN, amc
+    #url(r'^main/([a-zA-Z]+)/run/(\d+)/([\w\+%_&\- ]+)/$', gebs), #runType, runN, chamber
+    #url(r'^main/([a-zA-Z]+)/run/(\d+)/([\w\+%_&\- ]+)/vfat/(\d+)/$', vfats), #runType, runN, chamber, vfatN
+    #url(r'^main/([a-zA-Z]+)/run/(\d+)/([\w\+%_&\- ]+)/vfat/(\d+)/([\w\+%_&\- ]+)/$', display_vfat), #runType, runN, chamber, vfatN, hist
+    #url(r'^main/([a-zA-Z]+)/run/(\d+)/([\w\+%_&\- ]+)/canvas/([a-zA-Z]+)/$', display_canvas), #runType, runN, chamber, canvas
 
     # could match directory tree with
     # .../AMC13-(serial#)/AMC-(slot#)/GTX-(0,1)/VFAT-(slot#)/...
 
     # runType / runN / AMC (BoardID) / GEB (ChamberID) / VFAT (Slot) / hist
 
-    url(r'^main/([a-zA-Z]+)/run/(\d+)/AMC13-1/([\w\+%_&\- ]+)/([\w\+%_&\- ]+)/VFAT-(\d+)/hist/([\w\+%_&\- ]+)/$', display_vfat),
-    url(r'^main/([a-zA-Z]+)/run/(\d+)/AMC13-1/([\w\+%_&\- ]+)/([\w\+%_&\- ]+)/VFAT-(\d+)/$', vfats),
+    url(r'^main/([a-zA-Z]+)/run/(\d+)/AMC13-1/(AMC[\w\+%_&\- ]+)/(GTX[\w\+%_&\- ]+)/VFAT-(\d+)/hist/([\w\+%_&\- ]+)/$', display_vfat),
+    url(r'^main/([a-zA-Z]+)/run/(\d+)/AMC13-1/(AMC[\w\+%_&\- ]+)/(GTX[\w\+%_&\- ]+)/VFAT-(\d+)/$', vfats),
     #url(r'^main/([a-zA-Z]+)/run/(\d+)/AMC13-1/([\w\+%_&\- ]+)/([\w\+%_&\- ]+)/hist/([\w\+%_&\- ]+)/$', display_geb),
-    url(r'^main/([a-zA-Z]+)/run/(\d+)/AMC13-1/([\w\+%_&\- ]+)/([\w\+%_&\- ]+)/$', gebs),
-    #url(r'^main/([a-zA-Z]+)/run/(\d+)/AMC13-1/([\w\+%_&\- ]+)/hist/([\w\+%_&\- ]+)/$', display_amc),
-    url(r'^main/([a-zA-Z]+)/run/(\d+)/AMC13-1/([\w\+%_&\- ]+)/$', amc),
-    #url(r'^main/([a-zA-Z]+)/run/(\d+)/AMC13-1/hist/([\w\+%_&\- ]+)/$', display_amc13),
-    url(r'^main/([a-zA-Z]+)/run/(\d+)/AMC13-1/([\w\+%_&\- ]+)/([\w\+%_&\- ]+)/canvas/([\w\+%_&\- ]+)/$', display_canvas),
+    url(r'^main/([a-zA-Z]+)/run/(\d+)/AMC13-1/(AMC[\w\+%_&\- ]+)/(GTX[\w\+%_&\- ]+)/$', gebs),
+    url(r'^main/([a-zA-Z]+)/run/(\d+)/AMC13-1/([\w\+%_&\- ]+)/hist/([\w\+%_&\- ]+)/$', display_amc),
+    url(r'^main/([a-zA-Z]+)/run/(\d+)/AMC13-1/(AMC[\w\+%_&\- ]+)/$', amc),
+    url(r'^main/([a-zA-Z]+)/run/(\d+)/AMC13-1/hist/([\w\+%_&\- ]+)/$', display_amc_13),
+    url(r'^main/([a-zA-Z]+)/run/(\d+)/AMC13-1/$', amc_13),
+    url(r'^main/([a-zA-Z]+)/run/(\d+)/AMC13-1/(AMC[\w\+%_&\- ]+)/(GTX[\w\+%_&\- ]+)/canvas/([\w\+%_&\- ]+)/$', display_canvas),
 
 
 

@@ -1,0 +1,31 @@
+{% extends "amc_13.html" %}
+{% load staticfiles %}
+
+
+{% block display_amc_13 %}
+<div class="row-fluid">
+  <div class="span3">
+
+    <script src="{% static 'js/jsroot/JSRootCore.js' %}"></script>   
+
+    <center><div id={{hist}} style="width:90%"> 
+
+
+
+	<script type="text/javascript">
+
+	  var hist_ ="{{hist}}";
+	  JSROOT.NewHttpRequest("{% static '' %}{{run.Name}}/AMC13-1/{{hist}}.json", 'object', function(obj) {
+          //JSROOT.NewHttpRequest("/static/test/a.json", 'object', function(obj) {
+          JSROOT.draw( hist_, obj, "colz");
+          }).send();
+
+
+	</script>
+
+    </div></center>
+  </div>
+</div>
+
+{% endblock %} <!-- display_amc_13 -->
+
