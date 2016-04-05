@@ -35,7 +35,9 @@ hist_list = ["b1010",
              "ChipID",
              "FiredChannels",
              "crc",
-             "crc_calc"];
+             "crc_calc",
+             "latencyScan",
+             "thresholdScan"];
 amc13_hist_list = ["Control_Bit5",
                    "Control_BitA",
                    "Evt_ty",
