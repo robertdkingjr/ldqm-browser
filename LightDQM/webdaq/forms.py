@@ -1,7 +1,7 @@
 from django import forms
 #from django.forms.extras.widgets import Select
 
-AMC13CHOICES = ((83,83),(43,43))
+AMC13CHOICES = ((83,83),(43,43),(170,170))
 AMCCHOICES = ((1,"1"),(2,2),(3,3),(4,4),(5,5),(6,6),(7,7),(8,8),(9,9),(10,10),(11,11),(12,12))
 TRIGGERCHOICES = ((1,"local"),(2,"external"))
 VERBOSITY = ((1,1),(2,2),(3,3),(4,4),(5,5),(6,6),(7,7),(8,8),(9,9))

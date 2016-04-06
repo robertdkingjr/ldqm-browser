@@ -19,7 +19,7 @@ lslot_list = ["a","b","c","d"];
 
 vfat_address = []; #hex ID
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-csvfilename = os.path.join(BASE_DIR,'LightDQM/test/config/slot_table_TAMUv2.csv')
+csvfilename = os.path.join(BASE_DIR,'LightDQM/test/config/slot_table.csv')
 with open(csvfilename, 'rd') as csvfile:
   vfat_ids = csv.reader(csvfile, delimiter=',')
   for num in vfat_ids:
