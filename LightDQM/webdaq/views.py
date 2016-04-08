@@ -55,7 +55,7 @@ def gemsupervisor(request):
   def parkData():
 #call root converter
     call_command =  os.getenv('BUILD_HOME')+'/gem-light-dqm/gemtreewriter/bin/'+os.getenv('XDAQ_OS')+'/'+os.getenv('XDAQ_PLATFORM')+'/unpacker'
-    command_args = "/tmp/"+m_filename+".dat"
+    command_args = "/tmp/"+m_filename+".dat sdram"
     call([call_command+' '+command_args],shell=True)
 #create dirs in tmp
     for i in range (24):

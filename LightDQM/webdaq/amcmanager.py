@@ -20,6 +20,8 @@ class AMCmanager:
 
   def reset(self):
     writeRegister(self.glib,"GLIB.DAQ.CONTROL", 0x8)
+    writeRegister(self.glib,"GLIB.DAQ.CONTROL.DAQ_LINK_RESET",0x1)
+    writeRegister(self.glib,"GLIB.DAQ.CONTROL.DAQ_LINK_RESET",0x0)
 
   def activateGTX(self):
     c = 0
