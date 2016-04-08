@@ -36,18 +36,13 @@
 <!-- </div> -->
 
 <center><div id={{hist}} style="width:90%"> 
-
 <script type="text/javascript">
-
 var hist_ ="{{hist}}";
 JSROOT.NewHttpRequest("{% static '' %}{{run.Name}}/AMC13-1/{{amc_boardid}}/{{geb_chamberid}}/VFAT-{{vfat}}/{{hist}}.json", 'object', function(obj) {
         //JSROOT.NewHttpRequest("/static/test/a.json", 'object', function(obj) {
                JSROOT.draw( hist_, obj, "colz");
                }).send();
-
-
 </script>
-
 </div></center>
 
 {% endblock %} <!-- display_vfat -->
