@@ -36,6 +36,7 @@ def gemsupervisor(request):
   global m_filename
   global form
   global m_monitor
+  global lt
 
   def updateStatus():
     status = m_AMC13manager.device.getStatus()
@@ -92,7 +93,7 @@ def gemsupervisor(request):
           amc_str += str(amcN) + ","
         amc_str = amc_str[:-1]
         trigger_type = form.cleaned_data['trigger_type']
-        if trigger_type == 'local':
+        if trigger_type == '1':
           lt=True
         else:
           lt=False
@@ -176,7 +177,7 @@ def gemsupervisor(request):
           newrun.save()
           for a in a_list:
             newrun.amcs.add(a)
-          m_AMC13manager.configureTrigger(True,2,1,int(trigger_rate),0)
+          m_AMC13manager.configureTrigger(lt,2,1,int(trigger_rate),0)
           updateStatus()
           state = 'configured'
         except ValueError,e:
@@ -204,7 +205,10 @@ def gemsupervisor(request):
       state = 'configured'
     elif "monitoring" in request.POST:
       #pass
-      updateStatus()
+      if lt:
+        updateStatus()
+      else:
+        pass
   else:
     form = ConfigForm()
     state = 'halted'
