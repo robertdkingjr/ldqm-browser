@@ -31,11 +31,8 @@
 
 </head>
 
-<body onload="monitor_()">
+<body onload="{{mon|yesno:'monitor_(),'}}">
   
-
-
-
 <!-- Navigation -->
 <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
 
@@ -108,7 +105,7 @@
           <button type="submit" class="btn btn-primary" name="run">Run</button>
         {%endif%}
         {%if state == "running"%}
-          <button type="submit" class="btn btn-primary" disabled id="stop" name="stop">Stop</button>
+          <button type="submit" class="btn btn-primary" {{mon|yesno:"disabled,"}} id="stop" name="stop">Stop</button>
         {%endif%}
       </form>
       <br>

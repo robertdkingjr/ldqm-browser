@@ -95,8 +95,10 @@ def gemsupervisor(request):
         trigger_type = form.cleaned_data['trigger_type']
         if trigger_type == '1':
           lt=True
+          m_monitor = True
         else:
           lt=False
+          m_monitor = False
         trigger_rate = int(form.cleaned_data['trigger_rate'])
         verbosity = int(form.cleaned_data['verbosity'])
         uhal.setLogLevelTo(uhal.LogLevel.ERROR)
@@ -204,14 +206,16 @@ def gemsupervisor(request):
       t_p.start()
       state = 'configured'
     elif "monitoring" in request.POST:
+      updateStatus()
       #pass
-      if lt:
-        updateStatus()
-      else:
-        pass
+      #if lt:
+      #  updateStatus()
+      #else:
+      #  pass
   else:
     form = ConfigForm()
     state = 'halted'
-  return render(request, 'gemsupervisor.html',{'form':form,
+  return render(request, 'gemsupervisor.html',{'mon':m_monitor,
+                                               'form':form,
                                                'state':state})
 
