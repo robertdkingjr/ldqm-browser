@@ -8,10 +8,8 @@ from bugtracker.models import Ticket
 from django.template import Template, Context
 from django.contrib.staticfiles.templatetags.staticfiles import static
 import os
-
-
-
 import csv
+
 
 slot_list = ['00','01','02','03','04','05','06','07','08','09','10','11',
              '12','13','14','15','16','17','18','19','20','21','22','23'];
@@ -567,7 +565,7 @@ def gebs(request, runType, runN, amc_boardid, geb_chamberid):
       elif code==3: vfats.insert(int(s),[s, vfat_address[int(s)], code, 'danger', False])
       else: vfats.insert(int(s),[s, vfat_address[int(s)], code, 'danger', False])
     except:
-      print "Error locating vfat: ",vfat_address[int(s)]
+      print "Error locating state for vfat: ",vfat_address[int(s)]
   
   return render(request,'gebs.html', {'run_list':run_list,
                                       'slot_list':slot_list,
@@ -636,7 +634,7 @@ def display_geb(request, runType, runN, amc_boardid, geb_chamberid, hist):
       elif code==3: vfats.insert(int(s),[s, vfat_address[int(s)], code, 'danger', False])
       else: vfats.insert(int(s),[s, vfat_address[int(s)], code, 'danger', False])
     except:
-      print "Error locating vfat: ",vfat_address[int(s)]
+      print "Error locating states for vfat: ",vfat_address[int(s)]
   
   return render(request,'display_geb.html', {'run_list':run_list,
                                       'slot_list':slot_list,
@@ -854,7 +852,7 @@ def display_vfat(request, runType, runN, amc_boardid, geb_chamberid, vfatN, hist
         del vfats[int(s)]
         vfats.insert(int(s),[s, vfat_address[int(s)], code, 'danger', False])
     except:
-      print "Error locating vfat: ",vfat_address[int(s)]
+      print "Error locating state for vfat: ",vfat_address[int(s)]
   
   selected_vfat = vfats[int(vfatN)]
 
