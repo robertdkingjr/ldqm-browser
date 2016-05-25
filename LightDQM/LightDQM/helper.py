@@ -13,8 +13,10 @@ import csv
 
 DEBUG = True
 
-slot_list = ['00','01','02','03','04','05','06','07','08','09','10','11',
-             '12','13','14','15','16','17','18','19','20','21','22','23'];
+slot_list = ['00','01','02','03','04','05','06','07',
+             '08','09','10','11','12','13','14','15',
+             '16','17','18','19','20','21','22','23'];
+
 vfat_address = []; #hex ID
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 csvfilename = os.path.join(BASE_DIR,'LightDQM/test/config/slot_table_TAMUv2.csv')
@@ -78,12 +80,25 @@ def getVFATStates(run):
     for s in slot_list:
         try:
             code = int(next((x for x in vfat_state if x.HWID==vfat_address[int(s)]),None).State)
-            del vfats[int(s)]
+            del vfats[int(s)]          
+
+            #0 = Good,green
             if code==0: vfats.insert(int(s),[s, vfat_address[int(s)], code, 'success', False])
+
+            #1 = Warning,yellow
             elif code==1: vfats.insert(int(s),[s, vfat_address[int(s)], code, 'warning', False])
+
+            #2 = Dead,grey - accessible
+            elif code==2: vfats.insert(int(s),[s, vfat_address[int(s)], code, 'default', False])
+
+            #9 = Dead,grey - not accessible
             elif code==9: vfats.insert(int(s),[s, vfat_address[int(s)], code, 'default', True])
+
+            #3,other = Error,red
             elif code==3: vfats.insert(int(s),[s, vfat_address[int(s)], code, 'danger', False])
             else: vfats.insert(int(s),[s, vfat_address[int(s)], code, 'danger', False])
+
+
         except:
             print "Error locating state for vfat: ",vfat_address[int(s)]
     

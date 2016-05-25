@@ -83,10 +83,6 @@ def updateStates(rootFilename):
     run = Run.objects.get(Name=runName)
     if run:
         print 'Found run, adding new system state'
-        print 'Proof:'
-        print 'Name',run.Name
-        print 'Number',run.Number
-        print 'Adding run to new system state (?)'
         newSystemState.run_set.add(run)
         #run.State.add(newSystemState,False,False)
     else:
@@ -100,7 +96,7 @@ def parseVFATs(system_state):
         for line in vfat_ids:
             for address in line:
                 print address
-                if 'dead' in address: newState=1
+                if 'dead' in address: newState=2
                 else: newState=0
                 if not HWstate.objects.filter(HWID=address,State=newState):
                     print "Adding VFAT State to DB"
