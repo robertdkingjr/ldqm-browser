@@ -18,8 +18,7 @@ slot_list = ['00','01','02','03','04','05','06','07',
              '16','17','18','19','20','21','22','23'];
 
 vfat_address = []; #hex ID
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-csvfilename = os.path.join(BASE_DIR,'LightDQM/test/config/slot_table_TAMUv2.csv')
+csvfilename = os.getenv('BUILD_HOME')+'/gemdaq-testing/gemreadout/data/slot_table.csv'
 with open(csvfilename, 'rd') as csvfile:
   vfat_ids = csv.reader(csvfile, delimiter=',')
   for num in vfat_ids:
