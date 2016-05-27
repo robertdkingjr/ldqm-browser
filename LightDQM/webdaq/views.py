@@ -38,6 +38,7 @@ def gemsupervisor(request):
   global m_filename
   global form
   global m_monitor
+  global lt
 
   def updateStatus():
     status = m_AMC13manager.device.getStatus()
@@ -57,7 +58,7 @@ def gemsupervisor(request):
   def parkData():
 #call root converter
     call_command =  os.getenv('BUILD_HOME')+'/gem-light-dqm/gemtreewriter/bin/'+os.getenv('XDAQ_OS')+'/'+os.getenv('XDAQ_PLATFORM')+'/unpacker'
-    command_args = "/tmp/"+m_filename+".dat"
+    command_args = "/tmp/"+m_filename+".dat sdram"
     call([call_command+' '+command_args],shell=True)
 #create dirs in tmp
     for i in range (24):
@@ -95,10 +96,12 @@ def gemsupervisor(request):
           amc_str += str(amcN) + ","
         amc_str = amc_str[:-1]
         trigger_type = form.cleaned_data['trigger_type']
-        if trigger_type == 'local':
+        if trigger_type == '1':
           lt=True
+          m_monitor = True
         else:
           lt=False
+          m_monitor = False
         trigger_rate = int(form.cleaned_data['trigger_rate'])
         verbosity = int(form.cleaned_data['verbosity'])
         uhal.setLogLevelTo(uhal.LogLevel.ERROR)
@@ -108,6 +111,7 @@ def gemsupervisor(request):
           m_AMC13manager.configureInputs(amc_str)
           m_AMC13manager.reset()
           for amcN in amc_list:
+            print "Trying to connect to AMC # %s\n" %(amcN)
             m_AMCmanager.connect(int(amcN))
             m_AMCmanager.reset()
             n_gtx = m_AMCmanager.activateGTX()
@@ -178,7 +182,7 @@ def gemsupervisor(request):
           newrun.save()
           for a in a_list:
             newrun.amcs.add(a)
-          m_AMC13manager.configureTrigger(True,2,1,int(trigger_rate),0)
+          m_AMC13manager.configureTrigger(lt,2,1,int(trigger_rate),0)
           updateStatus()
           state = 'configured'
         except ValueError,e:
@@ -205,11 +209,16 @@ def gemsupervisor(request):
       t_p.start()
       state = 'configured'
     elif "monitoring" in request.POST:
-      #pass
       updateStatus()
+      #pass
+      #if lt:
+      #  updateStatus()
+      #else:
+      #  pass
   else:
     form = ConfigForm()
     state = 'halted'
-  return render(request, 'gemsupervisor.html',{'form':form,
+  return render(request, 'gemsupervisor.html',{'mon':m_monitor,
+                                               'form':form,
                                                'state':state})
 

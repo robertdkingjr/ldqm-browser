@@ -90,13 +90,13 @@ def updateStates(rootFilename):
         
 
 def parseVFATs(system_state):
-    vfat_table = '/home/kingr/ldqm-browser/LightDQM/LightDQM/test/config/slot_table_TAMUv2.csv'
+    vfat_table = os.getenv('BUILD_HOME')+'/gemdaq-testing/gemreadout/data/slot_table.csv'
     with open(vfat_table, 'rd') as csvfile:
         vfat_ids = csv.reader(csvfile, delimiter=',')
         for line in vfat_ids:
             for address in line:
                 print address
-                if 'dead' in address: newState=2
+                if 'dead' in address or '0x0' in address: newState=2
                 else: newState=0
                 if not HWstate.objects.filter(HWID=address,State=newState):
                     print "Adding VFAT State to DB"
