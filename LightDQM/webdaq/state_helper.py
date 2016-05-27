@@ -90,7 +90,7 @@ def updateStates(rootFilename):
         
 
 def parseVFATs(system_state):
-    vfat_table = '/home/kingr/ldqm-browser/LightDQM/LightDQM/test/config/slot_table_TAMUv2.csv'
+    vfat_table = os.getenv('BUILD_HOME')+'gemdaq-testing/gemreadout/data/slot_table.csv'
     with open(vfat_table, 'rd') as csvfile:
         vfat_ids = csv.reader(csvfile, delimiter=',')
         for line in vfat_ids:
