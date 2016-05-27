@@ -108,6 +108,7 @@ def gemsupervisor(request):
           m_AMC13manager.configureInputs(amc_str)
           m_AMC13manager.reset()
           for amcN in amc_list:
+            print "Trying to connect to AMC # %s\n" %(amcN)
             m_AMCmanager.connect(int(amcN))
             m_AMCmanager.reset()
             n_gtx = m_AMCmanager.activateGTX()
