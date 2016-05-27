@@ -11,10 +11,12 @@ from cStringIO import StringIO
 import struct
 from amc13manager import AMC13manager
 from helper import OutputGrabber
+from state_helper import *
 from registers_uhal import *
 from glib_system_info_uhal import *
 from glib_user_functions_uhal import *
 from amcmanager import AMCmanager
+import state_helper
 import datetime
 from subprocess import call
 import threading
@@ -71,14 +73,15 @@ def gemsupervisor(request):
     call_command =  os.getenv('BUILD_HOME')+'/gem-light-dqm/dqm-root/bin/'+os.getenv('XDAQ_OS')+'/'+os.getenv('XDAQ_PLATFORM')+'/gtprinter'
     command_args = "/tmp/"+m_filename+".analyzed.root"
     os.system(call_command+' '+command_args)
+
+#update AMC/GEB/VFAT states
+    command_args = "/tmp/"+m_filename+".analyzed.root"
+    print 'Updating HW states...'
+    updateStates(command_args)
+    print 'States updated!'
+
 #copy results to DQM display form
-    #call_command = "/home/mdalchen/work/ldqm-browser/LightDQM/LightDQM/test/"
     call_command = os.getenv('LDQM_STATIC')+'/'
-    # call_command += m_filename[10:15]
-    # call_command += "/"
-    # call_command += m_filename[:9]
-    # call_command += "/"
-    # call_command += "TAMU/GEB-GTX0-Long/"
     call(["mkdir -p "+call_command],shell=True)
     call(["cp -r /tmp/"+m_filename+" "+call_command],shell=True)
 
@@ -151,7 +154,6 @@ def gemsupervisor(request):
                   g_list.append(g)
 
             t_flag = False
-            #t_boardID = "47-20120013"#hard code now, read from HW later when available
             t_boardID = "AMC-"+str(amcN)#hard code now, read from HW later when available
             a_list = []
             amcs = AMC.objects.filter(BoardID = t_boardID)
