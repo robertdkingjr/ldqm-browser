@@ -1,5 +1,7 @@
 {% load staticfiles %}
 {% block all_plots %}
+  <!-- JSROOT -->
+  <script src="{% static 'js/jsroot/JSRootCore.js' %}"></script>   
 <div class="container-fluid">
   <div id="all_plots_main_area">
     <!-- Slider -->
@@ -10,7 +12,8 @@
           {% for hist in hist_list_long %}
           <li class="col-sm-3">
             <a class="thumbnail" id="all_plots_carousel-selector-{{ forloop.counter0 }}">
-              <img src="{% static ""%}/data_dqm/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/all_plots/{{hist}}">
+              <!--<img src="{% static '' %}test/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/all_plots/{{hist}}">-->
+              <div id="{{hist}}"> </div>
             </a>
           </li>
           {% endfor %}
@@ -27,11 +30,13 @@
                 {% for hist in hist_list_long %}
                   {% if forloop.first %}
                   <div class="active item" data-slide-number="{{ forloop.counter0 }}">
-                    <img src="{% static ""%}/data_dqm/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/all_plots/{{hist}}">
+                    <!--<img src="{% static '' %}test/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/all_plots/{{hist}}">-->
+                    <div id="{{hist}}"> </div>
                   </div>
                   {% else %}
                   <div class="item" data-slide-number="{{ forloop.counter0 }}">
-                    <img src="{% static ""%}/data_dqm/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/all_plots/{{hist}}">
+                    <!--<img src="{% static '' %}test/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/all_plots/{{hist}}">-->
+                    <div id="{{hist}}"> </div>
                   </div>
                   {% endif %}
                 {% endfor %}
@@ -53,6 +58,29 @@
   
   </div>
 </div>
+
+<script type="text/javascript">
+    console.log( "simpleHist01.js : START" );
+    console.log( "simpleHist01.js : my_list;" , "{{ hist_list_long|safe }}"  );
+    //var drawIdlist = ['beamprof','slot0'];
+
+    /*convert python list into js array*/
+    var drawIdlist = {{ hist_list_long|safe }};
+    drawIdlist.forEach(function(drawId){
+        //var file="{% static '' %}test/";
+        //var file="{% static '' %}data_dqm/";
+        var file="{% static '' %}test/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/all_plots/";
+        file+=drawId;
+        //file = file.slice(0,-4);
+        file+=".json";
+        console.log( "simpleHist01.js : json file for div id "+ drawId +": " , file  );
+
+        JSROOT.NewHttpRequest(file, 'object', function(obj) {
+        //JSROOT.NewHttpRequest("{% static '' %}test/a.json", 'object', function(obj) {
+               JSROOT.draw( drawId, obj, "colz");
+               }).send();
+        });
+</script>
 
 {% endblock %}
 

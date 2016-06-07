@@ -1,0 +1,49 @@
+{% extends "vfats.html" %}
+{% load staticfiles %}
+
+
+{% block display_vfat %}
+<script src="{% static 'js/jsroot/JSRootCore.js' %}"></script>   
+
+<!-- <div class="col-lg-1"> -->
+<!-- </div> -->
+<!-- <div class="col-lg-3"> -->
+<!--   <div class="panel panel-default"> -->
+<!--     <div class="panel-heading"> -->
+<!--       <center><h4>Tooltips</h4></center> -->
+<!--     </div> -->
+<!--     <p>This plot should show...</p> -->
+<!--     <ul> -->
+<!--       <li></li> -->
+<!--       <li></li> -->
+<!--       <li></li> -->
+<!--       <li></li> -->
+<!--     </ul>  -->
+<!--   </div> -->
+<!-- </div> -->
+<!-- <div class="col-lg-8"> -->
+  
+
+  <!-- OLD SYSTEM (png) -->
+  <!-- <center><img width="70%" src="{% static '' %}test/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/{{vfat}}/{{hist}}.png"></center> -->
+  
+  <!-- <div id={{hist}} style="width:50%"> </div> -->
+
+  
+  <!-- NEW SYSTEM (png)-->
+  <!-- <center><img width="70%" src="{% static '' %}{{run.Name}}/AMC13-1/{{amc_boardid}}/{{geb_chamberid}}/VFAT-{{vfat}}/{{hist}}.png"></center> -->
+  
+<!-- </div> -->
+
+<center><div id={{hist}} style="width:90%"> 
+<script type="text/javascript">
+var hist_ ="{{hist}}";
+JSROOT.NewHttpRequest("{% static '' %}{{run.Name}}/AMC13-1/{{amc_boardid}}/{{geb_chamberid}}/VFAT-{{vfat}}/{{hist}}.json", 'object', function(obj) {
+        //JSROOT.NewHttpRequest("/static/test/a.json", 'object', function(obj) {
+               JSROOT.draw( hist_, obj, "colz");
+               }).send();
+</script>
+</div></center>
+
+{% endblock %} <!-- display_vfat -->
+
