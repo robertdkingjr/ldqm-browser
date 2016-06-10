@@ -1,186 +1,311 @@
 from django.http import HttpResponse
 from django.shortcuts import render
-from ldqm_db.models import Run, AMC, GEB
+from ldqm_db.models import Run, AMC, GEB, VFAT, HWstate, SystemState
 from django.views.generic import ListView, DetailView, CreateView
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth.forms import UserCreationForm
 from bugtracker.models import Ticket
+from django.template import Template, Context
+from django.contrib.staticfiles.templatetags.staticfiles import static
+from helper import *
+import os
+import csv
 
-slot_list = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23];
+
 lslot_list = ["a","b","c","d"];
-hist_list = ["2D CRC for VFAT chip Slot",
-             "Strips fired for VFAT chip Slot",
-             "Channels fired for VFAT chip Slot"];
-hist_list_long = ['CRC', 
-                  'Channels_fired_for_VFAT_chip_Slot15',
-                  'CRC_2D_for_VFAT_chip_Slot13',
-                  'Strips_fired_for_VFAT_chip_Slot14',
-                  'Strips_fired_for_VFAT_chip_Slot6',
-                  'CRC_2D_for_VFAT_chip_Slot8',
-                  'VFAT_chip_Slot5_fired_per_event',
-                  'VFAT_chip_Slot20_fired_per_event',
-                  'CRC_2D_for_VFAT_chip_Slot2',
-                  'Strips_fired_for_VFAT_chip_Slot3',
-                  'Channels_fired_for_VFAT_chip_Slot5',
-                  'CRC_2D_for_VFAT_chip_Slot20',
-                  'Channels_fired_for_VFAT_chip_Slot4',
-                  'VFAT_chip_Slot18_fired_per_event',
-                  'CRC_2D_for_VFAT_chip_Slot11',
-                  'VFAT_chip_Slot4_fired_per_event',
-                  'Channels_fired_for_VFAT_chip_Slot17',
-                  'Channels_fired_for_VFAT_chip_Slot8',
-                  'Strips_fired_for_VFAT_chip_Slot17',
-                  'CRC_2D_for_VFAT_chip_Slot19',
-                  'Strips_fired_for_VFAT_chip_Slot22',
-                  'CRC_2D_for_VFAT_chip_Slot10',
-                  'Channels_fired_for_VFAT_chip_Slot14',
-                  'Channels_fired_for_VFAT_chip_Slot3',
-                  'Strips_fired_for_VFAT_chip_Slot4',
-                  'Strips_fired_for_VFAT_chip_Slot23',
-                  'VFAT_chip_Slot17_fired_per_event',
-                  'Channels_fired_for_VFAT_chip_Slot16',
-                  'Channels_fired_for_VFAT_chip_Slot18',
-                  'VFAT_chip_Slot13_fired_per_event',
-                  'Strips_fired_for_VFAT_chip_Slot21',
-                  'Strips_fired_for_VFAT_chip_Slot2',
-                  'Channels_fired_for_VFAT_chip_Slot9',
-                  'Strips_fired_for_VFAT_chip_Slot20',
-                  'Cluster_multiplicity',
-                  'CRC_2D_for_VFAT_chip_Slot1',
-                  'Channels_fired_for_VFAT_chip_Slot22',
-                  'Strips_fired_for_VFAT_chip_Slot10',
-                  'Strips_fired_for_VFAT_chip_Slot18',
-                  'CRC_2D_for_VFAT_chip_Slot18',
-                  'Channels_fired_for_VFAT_chip_Slot0',
-                  'Number_of_bad_VFAT_blocks_in_event',
-                  'VFAT_chip_Slot19_fired_per_event',
-                  'Channels_fired_for_VFAT_chip_Slot6',
-                  'CRC_calc_vs_CRC_VFAT',
-                  'CRC_2D_for_VFAT_chip_Slot7',
-                  'VFAT_chip_Slot1_fired_per_event',
-                  'CRC_2D_for_VFAT_chip_Slot14',
-                  'VFAT_chip_Slot2_fired_per_event',
-                  'Channels_not_fired_per_event',
-                  'ChipID','Flag',
-                  'Control_Bits_1010',
-                  'Strips_fired_for_VFAT_chip_Slot11',
-                  'Cluster_size',
-                  'CRC_2D_for_VFAT_chip_Slot23',
-                  'Difference_of_BX_and_BC',
-                  'VFAT_chip_Slot3_fired_per_event',
-                  'Channels_fired_for_VFAT_chip_Slot2',
-                  'CRC_2D_for_VFAT_chip_Slot9',
-                  'Control_Bits_1100',
-                  'Channels_fired_for_VFAT_chip_Slot10',
-                  'CRC_2D_for_VFAT_chip_Slot16',
-                  'Channels_fired_for_VFAT_chip_Slot12',
-                  'VFAT_chip_Slot16_fired_per_event',
-                  'CRC_Diff',
-                  'Channels_fired_for_VFAT_chip_Slot1',
-                  'VFAT_chip_Slot10_fired_per_event',
-                  'VFAT_chip_Slot8_fired_per_event',
-                  'Strips_fired_for_VFAT_chip_Slot16',
-                  'VFAT_chip_Slot6_fired_per_event',
-                  'VFAT_chip_Slot7_fired_per_event',
-                  'Strips_fired_for_VFAT_chip_Slot15',
-                  'Beam_Profile',
-                  'CRC_2D_for_VFAT_chip_Slot12',
-                  'CRC_2D_for_VFAT_chip_Slot22',
-                  'Strips','VFAT_slot_number',
-                  'Strips_fired_for_VFAT_chip_Slot13',
-                  'Strips_fired_for_VFAT_chip_Slot1',
-                  'Channels_fired_per_event',
-                  'CRC_2D_for_VFAT_chip_Slot4',
-                  'CRC_2D_for_VFAT_chip_Slot6',
-                  'VFAT_chip_Slot14_fired_per_event',
-                  'CRC_2D_for_VFAT_chip_Slot5',
-                  'VFAT_chip_Slot22_fired_per_event',
-                  'Channels_fired_for_VFAT_chip_Slot13',
-                  'Strips_fired_for_VFAT_chip_Slot19',
-                  'Strips_fired_for_VFAT_chip_Slot8',
-                  'Channels_fired_for_VFAT_chip_Slot23',
-                  'Strips_fired_for_VFAT_chip_Slot12',
-                  'Ratio_of_BX_and_BC',
-                  'CRC_2D_for_VFAT_chip_Slot17',
-                  'Number_VFAT_blocks_per_event',
-                  'VFAT_chip_Slot11_fired_per_event',
-                  'CRC_2D_for_VFAT_chip_Slot21',
-                  'VFAT_chip_Slot9_fired_per_event',
-                  'VFAT_chip_Slot12_fired_per_event',
-                  'Channels_fired_for_VFAT_chip_Slot21',
-                  'Number_of_good_VFAT_blocks_in_event',
-                  'Channels_fired_for_VFAT_chip_Slot7',
-                  'CRC_2D_for_VFAT_chip_Slot3',
-                  'VFAT_chip_Slot15_fired_per_event',
-                  'Channels_fired_for_VFAT_chip_Slot19',
-                  'Channels_fired_for_VFAT_chip_Slot20',
-                  'VFAT_chip_Slot23_fired_per_event',
-                  'Channels_fired_for_VFAT_chip_Slot11',
-                  'Strips_fired_for_VFAT_chip_Slot0',
-                  'Strips_fired_for_VFAT_chip_Slot7',
-                  'Control_Bits_1110',
-                  'VFAT_chip_Slot0_fired_per_event',
-                  'VFAT_chip_Slot21_fired_per_event',
-                  'Strips_fired_for_VFAT_chip_Slot9',
-                  'CRC_2D_for_VFAT_chip_Slot15',
-                  'CRC_2D_for_VFAT_chip_Slot0',
-                  'Strips_fired_for_VFAT_chip_Slot5']
+
+hist_list = ["b1010",
+             "b1100",
+             "b1110",
+             "BC",
+             "EC",
+             "Flag",
+             "ChipID",
+             "FiredChannels",
+             "crc",
+             "crc_calc",
+             "latencyScan",
+             "thresholdScan"];
+
+threshold_channels = range(0,127);
+
+amc13_hist_list = ["Control_Bit5",
+                   "Control_BitA",
+                   "Evt_ty",
+                   "LV1_id",
+                   "Bx_id",
+                   "Source_id",
+                   "CalTyp",
+                   "nAMC",
+                   "OrN",
+                   "CRC_amc13",
+                   "Blk_Not",
+                   "LV1_idT",
+                   "BX_idT",
+                   "EvtLength",
+                   "CRC_cdf"];
+amc_hist_list = ["AMCnum",
+                 "L1A",
+                 "BX",
+                 "Dlength",
+                 "FV",
+                 "Rtype",
+                 "Param1",
+                 "Param2",
+                 "Param3",
+                 "Onum",
+                 "BID",
+                 "GEMDAV",
+                 "Bstatus",
+                 "GDcount",
+                 "Tstate",
+                 "ChamT",
+                 "OOSG",
+                 "CRC",
+                 "L1AT",
+                 "DlengthT"];
+
+geb_hist_list = ["Errors",
+                 "InputID",
+                 "OHCRC",
+                 "Vwh",
+                 "Vwt",
+                 "Warnings",
+                 "ZeroSup"];
+
+sum_can_list  = ["integrity", "occupancy", "clusterMult", "clusterSize"];
+
 
 def dqm_help(request):
-  return render(request,'test.html', {'hist_list_long':hist_list_long,})
+  return render(request,'test.html', {'hist_list':hist_list,})
 
-def dqm_canvases(request):
-  return render(request, 'dqm_canvases.html')
+def runs(request):
+  run_list = Run.objects.all()
+  return render(request,'runs.html', {'run_list':run_list,})
 
-def all_plots(request):
-  
-  return render(request, 'all_plots.html', {'slot_list':slot_list, 
-                                            'selected_slot':-1})
-
-def chip_plots(request):
-  if 'selectSlot' in request.GET:
-    slot=int(request.GET['selectSlot'])
-  else: slot = -1
-  return render(request,'chip_plots.html', {'selected_slot':int(slot), 
-                                            'slot_list':slot_list,
-                                            'hist_list':hist_list})
 def main(request):
   run_list = Run.objects.all()
   return render(request,'main.html', {'run_list':run_list,})
 
+def report(request, runType, runN):
+  run_list = Run.objects.all()
+  run = Run.objects.get(Type=runType, Number = runN)
+  
+  amc_color,geb_color = getChamberStates(run)
+
+  
+  return render(request,'report.html', {'run_list':run_list,
+                                        'hist_list':hist_list,
+                                        'run':run,
+                                        'amc_color':amc_color,
+                                        'geb_color':geb_color})
+
+
 def chamber(request, runType, runN):
   run_list = Run.objects.all()
   run = Run.objects.get(Type=runType, Number = runN)
-  if 'selectSlot' in request.GET:
-    slot=int(request.GET['selectSlot'])
-    dqm_canvases_active=False
-  else: 
-    slot = 0
-    dqm_canvases_active=False
+
+  amc_color,geb_color = getChamberStates(run)
+  
   return render(request,'chambers.html', {'run_list':run_list,
-                                            'selected_slot':int(slot), 
-                                            'slot_list':slot_list,
-                                            'hist_list':hist_list,
-                                            'hist_list_long':hist_list_long,
-                                            'dqm_canvases_active':dqm_canvases_active,
-                                            'run':run})
-def chamber_tabs(request, runType, runN, chamber):
+                                          'slot_list':slot_list,
+                                          'hist_list':hist_list,
+                                          'run':run,
+                                          'amc_color':amc_color,
+                                          'geb_color':geb_color})
+
+def amc_13(request, runType, runN):
   run_list = Run.objects.all()
   run = Run.objects.get(Type=runType, Number = runN)
-  if 'selectSlot' in request.GET:
-    slot=int(request.GET['selectSlot'])
-    dqm_canvases_active=False
-  else: 
-    slot = 0
-    dqm_canvases_active=False
-  return render(request,'chamber-tabs.html', {'run_list':run_list,
-                                            'selected_slot':int(slot), 
-                                            'slot_list':slot_list,
-                                            'hist_list':hist_list,
-                                            'hist_list_long':hist_list_long,
-                                            'dqm_canvases_active':dqm_canvases_active,
-                                            'run':run,
-                                            'chamber':chamber})
+  
+  amc_color,geb_color = getChamberStates(run)
+
+
+  return render(request,'amc_13.html', {'run_list':run_list,
+                                        'slot_list':slot_list,
+                                        'hist_list':hist_list,
+                                        'amc13_hist_list':amc13_hist_list,
+                                        'run':run,
+                                        'sum_can_list':sum_can_list,
+                                        'amc_color':amc_color,
+                                        'geb_color':geb_color})
+
+def display_amc_13(request, runType, runN, hist):
+  run_list = Run.objects.all()
+  run = Run.objects.get(Type=runType, Number = runN)
+ 
+  amc_color,geb_color = getChamberStates(run)
+
+  return render(request,'display_amc_13.html', {'run_list':run_list,
+                                        'slot_list':slot_list,
+                                        'hist_list':hist_list,
+                                        'amc13_hist_list':amc13_hist_list,
+                                        'hist':hist,
+                                        'run':run,
+                                        'sum_can_list':sum_can_list,
+                                        'amc_color':amc_color,
+                                        'geb_color':geb_color})
+
+def amc(request, runType, runN, amc_boardid):
+  run_list = Run.objects.all()
+  run = Run.objects.get(Type=runType, Number = runN)
+  
+  amc_color,geb_color = getChamberStates(run)
+
+
+  return render(request,'amc.html', {'run_list':run_list,
+                                     'slot_list':slot_list,
+                                     'hist_list':hist_list,
+                                     'amc_hist_list':amc_hist_list,
+                                     'run':run,
+                                     'amc_boardid':amc_boardid,
+                                     'sum_can_list':sum_can_list,
+                                     'amc_color':amc_color,
+                                     'geb_color':geb_color})
+
+def display_amc(request, runType, runN, amc_boardid, hist):
+  run_list = Run.objects.all()
+  run = Run.objects.get(Type=runType, Number = runN)
+  
+  amc_color,geb_color = getChamberStates(run)
+ 
+  return render(request,'display_amc.html', {'run_list':run_list,
+                                     'slot_list':slot_list,
+                                     'hist_list':hist_list,
+                                     'amc_hist_list':amc_hist_list,
+                                     'run':run,
+                                     'hist':hist,
+                                     'amc_boardid':amc_boardid,
+                                     'sum_can_list':sum_can_list,
+                                     'amc_color':amc_color,
+                                     'geb_color':geb_color})
+
+
+
+def gebs(request, runType, runN, amc_boardid, geb_chamberid):
+  run_list = Run.objects.all()
+  run = Run.objects.get(Type=runType, Number = runN)
+  
+  amc_color,geb_color = getChamberStates(run)
+  vfats = getVFATStates(run)
+  
+  return render(request,'gebs.html', {'run_list':run_list,
+                                      'slot_list':slot_list,
+                                      'hist_list':hist_list,
+                                      'geb_hist_list':geb_hist_list,
+                                      'run':run,
+                                      'amc_boardid':amc_boardid,
+                                      'geb_chamberid':geb_chamberid,
+                                      'sum_can_list':sum_can_list,
+                                      'amc_color':amc_color,
+                                      'geb_color':geb_color,
+                                      'vfats':vfats})
+
+def display_geb(request, runType, runN, amc_boardid, geb_chamberid, hist):
+  run_list = Run.objects.all()
+  run = Run.objects.get(Type=runType, Number = runN)
+  amc_color,geb_color = getChamberStates(run)
+  vfats = getVFATStates(run)
+
+  return render(request,'display_geb.html', {'run_list':run_list,
+                                      'slot_list':slot_list,
+                                      'hist_list':hist_list,
+                                      'geb_hist_list':geb_hist_list,
+                                      'hist':hist,
+                                      'run':run,
+                                      'amc_boardid':amc_boardid,
+                                      'geb_chamberid':geb_chamberid,
+                                      'sum_can_list':sum_can_list,
+                                      'amc_color':amc_color,
+                                      'geb_color':geb_color,
+                                      'vfats':vfats})
+
+
+def vfats(request, runType, runN, amc_boardid, geb_chamberid, vfatN):
+  run_list = Run.objects.all()
+  run = Run.objects.get(Type=runType, Number = runN)
+  amc_color,geb_color = getChamberStates(run)
+  vfats = getVFATStates(run)
+
+  selected_vfat = vfats[int(vfatN)]
+  return render(request,'vfats.html', {'run_list':run_list,
+                                       'slot_list':slot_list,
+                                       'hist_list':hist_list,
+                                       'geb_hist_list':geb_hist_list,
+                                       'threshold_channels':threshold_channels,
+                                       'run':run,
+                                       'amc_boardid':amc_boardid,
+                                       'geb_chamberid':geb_chamberid,
+                                       'vfat':int(vfatN),
+                                       'sum_can_list':sum_can_list,
+                                       'vfats':vfats,
+                                       'selected_vfat':selected_vfat,
+                                       'amc_color':amc_color,
+                                       'geb_color':geb_color})
+
+def summary(request, runType, runN, chamber, summaryN):
+  run_list = Run.objects.all()
+  run = Run.objects.get(Type=runType, Number = runN)
+  amc_color,geb_color = getChamberStates(run)
+
+  return render(request,'summary.html', {'run_list':run_list,
+                                         'slot_list':slot_list,
+                                         'hist_list':hist_list,
+                                         'geb_hist_list':geb_hist_list,
+                                         'run':run,
+                                         'chamber':chamber,
+                                         'sum_can_list':sum_can_list,
+                                         'sumN':summaryN,
+                                         'amc_color':amc_color,
+                                         'geb_color':geb_color})
+
+def display_vfat(request, runType, runN, amc_boardid, geb_chamberid, vfatN, histN):
+  run_list = Run.objects.all()
+  run = Run.objects.get(Type=runType, Number = runN)  
+  
+  amc_color,geb_color = getChamberStates(run)
+  vfats = getVFATStates(run)
+  
+  selected_vfat = vfats[int(vfatN)]
+
+  return render(request,'display_vfat.html', {'run_list':run_list,
+                                              'slot_list':slot_list,
+                                              'hist_list':hist_list,
+                                              'geb_hist_list':geb_hist_list,
+                                              'run':run,
+                                              'amc_boardid':amc_boardid,
+                                              'geb_chamberid':geb_chamberid,
+                                              'sum_can_list':sum_can_list,
+                                              'vfat':int(vfatN),
+                                              'hist':histN,
+                                              'vfats':vfats,
+                                              'selected_vfat':selected_vfat,
+                                              'amc_color':amc_color,
+                                              'geb_color':geb_color})
+
+
+def display_canvas(request, runType, runN, amc_boardid, geb_chamberid, canvas):
+  run_list = Run.objects.all()
+  run = Run.objects.get(Type=runType, Number = runN)
+  
+  amc_color,geb_color = getChamberStates(run)
+  vfats = getVFATStates(run)
+
+  return render(request,'display_canvas.html', {'run_list':run_list,
+                                                'slot_list':slot_list,
+                                                'hist_list':hist_list,
+                                                'geb_hist_list':geb_hist_list,
+                                                'run':run,
+                                                'amc_boardid':amc_boardid,
+                                                'geb_chamberid':geb_chamberid,
+                                                'chamber':chamber,
+                                                'sum_can_list':sum_can_list,
+                                                'canvas':canvas,
+                                                'vfats':vfats,
+                                                'amc_color':amc_color,
+                                                'geb_color':geb_color})
+
+
 class BugListView(ListView):
     model = Ticket
     template_name = 'list.html'
@@ -200,6 +325,7 @@ class BugCreateView(CreateView):
     fields = ['title', 'text']
     success_url = reverse_lazy('index')
 
-    def form_valid(self, form):
+def form_valid(self, form):
         form.instance.user = self.request.user
         return super(BugCreateView, self).form_valid(form)
+

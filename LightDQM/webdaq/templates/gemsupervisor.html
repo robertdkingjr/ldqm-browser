@@ -1,0 +1,171 @@
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% load bootstrap_toolkit %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  
+  <title>Light DQM Browser</title>
+  
+  
+  <!-- Bootstrap Core CSS -->
+  <link  rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+  
+  <!-- Custom CSS -->
+  <link href="{% static 'css/portfolio-item.css' %}" rel="stylesheet">
+  <link href="{% static 'css/simple-sidebar.css' %}" rel="stylesheet">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+
+</head>
+
+<body onload="{{mon|yesno:'monitor_(),'}}">
+  
+<!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+
+  <div class="container">
+
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+      </button>
+      <p class="navbar-brand" >Light DQM Web Browser</p>
+    </div>
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Services <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="/main/">LightDQM</a></li>
+              <li><a href="/gemsupervisor/">WebDAQ</a></li>
+              <li><a href="/admin/">Administration</a></li>
+              <li><a href="{% url 'index' %}">Submit a ticket</a></li>
+            </ul>
+        </li>
+        <li>
+          <a href="/help/">Help</a>
+        </li>
+      </ul>
+    </div>
+    <!-- /.navbar-collapse -->
+  </div>
+  <!-- /.container -->
+</nav>
+
+<div class="container" style="background-color:#ffffff">
+<form action="/gemsupervisor/" method="post" class="form-inline">
+    {% csrf_token %}
+    {{ form}}
+    {%if state == "halted"%}
+      <button class="btn btn-primary" type="submit" name="configure">Configure</button>
+    {%endif%}
+    {%if state == "configured"%}
+      <button class="btn btn-primary" name="halt">Halt</button>
+    {%endif%}
+
+    {%if state == "running"%}
+      <button class="btn btn-disabled" disabled name="halt">Halt</button>
+    {%endif%}
+</form> 
+<br>
+</div>
+{%if state in "configured,running" %}
+  {%if state == "running"%}
+  <form name="monitor" id="monitor" method="post">
+    {% csrf_token %}
+    <input hidden type="text" name="monitoring" value="submit"/>
+  </form>
+  {%endif%}
+  <div class="container" style="background-color:#ffffff">
+    <div class="row">
+      <form class="form-inline" method="post">
+        {% csrf_token %}
+        <label for="ntriggers">Number of triggers to take</label>
+        <input type="number" class="form-control" id="ntriggers" name="nevents" value=100>
+        {%if state == "configured"%}
+          <button type="submit" class="btn btn-primary" name="run">Run</button>
+        {%endif%}
+        {%if state == "running"%}
+          <button type="submit" class="btn btn-primary" {{mon|yesno:"disabled,"}} id="stop" name="stop">Stop</button>
+        {%endif%}
+      </form>
+      <br>
+      <div class="col-lg-6">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4>
+              AMC13 STATUS
+            </h4>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4>
+              AMCs STATUS
+            </h4>
+          </div>
+        </div>
+      </div>
+    <div class="row">
+      <div class="col-lg-6">
+        {%block amc13status%}
+          {%include "amc13status.html"%}
+        {%endblock%}
+      </div>
+      <div class="col-lg-6">
+        {%block amcstatus%}
+          {%include "amcstatus.html"%}
+        {%endblock%}
+      </div>
+    </div>
+  </div>
+{%endif%}
+  <!-- Form autosubmit -->
+  <script type="text/javascript">
+    function monitor_(){
+
+      document.getElementById("stop").disabled = false;
+      var auto = setTimeout(function(){ if (document.readyState !== 'complete') return; autoRefresh(); }, 100);
+      
+      function submitform(){
+        //alert('test');
+        if (document.readyState !== 'complete') return;
+        document.forms["monitor"].submit();
+        document.getElementById("stop").disabled = true;
+      }
+      
+      function autoRefresh(){
+        clearTimeout(auto);
+        auto = setTimeout(function(){ submitform(); autoRefresh(); }, 100000000);
+      }
+    }
+  </script>
+
+  <!-- jQuery -->
+  <script src="{% static 'js/jquery.js' %}"></script>
+  <!-- Bootstrap Core JavaScript -->
+  <script src="{% static 'js/bootstrap.min.js' %}"></script>
+</body>
+
+</html>

@@ -1,5 +1,9 @@
 !.gitignore
 *.pyc
+*.png
+*.json
+*.pdf
+*.jpg
 *.py~
 *.swp~
 *.swp
