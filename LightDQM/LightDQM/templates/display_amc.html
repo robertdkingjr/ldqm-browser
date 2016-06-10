@@ -1,0 +1,44 @@
+{% extends "amc.html" %}
+{% load staticfiles %}
+
+{% block display_amc %}
+<div class="row-fluid">
+<script src="{% static 'js/jsroot/JSRootCore.js' %}"></script>   
+<script src="{% static 'js/jquery.js' %}"></script>   
+  <center><div id={{hist}} style="width:90%"> 
+  <script type="text/javascript">
+  var cnt = 0;
+  function updateGUI() {
+    console.log("UpdateGUI called")
+    var frame ="{{hist}}";
+    var request_addr = "{% static '' %}{{run.Name}}/AMC13-1/{{amc_boardid}}/{{hist}}.json?dummy="+cnt;
+    var req = JSROOT.NewHttpRequest(request_addr, 'object', function(histo) {
+                   JSROOT.redraw( frame, histo, "colz");
+                   });
+    req.send(null);
+    req.cnt = cnt++;
+  }
+  
+  $(document).ready(function startGUI() {
+    //d3.select('html').style('height','100%');
+    //d3.select('body').style({'min-height':'100%', 'margin':'0px', "overflow" :"hidden"});
+    console.log("StartGUI called")
+    var monitor = JSROOT.GetUrlOption("monitoring");
+    if ((monitor == "") || (monitor==null)) 
+       monitor = 1000;
+    else
+      monitor = parseInt(monitor);
+    drawopt = JSROOT.GetUrlOption("opt");
+    addr = JSROOT.GetUrlOption("addr");
+    var layout = JSROOT.GetUrlOption("layout");
+    if (layout!=null) mdi = new JSROOT.GridDisplay('drawing', layout);
+    setInterval(updateGUI, monitor);
+    // let adjust drawing when browser will be resized
+    var frame ="{{hist}}";
+    JSROOT.RegisterForResize(frame);
+  });
+  </script>
+  </div></center>
+</div>
+
+{% endblock %} <!-- display_amc -->

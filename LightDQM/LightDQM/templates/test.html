@@ -1,0 +1,29 @@
+{% load staticfiles %}
+<script src="{% static 'js/jsroot/JSRootCore.js' %}"></script>   
+{% for item in hist_list_long %}
+<div id="{{item}}" style="width:800px; height:600px"> </div>
+{% endfor %}
+<script type="text/javascript">
+    console.log( "simpleHist01.js : START" );
+    console.log( "simpleHist01.js : my_list;" , "{{ hist_list_long|safe }}"  );
+    //var drawIdlist = ['beamprof','slot0'];
+
+    /*convert python list into js array*/
+    var drawIdlist = {{ hist_list_long|safe }};
+    drawIdlist.forEach(function(drawId){
+        //var file="{% static '' %}test/";
+        //var file="{% static '' %}data_dqm/";
+        var file="{% static '' %}test/bench/run000001/TAMU/GEB-00-Long/all_plots/";
+        file+=drawId;
+        //file = file.slice(0,-4);
+        file+=".json";
+        console.log( "simpleHist01.js : json file for div id "+ drawId +": " , file  );
+
+        JSROOT.NewHttpRequest(file, 'object', function(obj) {
+        //JSROOT.NewHttpRequest("{% static '' %}test/a.json", 'object', function(obj) {
+               JSROOT.draw( drawId, obj, "colz");
+               }).send();
+        });
+</script>
+
+

@@ -18,7 +18,8 @@
   
   <!-- Custom CSS -->
   <link href="{% static 'css/portfolio-item.css' %}" rel="stylesheet">
-  
+  <link href="{% static 'css/simple-sidebar.css' %}" rel="stylesheet">
+
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
   <!--[if lt IE 9]>
@@ -30,70 +31,123 @@
 
 <body>
   
-  {%include "nav.html"%}  
 
-  {% block main %}
-<div class="container-fluid">
-  <div class="col-sm-4">
-    <div class="row">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h4>
-            Run list
-          </h4>
+
+
+<!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+  <a href="#menu-toggle" class="navbar-brand pull-left" id="menu-toggle" style="color:#006080"><b>Run List</b></a>
+
+  <div class="container">
+
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+      </button>
+      <p class="navbar-brand" >Light DQM Web Browser</p>
+    </div>
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Services <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="/main/">LightDQM</a></li>
+              <li><a href="/gemsupervisor/">WebDAQ</a></li>
+              <li><a href="/admin/">Administration</a></li>
+              <li><a href="{% url 'index' %}">Submit a ticket</a></li>
+            </ul>
+        </li>
+        <li>
+          <a href="/help/">Help</a>
+        </li>
+      </ul>
+    </div>
+    <!-- /.navbar-collapse -->
+  </div>
+  <!-- /.container -->
+</nav>
+ 
+ {% block main %}
+
+
+
+
+<div id="wrapper" class="toggled">
+  <!-- Sidebar -->
+  <div id="sidebar-wrapper">
+    <ul class="sidebar-nav">
+      <li class="sidebar-brand">
+        <center>Run List</center>
+      </li>
       
-          </div>
-          <div class="span3">
-          <table class="table table-fixed" id="table">
-            <thead>
-              <tr>
-                <th class="col-xs-3">Run Number</th>
-                <th class="col-xs-2">Type</th>
-                <th class="col-xs-2">Date</th>
-                <th class="col-xs-2">Period</th>
-              </tr>
-            </thead>
-            <tbody>
-                {% for run_ in run_list %}
-                {% if run_.Number == run.Number and run_.Type == run.Type %}
-                  <tr class="selected">
-                {% else %}
-                  <tr >
-                {% endif %}
-                  <td class="col-xs-3">{{run_.Number}}</td>
-                  <td class="col-xs-2">{{run_.Type}}</td>
-                  <td class="col-xs-3">{{run_.Date}}</td>
-                  <td class="col-xs-2">{{run_.Period}}</td>
-                </tr>
-               {% endfor %}
-            </tbody>
-          </table>
-          </div>
+      <table class="table table-fixed" id="table">
+	<thead>
+	  <tr>
+            <th class="col-xs-3">Run Number</th>
+            <th class="col-xs-2">Type</th>
+            <th class="col-xs-2">Date</th>
+            <th class="col-xs-2">Period</th>
+	  </tr>
+	</thead>
+	<tbody>
+          {% for run_ in run_list %}
+          {% if run_.Number == run.Number and run_.Type == run.Type %}
+          <tr class="selected">
+            {% else %}
+          <tr >
+            {% endif %}
+            <td class="col-xs-3">{{run_.Number}}</td>
+            <td class="col-xs-2">{{run_.Type}}</td>
+            <td class="col-xs-3">{{run_.Date}}</td>
+            <td class="col-xs-2">{{run_.Period}}</td>
+          </tr>
+	  {% endfor %}
+	</tbody>
+      </table>
+
+
+    </ul>
+  </div>
+  <!-- /#sidebar-wrapper -->
+
+  <div id="page-content-wrapper">
+    <div class="container-fluid">
+      
+    </div>
+    <div class="col-lg-12">
+      <div class="row">      
+	{% block chambers %}
+	{% endblock %}
       </div>
     </div>
   </div>
-  <div class="col-lg-8">
-    <div class="row">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h4>
-            GEM chambers
-          </h4>
-        </div>
-        {% block chambers %}
-        {% endblock %}
-      </div>
-    </div>
-  </div>
+
 </div>
-  {% endblock %}
+<!-- /#wrapper -->
+
+<!-- <center><a href="/runs/" class="btn btn-info btn-lg">Select Run</a></center> -->
+
+{% endblock %} <!-- main  -->
 
   <!-- jQuery -->
   <script src="{% static 'js/jquery.js' %}"></script>
-  
   <!-- Bootstrap Core JavaScript -->
   <script src="{% static 'js/bootstrap.min.js' %}"></script>
   <script src="{% static 'js/lightdqm.js' %}"></script>
+
+  <script>
+    $("#menu-toggle").click(function(e) {
+    e.preventDefault();
+    $("#wrapper").toggleClass("toggled");
+    });
+  </script>
+
 
 </body>
 
