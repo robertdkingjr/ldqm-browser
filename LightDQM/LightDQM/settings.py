@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'LightDQM',
     'ldqm_db',
     'bugtracker',
-    #'webdaq',
+    'webdaq',
 ]
 
 MIDDLEWARE_CLASSES = [
