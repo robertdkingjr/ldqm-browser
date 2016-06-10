@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'LightDQM',
     'ldqm_db',
     'bugtracker',
-    'webdaq',
+    #'webdaq',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -63,6 +63,7 @@ STATIC_URL = '/static/'
 #STATIC_ROOT = os.path.join(BASE_DIR, 'LightDQM/')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'LightDQM/static'),
     os.path.join(BASE_DIR, 'LightDQM'),
+    os.path.join(BASE_DIR, 'LightDQM/test'),
     '/tmp/',
     '/home/kingr/ldqm-browser/LightDQM/LightDQM/',
     '/home/kingr/ldqm-browser/LightDQM/LightDQM/static/',

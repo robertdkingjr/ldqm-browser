@@ -1,49 +1,42 @@
 {% extends "gebs.html" %}
 {% load staticfiles %}
 
-
 {%block display_canvas %}
 <script src="{% static 'js/jsroot/JSRootCore.js' %}"></script>   
-
-<!-- <center><img width="70%" src="{% static '' %}test/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/canvases/{{canvas}}.png"></center> -->
-
-<!-- <div class="col-lg-2"> -->
-<!--   <div class="panel panel-default"> -->
-<!--     <div class="panel-heading"> -->
-<!--       <center><h4>Tooltips</h4></center> -->
-<!--     </div> -->
-<!--     <p>This plot should show...</p> -->
-<!--     <ul> -->
-<!--       <li></li> -->
-<!--       <li></li> -->
-<!--       <li></li> -->
-<!--       <li></li> -->
-
-<!--     </ul>  -->
-<!--   </div> -->
-<!-- </div> -->
-<!-- <div class="col-lg-10"> -->
-
-
-
+<script src="{% static 'js/jquery.js' %}"></script>   
 <center><div id={{canvas}} style="width:90%"> 
-
-
-<!-- </div> -->
-
-
-<script type="text/javascript">
-
-var hist_ ="{{canvas}}";
-JSROOT.NewHttpRequest("{% static '' %}{{run.Name}}/AMC13-1/{{amc_boardid}}/{{geb_chamberid}}/{{canvas}}.json", 'object', function(obj) {
-        //JSROOT.NewHttpRequest("/static/test/a.json", 'object', function(obj) {
-               JSROOT.draw( hist_, obj, "colz");
-               }).send();
-
-
-</script>
-
+  <script type="text/javascript">
+  var cnt = 0;
+  function updateGUI() {
+    console.log("UpdateGUI called")
+    var frame ="{{canvas}}";
+    var request_addr = "{% static '' %}{{run.Name}}/AMC13-1/{{amc_boardid}}/{{geb_chamberid}}/{{canvas}}.json?dummy="+cnt;
+    var req = JSROOT.NewHttpRequest(request_addr, 'object', function(histo) {
+                   JSROOT.redraw( frame, histo, "colz");
+                   });
+    req.send(null);
+    req.cnt = cnt++;
+  }
+  
+  $(document).ready(function startGUI() {
+    //d3.select('html').style('height','100%');
+    //d3.select('body').style({'min-height':'100%', 'margin':'0px', "overflow" :"hidden"});
+    console.log("StartGUI called")
+    var monitor = JSROOT.GetUrlOption("monitoring");
+    if ((monitor == "") || (monitor==null)) 
+       monitor = 1000;
+    else
+      monitor = parseInt(monitor);
+    drawopt = JSROOT.GetUrlOption("opt");
+    addr = JSROOT.GetUrlOption("addr");
+    var layout = JSROOT.GetUrlOption("layout");
+    if (layout!=null) mdi = new JSROOT.GridDisplay('drawing', layout);
+    setInterval(updateGUI, monitor);
+    // let adjust drawing when browser will be resized
+    var frame ="{{canvas}}";
+    JSROOT.RegisterForResize(frame);
+  });
+  </script>
 </div></center>
 
 {%endblock %} <!-- display_canvas -->
-
