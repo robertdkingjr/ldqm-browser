@@ -19,14 +19,11 @@ td.null { background-color:lightgrey;} </style></head><body>
 <tr><th>REG_1</th><td title="'1' enables DAQLSC" class="nonerror">1</td><td title="if '1', generate fake event upon receiving L1A" class="null">0</td><td title="if '1', uses internally generated L1A" class="nonerror">1</td><td title="run mode" class="null">0</td><td title="if '1', TTS output is 80MHz clock which can be looped back to TTC input" class="null">0</td></tr>
 </table>
 <table border="1" ><tr><th class="name">AMC_Links</th><th>AMC10</th></tr>
-<tr><th>AMC_BAD_LENGTH</th><td title="AMC bad event length counter" class="nonerror">0x    10002</td></tr>
-<tr><th>AMC_BSY_TIME</th><td title="AMC TTS BSY state timeAMC TTS BSY state time" class="nonerror">0x       15</td></tr>
-<tr><th>AMC_FORMAT_ERROR</th><td title="Badly formatted input word" class="nonerror">0x311AE331A</td></tr>
-<tr><th>AMC_LINK_READY</th><td title="'1' indicates AMC1..12 Link Ready" class="nonerror">          1</td></tr>
-<tr><th>AMC_TRAILER_EVN_BAD</th><td title="AMC event trailer Evn mismatch error counter" class="error">0x    10004</td></tr>
-<tr><th>BUFFER_UNDERFLOW</th><td title="Buffer underflow on backplane link" class="nonerror">          1</td></tr>
-<tr><th>LINK_OK</th><td title="'0' AMC1..12 loss of sync" class="nonerror">          1</td></tr>
-<tr><th>LINK_VERS_WRONG</th><td title="'1' AMC1..12 link version wrong" class="nonerror">          1</td></tr>
+<tr><th>AMC_BSY_TIME</th><td title="AMC TTS BSY state timeAMC TTS BSY state time" class="nonerror">0xF</td></tr>
+<tr><th>AMC_LINK_READY</th><td title="'1' indicates AMC1..12 Link Ready" class="nonerror">  1</td></tr>
+<tr><th>BUFFER_UNDERFLOW</th><td title="Buffer underflow on backplane link" class="nonerror">  1</td></tr>
+<tr><th>LINK_OK</th><td title="'0' AMC1..12 loss of sync" class="nonerror">  1</td></tr>
+<tr><th>LINK_VERS_WRONG</th><td title="'1' AMC1..12 link version wrong" class="nonerror">  1</td></tr>
 </table>
 <table border="1" ><tr><th class="name">DT_Trig</th><th>TRIG0</th><th>TRIG1</th><th>VALUE</th></tr>
 <tr><th>INPUT_DELAY</th><td title="Set delay in 1/8 BX steps for TRIG0 input" class="null">0</td><td title="Set delay in 1/8 BX steps for TRIG1 input" class="null">0</td><td> </td></tr>
@@ -35,7 +32,7 @@ td.null { background-color:lightgrey;} </style></head><body>
 <tr><th>TRIGGER_ENABLE</th><td> </td><td> </td><td title="Enable DT LUT trigger" class="null">0</td></tr>
 </table>
 <table border="1" ><tr><th class="name">Event_Builder</th><th>COUNT</th><th>PCT_NO_BP</th><th>RATEHZ</th></tr>
-<tr><th>L1A</th><td title="L1A counter" class="nonerror">0x285</td><td> </td><td title="L1A rate in Hz" class="nonerror">11</td></tr>
+<tr><th>L1A</th><td title="L1A counter" class="nonerror">0x1A4</td><td> </td><td title="L1A rate in Hz" class="nonerror">17</td></tr>
 <tr><th>SFP0</th><td> </td><td title="Live time (no backpressure) for SFP0" class="nonerror">100</td><td> </td></tr>
 <tr><th>SFP1</th><td> </td><td title="Live time (no backpressure) for SFP1" class="nonerror">100</td><td> </td></tr>
 <tr><th>SFP2</th><td> </td><td title="Live time (no backpressure) for SFP2" class="nonerror">100</td><td> </td></tr>
@@ -50,7 +47,7 @@ td.null { background-color:lightgrey;} </style></head><body>
 <tr><th>TEST_MODE</th><td title="'1' means link is in test mode, '0' for FED data" class="nonerror">         0</td></tr>
 </table>
 <table border="1" ><tr><th class="name">State_Timers</th><th>COUNT</th><th>PERCENT</th></tr>
-<tr><th>L1A_IN_BSY</th><td title="L1A received when in BSY state" class="nonerror">0x285</td><td> </td></tr>
+<tr><th>L1A_IN_BSY</th><td title="L1A received when in BSY state" class="nonerror">0x1A4</td><td> </td></tr>
 <tr><th>READY</th><td title="ready time counter" class="nonerror">    0</td><td title="Live time (TTS ready) percent" class="null">0</td></tr>
 <tr><th>RUN</th><td title="run time counter" class="nonerror">    0</td><td> </td></tr>
 </table>
@@ -59,8 +56,9 @@ td.null { background-color:lightgrey;} </style></head><body>
 <tr><th>ORBIT_PRESCALE</th><td title="Orbit prescale-1 for BGO channel 1" class="nonerror">   1</td></tr>
 <tr><th>STARTING_BX</th><td title="Starting BX for BGO channel 1" class="nonerror">   1</td></tr>
 </table>
-<table border="1" ><tr><th class="name">TTC_Rx</th><th>ENC</th><th>RAW</th></tr>
-<tr><th>STATE</th><td title="encoded TTS from enabled AMCs" class="nonerror">RDY (0x0)</td><td title="Current T1 overall TTS state" class="nonerror">BSY (0x4)</td></tr>
+<table border="1" ><tr><th class="name">TTC_Rx</th><th>BCNT</th><th>COUNT</th><th>ENC</th><th>RAW</th></tr>
+<tr><th>BCNT_ERROR</th><td> </td><td title="TTC BC0 error counter" class="error">5</td><td> </td><td> </td></tr>
+<tr><th>STATE</th><td title="TTC bcnt error" class="error">1</td><td> </td><td title="encoded TTS from enabled AMCs" class="nonerror">RDY (0x0)</td><td title="Current T1 overall TTS state" class="nonerror">BSY (0x4)</td></tr>
 </table>
 <table><tr><td>SVN</td><td>45415</td></tr></table>
 </body></html>

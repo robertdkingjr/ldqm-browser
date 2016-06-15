@@ -6,6 +6,7 @@ import time
 
 def process_chunk(m_filename, chunk):
   global is_first
+  print "Process chunk with base filename %s\n" %(m_filename)
   t_filename = m_filename+"_chunk_"+str(chunk)
 #call root converter
   call_command =  os.getenv('BUILD_HOME')+'/gem-light-dqm/gemtreewriter/bin/'+os.getenv('XDAQ_OS')+'/'+os.getenv('XDAQ_PLATFORM')+'/unpacker'
@@ -22,12 +23,22 @@ def process_chunk(m_filename, chunk):
   os.system(call_command+' '+command_args)
 #call hadd if not the first chunk, otherwise rename
   if (chunk > 0):
-    call_command = "hadd" 
-    command_args = m_filename+".analyzed.root" + t_filename+".analyzed.root"
+    call_command = "hadd -v 0 " 
+    command_args = "/tmp/hadd_tmp.root " + "/tmp/" + m_filename+".analyzed.root" + " " + "/tmp/" + t_filename+".analyzed.root"
     os.system(call_command+' '+command_args)
-    call(["rm "+ t_filename+".analyzed.root"],shell=True)
+    call(["rm "+ "/tmp/" + t_filename+".analyzed.root"],shell=True)
+    call(["mv "+ "/tmp/hadd_tmp.root " + "/tmp/" + m_filename+".analyzed.root"],shell=True)
+    command_args = "/tmp/hadd_tmp.root " + "/tmp/" + m_filename+".raw.root" + " " + "/tmp/" + t_filename+".raw.root"
+    os.system(call_command+' '+command_args)
+    call(["rm "+ "/tmp/" + t_filename+".raw.root"],shell=True)
+    call(["mv "+ "/tmp/hadd_tmp.root " + "/tmp/" + m_filename+".raw.root"],shell=True)
+    file('/tmp/add_tmp.dat','wb').write(file("/tmp/" + t_filename+".dat",'rb').read()+file("/tmp/" + m_filename+".dat",'rb').read())
+    call(["rm "+ "/tmp/" + t_filename+".dat"],shell=True)
+    call(["mv "+ "/tmp/add_tmp.dat " + "/tmp/" + m_filename+".dat"],shell=True)
   else:
-    call(["mv "+ t_filename+".analyzed.root" + " " + m_filename+".analyzed.root"],shell=True)
+    call(["mv "+ "/tmp/" + t_filename+".analyzed.root" + " " + "/tmp/" + m_filename+".analyzed.root"],shell=True)
+    call(["mv "+ "/tmp/" + t_filename+".raw.root" + " " + "/tmp/" + m_filename+".raw.root"],shell=True)
+    call(["mv "+ "/tmp/" + t_filename+".dat" + " " + "/tmp/" + m_filename+".dat"],shell=True)
 
 #call dqm printer
   call_command =  os.getenv('BUILD_HOME')+'/gem-light-dqm/dqm-root/bin/'+os.getenv('XDAQ_OS')+'/'+os.getenv('XDAQ_PLATFORM')+'/gtprinter'

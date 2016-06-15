@@ -28,15 +28,15 @@ import csv
 
 #Updates GEB/AMC states for run from Error/Warning histograms
 def updateStates(rootFilename):
-    print 'Creating new system state'
+    #print 'Creating new system state'
     newSystemState = SystemState()
     newSystemState.save()
     rootFile = ROOT.TFile(rootFilename,"READ")
-    print 'Locating error/warning histograms'
+    #print 'Locating error/warning histograms'
     for path,hist in getEWHists(rootFile): #one hist at a time
         entries = int(hist.GetEntries())
-        print hist.ClassName(), path
-        print "Entries", entries
+        #print hist.ClassName(), path
+        #print "Entries", entries
         #for bin in range(hist.GetNbinsX()): #check each bin
             #print bin,":",hist.GetBinContent(bin)
         amc13=path[path.find('AMC13'):path.find('AMC13')+7]
@@ -50,39 +50,39 @@ def updateStates(rootFilename):
         if entries>0: 
             if hist.GetName() == "Warnings": newState = 1
             if hist.GetName() == "Errors": newState = 3
-        print "New State:",newState
+        #print "New State:",newState
 
         #Check if HWStates in DB
         if not HWstate.objects.filter(HWID=amc,State=newState):
-            print "Adding AMC State to DB"
+            #print "Adding AMC State to DB"
             ahws = HWstate(HWID=amc, State=newState)
             ahws.save()
         else:
-            print 'AMC state already exists. Adding...'
+            #print 'AMC state already exists. Adding...'
             ahws = HWstate.objects.get(HWID=amc,State=newState)
         newSystemState.amcStates.add(ahws)
-        print 'AMC state added to new system state'
+        #print 'AMC state added to new system state'
         if not HWstate.objects.filter(HWID=geb,State=newState):
-            print "Adding GEB State to DB"
+            #print "Adding GEB State to DB"
             ghws = HWstate(HWID=geb, State=newState)
             ghws.save()   
         else:
-            print 'GEB state already exists. Adding...'
+            #print 'GEB state already exists. Adding...'
             ghws = HWstate.objects.get(HWID=geb,State=newState)
         newSystemState.gebStates.add(ghws)
-        print 'GEB state added to new system state'
+        #print 'GEB state added to new system state'
 
         parseVFATs(newSystemState)
     
     #Add new state to run in DB
-    print 'Adding new system state to run in DB'
+    #print 'Adding new system state to run in DB'
     runName_start = rootFilename.find('run')
     runName_end = rootFilename.find('.',runName_start)
     runName = rootFilename[runName_start:runName_end]
-    print 'runName',runName
+    #print 'runName',runName
     run = Run.objects.get(Name=runName)
     if run:
-        print 'Found run, adding new system state'
+        #print 'Found run, adding new system state'
         newSystemState.run_set.add(run)
         #run.State.add(newSystemState,False,False)
     else:
@@ -95,18 +95,18 @@ def parseVFATs(system_state):
         vfat_ids = csv.reader(csvfile, delimiter=',')
         for line in vfat_ids:
             for address in line:
-                print address
+                #print address
                 if 'dead' in address or '0x0' in address: newState=2
                 else: newState=0
                 if not HWstate.objects.filter(HWID=address,State=newState):
-                    print "Adding VFAT State to DB"
+                    #print "Adding VFAT State to DB"
                     vhws = HWstate(HWID=address, State=newState)
                     vhws.save()
                 else:
-                    print 'VFAT state already exists. Adding...'
+                    #print 'VFAT state already exists. Adding...'
                     vhws = HWstate.objects.get(HWID=address,State=newState)
                 system_state.vfatStates.add(vhws)
-                print 'VFAT state %s added to new system state'%str(address)
+                #print 'VFAT state %s added to new system state'%str(address)
 
 
 
