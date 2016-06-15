@@ -2,6 +2,7 @@ import os
 from subprocess import call
 from webdaq.state_helper import updateStates
 from ldqm_db.models import Run
+import time
 
 def process_chunk(m_filename, chunk):
   global is_first
@@ -48,8 +49,11 @@ def run_dqm():
   chunk = 0
   run = Run.objects.order_by('-id')[0]
   fname_base = run.Name
+  print fname_base
   while True:
-    fname = fname_base+"_chunk_"+str(chunk)+".dat"
+    fname = "/tmp/"+fname_base+"_chunk_"+str(chunk)+".dat"
+    print fname
+    time.sleep(3)
     file_exist = os.path.isfile(fname) 
     if file_exist:
       process_chunk(fname_base, chunk)
