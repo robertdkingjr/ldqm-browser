@@ -58,6 +58,11 @@ def process_chunk(m_filename, chunk):
 
 def run_dqm():
   chunk = 0
+  for dirname, dirnames, filenames in os.walk('/tmp/'):
+    for name in filenames:
+        if "chunk_0.dat" in name:
+          fname_base = name[:-4]
+          print "Base name found: %s" % (fname_base)
   run = Run.objects.order_by('-id')[0]
   fname_base = run.Name
   print fname_base
