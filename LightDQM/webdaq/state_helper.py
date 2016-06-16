@@ -22,7 +22,6 @@ from time import sleep
 import os
 import sys
 import threading
-import ROOT
 import csv
 
 
