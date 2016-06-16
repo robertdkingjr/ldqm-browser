@@ -19,7 +19,9 @@ slot_list = ['00','01','02','03','04','05','06','07',
 
 vfat_address = []; #hex ID
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-csvfilename = os.path.join(BASE_DIR,'LightDQM/test/config/slot_table_TAMUv2.csv')
+VFAT_SLOT_TABLE_PATH = 'LightDQM/test/config/slot_table_TAMUv2.csv'
+csvfilename = os.path.join(BASE_DIR,VFAT_SLOT_TABLE_PATH)
+
 with open(csvfilename, 'rd') as csvfile:
   vfat_ids = csv.reader(csvfile, delimiter=',')
   for num in vfat_ids:

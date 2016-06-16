@@ -35,7 +35,7 @@
 <script type="text/javascript">
 
 var hist_ ="{{canvas}}";
-JSROOT.NewHttpRequest("{% static '' %}{{run.Name}}/AMC13-1/{{amc_boardid}}/{{geb_chamberid}}/{{canvas}}.json", 'object', function(obj) {
+JSROOT.NewHttpRequest("{% static '' %}{{run.Name}}/AMC13-1/{{amc_boardid}}/{{geb_chamberid}}/summary_canvases/{{canvas}}.json", 'object', function(obj) {
         //JSROOT.NewHttpRequest("/static/test/a.json", 'object', function(obj) {
                JSROOT.draw( hist_, obj, "colz");
                }).send();
