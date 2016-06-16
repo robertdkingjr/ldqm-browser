@@ -61,3 +61,9 @@ urlpatterns = [
 # for gemsupervisot
     url(r'^gemsupervisor/', include('webdaq.urls')),
 ]
+
+from LightDQM.dqm_daemon import run_dqm
+import threading
+_thread = threading.Thread(target=run_dqm)
+_thread.setDaemon(True)
+_thread.start()
