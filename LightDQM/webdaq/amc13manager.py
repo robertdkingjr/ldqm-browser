@@ -5,6 +5,7 @@ import amc13
 import sys
 import struct
 from helper import OutputGrabber
+import time
 
 class AMC13manager:
   def __init__(self):
@@ -45,26 +46,21 @@ class AMC13manager:
     packer = struct.Struct('Q')
     pEvt = []
     read_event = self.device.readEvent
+    cnt = 0
     while self.isRunning:
-      nevt = self.device.read(self.device.Board.T1, 'STATUS.MONITOR_BUFFER.UNREAD_EVENTS')
-      #print "Trying to read %s events" % nevt
+      nevt = self.device.read(self.device.Board.T1, 'STATUS.MONITOR_BUFFER.UNREAD_BLOCKS')
+      #nevt = self.device.read(self.device.Board.T1, 'STATUS.MONITOR_BUFFER.UNREAD_EVENTS')
+      print "Trying to read %s events" % nevt
       for i in range(nevt):
         pEvt += read_event()
-      #status = self.device.getStatus()
-      #status.SetHTML()
-      ## Create pipe and dup2() the write end of it on top of stdout, saving a copy
-      ## of the old stdout
-      #out = OutputGrabber()
-      #out.start()
-      #status.Report(self.verbosity)
-      #out.stop()
-      #shtml = out.capturedtext
-      #with open("webdaq/templates/amc13status.html", "w") as text_file:
-      #  text_file.write(shtml)
-    for word in pEvt:
-      datastring += packer.pack(word)
-    with open (ofile, "wb") as compdata:
-      compdata.write(datastring)
+      for word in pEvt:
+        datastring += packer.pack(word)
+      #if nevt > 0:
+      with open (ofile+"_chunk_"+str(cnt)+".dat", "wb") as compdata:
+        compdata.write(datastring)
+      cnt += 1;
+      time.sleep(5)
+
 
   def stopDataTaking(self):
     if self.localTrigger:
