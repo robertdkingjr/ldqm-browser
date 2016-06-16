@@ -124,7 +124,7 @@ def parseVFATs(system_state):
             for address in line:
                 address_list.append(address)
                 print address
-                if 'dead' in address or '0x0' in address: newState=9
+                if 'dead' in address or '0x0' in address: newState=2
                 else: newState=0
                 if not HWstate.objects.filter(HWID=address,State=newState):
                     print "Adding VFAT State to DB"

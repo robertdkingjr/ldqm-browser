@@ -3,7 +3,7 @@ sys.path.append('${GEM_PYTHON_PATH}')
 
 import uhal
 
-gMAX_RETRIES = 11
+gMAX_RETRIES = 3
 gRetries = 0
 class colors:
 	WHITE   = '\033[97m'

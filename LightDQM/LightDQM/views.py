@@ -14,7 +14,6 @@ import csv
 
 lslot_list = ["a","b","c","d"];
 
-
 hist_list = ["b1010",
              "b1100",
              "b1110",
