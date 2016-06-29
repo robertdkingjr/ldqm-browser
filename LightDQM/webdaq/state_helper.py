@@ -117,7 +117,8 @@ def updateStates(rootFilename):
         print "Could not locate Run %s in database"%runName
 
 def parseVFATs(system_state):
-    with open(csvfilename, 'rd') as csvfile:
+    vfat_table = os.getenv('BUILD_HOME')+'/cmsgemos/gemreadout/data/slot_table.csv'
+    with open(vfat_table, 'rd') as csvfile:
         vfat_ids = csv.reader(csvfile, delimiter=',')
         for line in vfat_ids:
             for address in line:
