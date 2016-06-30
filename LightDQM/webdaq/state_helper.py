@@ -23,6 +23,7 @@ import os
 import sys
 import threading
 import csv
+import ROOT
 
 #csvfilename = '/home/kingr/ldqm-browser/LightDQM/LightDQM/test/config/slot_table_TAMUv2.csv'
 
