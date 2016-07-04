@@ -22,7 +22,7 @@ def process_chunk(m_filename, chunk):
   command_args = "/tmp/"+t_filename+".raw.root"
   os.system(call_command+' '+command_args)
 #call hadd if not the first chunk, otherwise rename
-  if (os.path.isfile(m_filename+"analyzed.root")):
+  if (os.path.isfile("/tmp/"+m_filename+".analyzed.root")):
     call_command = "hadd -v 0 " 
     command_args = "/tmp/hadd_tmp.root " + "/tmp/" + m_filename+".analyzed.root" + " " + "/tmp/" + t_filename+".analyzed.root"
     os.system(call_command+' '+command_args)

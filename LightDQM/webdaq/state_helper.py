@@ -83,10 +83,10 @@ def updateStates(rootFilename):
                 vhws = HWstate.objects.get(HWID=vfat,State=newState)
             newSystemState.vfatStates.add(vhws)
         else:
-            if not HWstate.objects.filter(HWID=vfat,State=newState):
-                #print "Adding VFAT State to DB"
-                vhws = HWstate(HWID=vfat, State=newState)
-                vhws.save()
+            if not HWstate.objects.filter(HWID=amc,State=newState):
+                #print "Adding AMC State to DB"
+                ahws = HWstate(HWID=amc, State=newState)
+                ahws.save()
             else:
                 #print 'AMC state already exists. Adding...'
                 ahws = HWstate.objects.get(HWID=amc,State=newState)
