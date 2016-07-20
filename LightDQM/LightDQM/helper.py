@@ -17,14 +17,25 @@ slot_list = ['00','01','02','03','04','05','06','07',
              '08','09','10','11','12','13','14','15',
              '16','17','18','19','20','21','22','23'];
 
-vfat_address = []; #hex ID
-csvfilename = os.getenv('BUILD_HOME')+'/cmsgemos/gemreadout/data/slot_table.csv'
+#vfat_address = []; #hex ID
+#csvfilename = os.getenv('BUILD_HOME')+'/cmsgemos/gemreadout/data/slot_table.csv'
+#with open(csvfilename, 'rd') as csvfile:
+#  vfat_ids = csv.reader(csvfile, delimiter=',')
+#  for num in vfat_ids:
+#      vfat_address.extend(num)
 
-with open(csvfilename, 'rd') as csvfile:
-  vfat_ids = csv.reader(csvfile, delimiter=',')
-  for num in vfat_ids:
-      vfat_address.extend(num)
+vfat_address = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]; #hex ID
 
+#def getVFATSlots(geb):
+#  vfat_address = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]; #hex ID
+#  try:
+#    vfats = geb.vfats.all()
+#    for v in vfats:
+#      vfat_address[v.Slot] = v.ChipID
+#  except:
+#    if DEBUG: print "Could not locate VFAT slots"
+#  return vfat_address 
+ 
 
 def getChamberStates(run):
     amc_color = []
@@ -68,7 +79,13 @@ def getChamberStates(run):
 def getVFATStates(run):
     vfats = []    
     for s in slot_list: #initialize vfats to work if no states in DB
-        vfats.insert(int(s),[s, vfat_address[int(s)], 0, 'default', False])
+      vfats.insert(int(s),[s, vfat_address[int(s)], 0, 'default', False])
+
+#    for amc in run.amcs.all():
+#      for geb in amc.gebs.all():
+#	vfat_address=getVFATSlots(geb)
+#	for s in slot_list: #initialize vfats to work if no states in DB
+#	  vfats.insert(int(s),[s, vfat_address[int(s)], 0, 'default', False])
 
     try:
         state = run.State

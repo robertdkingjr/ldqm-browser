@@ -22,7 +22,7 @@ def process_chunk(m_filename, chunk):
   command_args = "/tmp/"+t_filename+".raw.root"
   os.system(call_command+' '+command_args)
 #call hadd if not the first chunk, otherwise rename
-  if (chunk > 0):
+  if (os.path.isfile("/tmp/"+m_filename+".analyzed.root")):
     call_command = "hadd -v 0 " 
     command_args = "/tmp/hadd_tmp.root " + "/tmp/" + m_filename+".analyzed.root" + " " + "/tmp/" + t_filename+".analyzed.root"
     os.system(call_command+' '+command_args)
@@ -58,15 +58,21 @@ def process_chunk(m_filename, chunk):
 
 def run_dqm():
   chunk = 0
-  for dirname, dirnames, filenames in os.walk('/tmp/'):
-    for name in filenames:
-        if "chunk_0.dat" in name:
-          fname_base = name[:-4]
-          print "Base name found: %s" % (fname_base)
-  run = Run.objects.order_by('-id')[0]
-  fname_base = run.Name
-  print fname_base
+  #for dirname, dirnames, filenames in os.walk('/tmp/'):
+  #  for name in filenames:
+  #      if "chunk_0.dat" in name:
+  #        fname_base = name[:-4]
+  #        print "Base name found: %s" % (fname_base)
+  #run = Run.objects.order_by('-id')[1]
+  #fname_base = run.Name
+  #print fname_base
   while True:
+    try:
+      run = Run.objects.order_by('-id')[0]
+    except IndexError as ie:
+      print "Index Error"
+      continue
+    fname_base = run.Name
     fname = "/tmp/"+fname_base+"_chunk_"+str(chunk)+".dat"
     print fname
     time.sleep(3)
