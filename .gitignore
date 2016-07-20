@@ -11,3 +11,4 @@
 .*.py.swp
 *.html~
 *.swo
+*.sqlite3
