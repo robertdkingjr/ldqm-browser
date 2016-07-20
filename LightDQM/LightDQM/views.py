@@ -187,7 +187,7 @@ def gebs(request, runType, runN, amc_boardid, geb_chamberid):
   run = Run.objects.get(Type=runType, Number = runN)
   
   amc_color,geb_color = getChamberStates(run)
-  vfats = getVFATStates(run)
+  vfats = getVFATStates(run,amc_boardid,geb_chamberid)
   
   return render(request,'gebs.html', {'run_list':run_list,
                                       'slot_list':slot_list,
@@ -205,7 +205,7 @@ def display_geb(request, runType, runN, amc_boardid, geb_chamberid, hist):
   run_list = Run.objects.all()
   run = Run.objects.get(Type=runType, Number = runN)
   amc_color,geb_color = getChamberStates(run)
-  vfats = getVFATStates(run)
+  vfats = getVFATStates(run,amc_boardid,geb_chamberid)
 
   return render(request,'display_geb.html', {'run_list':run_list,
                                       'slot_list':slot_list,
@@ -225,7 +225,7 @@ def vfats(request, runType, runN, amc_boardid, geb_chamberid, vfatN):
   run_list = Run.objects.all()
   run = Run.objects.get(Type=runType, Number = runN)
   amc_color,geb_color = getChamberStates(run)
-  vfats = getVFATStates(run)
+  vfats = getVFATStates(run,amc_boardid,geb_chamberid)
 
   selected_vfat = vfats[int(vfatN)]
   return render(request,'vfats.html', {'run_list':run_list,
@@ -264,7 +264,7 @@ def display_vfat(request, runType, runN, amc_boardid, geb_chamberid, vfatN, hist
   run = Run.objects.get(Type=runType, Number = runN)  
   
   amc_color,geb_color = getChamberStates(run)
-  vfats = getVFATStates(run)
+  vfats = getVFATStates(run,amc_boardid,geb_chamberid)
   
   selected_vfat = vfats[int(vfatN)]
 
@@ -289,7 +289,7 @@ def display_canvas(request, runType, runN, amc_boardid, geb_chamberid, canvas):
   run = Run.objects.get(Type=runType, Number = runN)
   
   amc_color,geb_color = getChamberStates(run)
-  vfats = getVFATStates(run)
+  vfats = getVFATStates(run,amc_boardid,geb_chamberid)
 
   return render(request,'display_canvas.html', {'run_list':run_list,
                                                 'slot_list':slot_list,

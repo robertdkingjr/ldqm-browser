@@ -26,16 +26,21 @@ slot_list = ['00','01','02','03','04','05','06','07',
 
 vfat_address = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]; #hex ID
 
-#def getVFATSlots(geb):
-#  vfat_address = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]; #hex ID
-#  try:
-#    vfats = geb.vfats.all()
-#    for v in vfats:
-#      vfat_address[v.Slot] = v.ChipID
-#  except:
-#    if DEBUG: print "Could not locate VFAT slots"
-#  return vfat_address 
- 
+def getVFATSlots(run,amc,geb):
+
+    # Find correct GEB, add associated VFATs to vfat_address
+    try:
+        AMC = run.amcs.get(BoardID=amc)
+        #check here
+        GEB = AMC.gebs.get(ChamberID=geb)
+        VFATs = GEB.vfats.all()
+    except:
+        print "Error accessing database for run:",run.Name
+
+    for VFAT in VFATs:
+        vfat_address[VFAT.Slot] = VFAT.ChipID
+
+    return vfat_address
 
 def getChamberStates(run):
     amc_color = []
@@ -76,8 +81,9 @@ def getChamberStates(run):
                 if DEBUG: print "Error locating GEB: ", geb.ChamberID, geb.Type
     return amc_color,geb_color
 
-def getVFATStates(run):
-    vfats = []    
+def getVFATStates(run,amc,geb):
+    vfats = []
+    vfat_address = getVFATSlots(run,amc,geb)
     for s in slot_list: #initialize vfats to work if no states in DB
       vfats.insert(int(s),[s, vfat_address[int(s)], 0, 'default', False])
 
