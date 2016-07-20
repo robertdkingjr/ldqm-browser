@@ -197,16 +197,16 @@ def gemsupervisor(request):
       #form = ConfigForm()
       updateStatus()
       nevents = int(request.POST['nevents'])
-      t = threading.Thread(target = m_AMC13manager.startDataTaking, args = ["/tmp/"+m_filename+".dat"])
+      t = threading.Thread(target = m_AMC13manager.startDataTaking, args = ["/tmp/"+m_filename])
       t.start()
       state = 'running'
 
     elif 'stop' in request.POST:
       m_AMC13manager.stopDataTaking()
       updateStatus()
-      sleep(1)
-      t_p = threading.Thread(target = parkData)
-      t_p.start()
+      #sleep(1)
+      #t_p = threading.Thread(target = parkData)
+      #t_p.start()
       state = 'configured'
     elif "monitoring" in request.POST:
       updateStatus()

@@ -27,7 +27,7 @@
           {% for hist in hist_list %}
           <li class="col-sm-3">
             <a class="thumbnail" id="carousel-selector-{{ forloop.counter0 }}">
-              <img src="{% static '' %}test/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/{{selected_slot}}/{{hist}}{{ selected_slot }}.png">
+              <img src="{% static '' %}/data_dqm/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/{{selected_slot}}/{{hist}}{{ selected_slot }}.png">
             </a>
           </li>
           {% endfor %}
@@ -44,11 +44,11 @@
                 {% for hist in hist_list %}
                   {% if forloop.first %}
                   <div class="active item" data-slide-number="{{ forloop.counter0 }}">
-                    <img src="{% static '' %}test/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/{{selected_slot}}/{{hist}}{{ selected_slot }}.png">
+                    <img src="{% static '' %}/data_dqm/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/{{selected_slot}}/{{hist}}{{ selected_slot }}.png">
                   </div>
                   {% else %}
                   <div class="item" data-slide-number="{{ forloop.counter0 }}">
-                    <img src="{% static '' %}test/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/{{selected_slot}}/{{hist}}{{ selected_slot }}.png">
+                    <img src="{% static '' %}/data_dqm/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/{{selected_slot}}/{{hist}}{{ selected_slot }}.png">
                   </div>
                   {% endif %}
                 {% endfor %}
