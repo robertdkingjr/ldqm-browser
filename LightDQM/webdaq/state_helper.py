@@ -119,22 +119,22 @@ def updateStates(rootFilename):
 
 def parseVFATs(system_state):
     vfat_table = os.getenv('BUILD_HOME')+'/cmsgemos/gemreadout/data/slot_table.csv'
-    with open(vfat_table, 'rd') as csvfile:
-        vfat_ids = csv.reader(csvfile, delimiter=',')
-        for line in vfat_ids:
-            for address in line:
-                address_list.append(address)
-                if 'dead' in address or '0x0' in address: newState=2
-                else: newState=0
-                if not HWstate.objects.filter(HWID=address,State=newState):
-                    #print "Adding VFAT State to DB"
-                    vhws = HWstate(HWID=address, State=newState)
-                    vhws.save()
-                else:
-                    #print 'VFAT state already exists. Adding...'
-                    vhws = HWstate.objects.get(HWID=address,State=newState)
-                system_state.vfatStates.add(vhws)
-                #print 'VFAT state %s added to new system state'%str(address)
+    #with open(vfat_table, 'rd') as csvfile:
+    #    vfat_ids = csv.reader(csvfile, delimiter=',')
+    #    for line in vfat_ids:
+    #        for address in line:
+    #            address_list.append(address)
+    #            if 'dead' in address or '0x0' in address: newState=2
+    #            else: newState=0
+    #            if not HWstate.objects.filter(HWID=address,State=newState):
+    #                #print "Adding VFAT State to DB"
+    #                vhws = HWstate(HWID=address, State=newState)
+    #                vhws.save()
+    #            else:
+    #                #print 'VFAT state already exists. Adding...'
+    #                vhws = HWstate.objects.get(HWID=address,State=newState)
+    #            system_state.vfatStates.add(vhws)
+    #            #print 'VFAT state %s added to new system state'%str(address)
 
 #Recursively returns histograms with title Errors or Warnings and path
 def getEWHists(source, basepath="/"):
