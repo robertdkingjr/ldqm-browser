@@ -47,10 +47,10 @@ def process_chunk(m_filename, chunk):
   # os.system(call_command+' '+command_args)
 
 #update AMC/GEB/VFAT states
-  # command_args = "/tmp/"+m_filename+".analyzed.root"
-  # print 'Updating HW states...'
-  # updateStates(command_args)
-  # print 'States updated!'
+  command_args = "/tmp/"+m_filename+".analyzed.root"
+  print '[dqm-daemon] Updating HW states'
+  updateStates(command_args)
+  print '[dqm-daemon] States updated!'
 
 #copy results to DQM display form
   # call_command = os.getenv('LDQM_STATIC')+'/'
@@ -61,7 +61,6 @@ def process_chunk(m_filename, chunk):
 
 def run_dqm():
   chunk = 0
-  
   while True:
     time.sleep(3)
     try:
@@ -71,7 +70,7 @@ def run_dqm():
       continue
     fname_base = run.Name
     globname = glob.glob('/tmp/'+fname_base+'_chunk_*.dat')
-    print len(globname), 'chunks in globname'
+    print len(globname), 'chunks remaining to process for',run.Name
     for fname in globname:
       print fname
       chunk = int(fname[fname.find('chunk')+6:fname.find('.dat')])
