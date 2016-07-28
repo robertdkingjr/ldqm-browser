@@ -42,9 +42,9 @@ def process_chunk(m_filename, chunk):
     call(["mv "+ "/tmp/" + t_filename+".dat" + " " + "/tmp/" + m_filename+".dat"],shell=True)
 
 #call dqm printer
-  # call_command =  os.getenv('BUILD_HOME')+'/gem-light-dqm/dqm-root/bin/'+os.getenv('XDAQ_OS')+'/'+os.getenv('XDAQ_PLATFORM')+'/gtprinter'
-  # command_args = "/tmp/"+m_filename+".analyzed.root"
-  # os.system(call_command+' '+command_args)
+  call_command =  os.getenv('BUILD_HOME')+'/gem-light-dqm/dqm-root/bin/'+os.getenv('XDAQ_OS')+'/'+os.getenv('XDAQ_PLATFORM')+'/onlineprinter'
+  command_args = "/tmp/"+m_filename+".analyzed.root"
+  os.system(call_command+' '+command_args)
 
 #update AMC/GEB/VFAT states
   command_args = "/tmp/"+m_filename+".analyzed.root"
@@ -53,9 +53,9 @@ def process_chunk(m_filename, chunk):
   print '[dqm-daemon] States updated!'
 
 #copy results to DQM display form
-  # call_command = os.getenv('LDQM_STATIC')+'/'
-  # call(["mkdir -p "+call_command],shell=True)
-  # call(["cp -r /tmp/"+m_filename+" "+call_command],shell=True)
+  call_command = os.getenv('LDQM_STATIC')+'/'
+  call(["mkdir -p "+call_command],shell=True)
+  call(["cp -r /tmp/"+m_filename+" "+call_command],shell=True)
 
   return
 

@@ -74,7 +74,8 @@ geb_hist_list = ["Errors",
                  "Vwh",
                  "Vwt",
                  "Warnings",
-                 "ZeroSup"];
+                 "ZeroSup",
+                 "BeamProfile"];
 
 sum_can_list  = ["integrity", "occupancy", "clusterMult", "clusterSize"];
 
