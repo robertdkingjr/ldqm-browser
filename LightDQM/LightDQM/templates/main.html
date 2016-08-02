@@ -90,20 +90,20 @@
 	<thead>
 	  <tr>
             <th class="col-xs-3">Run Number</th>
-            <th class="col-xs-2">Type</th>
+            <th class="col-xs-2">Station</th>
             <th class="col-xs-2">Date</th>
             <th class="col-xs-2">Period</th>
 	  </tr>
 	</thead>
 	<tbody>
           {% for run_ in run_list %}
-          {% if run_.Number == run.Number and run_.Type == run.Type %}
+          {% if run_.Number == run.Number and run_.Station == run.Station %}
           <tr class="selected">
             {% else %}
           <tr >
             {% endif %}
             <td class="col-xs-3">{{run_.Number}}</td>
-            <td class="col-xs-2">{{run_.Type}}</td>
+            <td class="col-xs-2">{{run_.Station}}</td>
             <td class="col-xs-3">{{run_.Date}}</td>
             <td class="col-xs-2">{{run_.Period}}</td>
           </tr>

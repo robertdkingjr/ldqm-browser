@@ -12,7 +12,7 @@
           {% for hist in hist_list_long %}
           <li class="col-sm-3">
             <a class="thumbnail" id="all_plots_carousel-selector-{{ forloop.counter0 }}">
-              <!--<img src="{% static '' %}test/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/all_plots/{{hist}}">-->
+              <!--<img src="{% static '' %}test/{{run.Station}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/all_plots/{{hist}}">-->
               <div id="{{hist}}"> </div>
             </a>
           </li>
@@ -30,12 +30,12 @@
                 {% for hist in hist_list_long %}
                   {% if forloop.first %}
                   <div class="active item" data-slide-number="{{ forloop.counter0 }}">
-                    <!--<img src="{% static '' %}test/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/all_plots/{{hist}}">-->
+                    <!--<img src="{% static '' %}test/{{run.Station}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/all_plots/{{hist}}">-->
                     <div id="{{hist}}"> </div>
                   </div>
                   {% else %}
                   <div class="item" data-slide-number="{{ forloop.counter0 }}">
-                    <!--<img src="{% static '' %}test/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/all_plots/{{hist}}">-->
+                    <!--<img src="{% static '' %}test/{{run.Station}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/all_plots/{{hist}}">-->
                     <div id="{{hist}}"> </div>
                   </div>
                   {% endif %}
@@ -69,7 +69,7 @@
     drawIdlist.forEach(function(drawId){
         //var file="{% static '' %}test/";
         //var file="{% static '' %}data_dqm/";
-        var file="{% static '' %}test/{{run.Type}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/all_plots/";
+        var file="{% static '' %}test/{{run.Station}}/run{{run.Number}}/{{run.Station}}/{{chamber}}/all_plots/";
         file+=drawId;
         //file = file.slice(0,-4);
         file+=".json";

@@ -91,9 +91,9 @@ def main(request):
   run_list = Run.objects.all()
   return render(request,'main.html', {'run_list':run_list,})
 
-def report(request, runType, runN):
+def report(request, runStation, runN):
   run_list = Run.objects.all()
-  run = Run.objects.get(Type=runType, Number = runN)
+  run = Run.objects.get(Station=runStation, Number = runN)
   
   amc_color,geb_color = getChamberStates(run)
 
@@ -105,9 +105,9 @@ def report(request, runType, runN):
                                         'geb_color':geb_color})
 
 
-def chamber(request, runType, runN):
+def chamber(request, runStation, runN):
   run_list = Run.objects.all()
-  run = Run.objects.get(Type=runType, Number = runN)
+  run = Run.objects.get(Station=runStation, Number = runN)
 
   amc_color,geb_color = getChamberStates(run)
   
@@ -118,9 +118,9 @@ def chamber(request, runType, runN):
                                           'amc_color':amc_color,
                                           'geb_color':geb_color})
 
-def amc_13(request, runType, runN):
+def amc_13(request, runStation, runN):
   run_list = Run.objects.all()
-  run = Run.objects.get(Type=runType, Number = runN)
+  run = Run.objects.get(Station=runStation, Number = runN)
   
   amc_color,geb_color = getChamberStates(run)
 
@@ -134,9 +134,9 @@ def amc_13(request, runType, runN):
                                         'amc_color':amc_color,
                                         'geb_color':geb_color})
 
-def display_amc_13(request, runType, runN, hist):
+def display_amc_13(request, runStation, runN, hist):
   run_list = Run.objects.all()
-  run = Run.objects.get(Type=runType, Number = runN)
+  run = Run.objects.get(Station=runStation, Number = runN)
  
   amc_color,geb_color = getChamberStates(run)
 
@@ -150,9 +150,9 @@ def display_amc_13(request, runType, runN, hist):
                                         'amc_color':amc_color,
                                         'geb_color':geb_color})
 
-def amc(request, runType, runN, amc_boardid):
+def amc(request, runStation, runN, amc_boardid):
   run_list = Run.objects.all()
-  run = Run.objects.get(Type=runType, Number = runN)
+  run = Run.objects.get(Station=runStation, Number = runN)
   
   amc_color,geb_color = getChamberStates(run)
 
@@ -167,9 +167,9 @@ def amc(request, runType, runN, amc_boardid):
                                      'amc_color':amc_color,
                                      'geb_color':geb_color})
 
-def display_amc(request, runType, runN, amc_boardid, hist):
+def display_amc(request, runStation, runN, amc_boardid, hist):
   run_list = Run.objects.all()
-  run = Run.objects.get(Type=runType, Number = runN)
+  run = Run.objects.get(Station=runStation, Number = runN)
   
   amc_color,geb_color = getChamberStates(run)
  
@@ -186,9 +186,9 @@ def display_amc(request, runType, runN, amc_boardid, hist):
 
 
 
-def gebs(request, runType, runN, amc_boardid, geb_chamberid):
+def gebs(request, runStation, runN, amc_boardid, geb_chamberid):
   run_list = Run.objects.all()
-  run = Run.objects.get(Type=runType, Number = runN)
+  run = Run.objects.get(Station=runStation, Number = runN)
   
   amc_color,geb_color = getChamberStates(run)
   vfats = getVFATStates(run,amc_boardid,geb_chamberid)
@@ -205,9 +205,9 @@ def gebs(request, runType, runN, amc_boardid, geb_chamberid):
                                       'geb_color':geb_color,
                                       'vfats':vfats})
 
-def display_geb(request, runType, runN, amc_boardid, geb_chamberid, hist):
+def display_geb(request, runStation, runN, amc_boardid, geb_chamberid, hist):
   run_list = Run.objects.all()
-  run = Run.objects.get(Type=runType, Number = runN)
+  run = Run.objects.get(Station=runStation, Number = runN)
   amc_color,geb_color = getChamberStates(run)
   vfats = getVFATStates(run,amc_boardid,geb_chamberid)
 
@@ -225,9 +225,9 @@ def display_geb(request, runType, runN, amc_boardid, geb_chamberid, hist):
                                       'vfats':vfats})
 
 
-def vfats(request, runType, runN, amc_boardid, geb_chamberid, vfatN):
+def vfats(request, runStation, runN, amc_boardid, geb_chamberid, vfatN):
   run_list = Run.objects.all()
-  run = Run.objects.get(Type=runType, Number = runN)
+  run = Run.objects.get(Station=runStation, Number = runN)
   amc_color,geb_color = getChamberStates(run)
   vfats = getVFATStates(run,amc_boardid,geb_chamberid)
 
@@ -247,9 +247,9 @@ def vfats(request, runType, runN, amc_boardid, geb_chamberid, vfatN):
                                        'amc_color':amc_color,
                                        'geb_color':geb_color})
 
-def summary(request, runType, runN, chamber, summaryN):
+def summary(request, runStation, runN, chamber, summaryN):
   run_list = Run.objects.all()
-  run = Run.objects.get(Type=runType, Number = runN)
+  run = Run.objects.get(Station=runStation, Number = runN)
   amc_color,geb_color = getChamberStates(run)
 
   return render(request,'summary.html', {'run_list':run_list,
@@ -263,9 +263,9 @@ def summary(request, runType, runN, chamber, summaryN):
                                          'amc_color':amc_color,
                                          'geb_color':geb_color})
 
-def display_vfat(request, runType, runN, amc_boardid, geb_chamberid, vfatN, histN):
+def display_vfat(request, runStation, runN, amc_boardid, geb_chamberid, vfatN, histN):
   run_list = Run.objects.all()
-  run = Run.objects.get(Type=runType, Number = runN)  
+  run = Run.objects.get(Station=runStation, Number = runN)  
   
   amc_color,geb_color = getChamberStates(run)
   vfats = getVFATStates(run,amc_boardid,geb_chamberid)
@@ -288,9 +288,9 @@ def display_vfat(request, runType, runN, amc_boardid, geb_chamberid, vfatN, hist
                                               'geb_color':geb_color})
 
 
-def display_canvas(request, runType, runN, amc_boardid, geb_chamberid, canvas):
+def display_canvas(request, runStation, runN, amc_boardid, geb_chamberid, canvas):
   run_list = Run.objects.all()
-  run = Run.objects.get(Type=runType, Number = runN)
+  run = Run.objects.get(Station=runStation, Number = runN)
   
   amc_color,geb_color = getChamberStates(run)
   vfats = getVFATStates(run,amc_boardid,geb_chamberid)
