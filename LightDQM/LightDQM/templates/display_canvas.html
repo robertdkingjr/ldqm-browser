@@ -2,7 +2,7 @@
 {% load staticfiles %}
 
 {%block display_canvas %}
-<script src="{% static 'js/jsroot/JSRootCore.js' %}"></script>   
+<script src="{% static 'js/jsroot/scripts/JSRootCore.js' %}"></script>   
 <script src="{% static 'js/jquery.js' %}"></script>   
 <center><div id={{canvas}} style="width:90%"> 
   <script type="text/javascript">
@@ -10,7 +10,7 @@
   function updateGUI() {
     console.log("UpdateGUI called")
     var frame ="{{canvas}}";
-    var request_addr = "{% static '' %}{{run.Name}}/AMC13-1/{{amc_boardid}}/{{geb_chamberid}}/{{canvas}}.json?dummy="+cnt;
+    var request_addr = "{% static '' %}{{run.Name}}/AMC13-1/{{amc_boardid}}/{{geb_chamberid}}/summary_canvases/{{canvas}}.json?dummy="+cnt;
     var req = JSROOT.NewHttpRequest(request_addr, 'object', function(histo) {
                    JSROOT.redraw( frame, histo, "colz");
                    });

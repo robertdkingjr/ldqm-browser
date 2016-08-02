@@ -100,14 +100,23 @@ WSGI_APPLICATION = 'LightDQM.wsgi.application'
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'ldqm_db.sqlite3'),
-    },
+    #'default': {
+    #    'ENGINE': 'django.db.backends.sqlite3',
+    #    'NAME': os.path.join(BASE_DIR, 'ldqm_db.sqlite3'),
+    #},
     'bugtracker': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'bugtracker/bugtracker_db.sqlite3'),
+    },
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'ldqm_test_db',
+        'PORT': 3306,
+        'HOST': 'gem904daq01',
+        'USER': 'gemdaq',
+        'PASSWORD': 'gemdaq',
     }
+
 }
 
 

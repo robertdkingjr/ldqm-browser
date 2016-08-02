@@ -22,101 +22,165 @@ from time import sleep
 import os
 import sys
 import threading
-import ROOT
 import csv
+import ROOT
 
+
+address_list = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]; #hex ID
 
 #Updates GEB/AMC states for run from Error/Warning histograms
 def updateStates(rootFilename):
-    print 'Creating new system state'
-    newSystemState = SystemState()
-    newSystemState.save()
     rootFile = ROOT.TFile(rootFilename,"READ")
-    print 'Locating error/warning histograms'
+    runName = rootFilename[rootFilename.rfind('run',0,len(rootFilename)):-14]
+    print 'Run Name:',runName
+    run = Run.objects.get(Name=runName)
+    if not run:
+        print "Could not locate %s in database"%runName
+        return
+
+    systemState = run.State
+
+    if not systemState:
+        newSystemState = SystemState()
+        newSystemState.save()
+        systemState = newSystemState
+        systemState.run_set.add(run)
+
+    #print 'Locating error/warning histograms'
     for path,hist in getEWHists(rootFile): #one hist at a time
+        # print 'path:',path
+        # print 'hist:',hist
+
         entries = int(hist.GetEntries())
-        print hist.ClassName(), path
-        print "Entries", entries
-        #for bin in range(hist.GetNbinsX()): #check each bin
-            #print bin,":",hist.GetBinContent(bin)
-        amc13=path[path.find('AMC13'):path.find('AMC13')+7]
-        if path[path.rfind('AMC')+6]=='/': #2 digit AMC#
-            amc = path[path.rfind('AMC'):path.rfind('AMC')+6]
-        else: #1 digit AMC#
-            amc = path[path.rfind('AMC'):path.rfind('AMC')+5]
-        geb = path[path.find('GTX'):path.find('GTX')+5]
+    
+        vfatSlot,geb,amc = parsePath(path,hist.GetName())
+        # print 'VFAT Slot:',vfatSlot
+        # print 'GEB:',geb
+        # print 'AMC:',amc
+        
+        geb = 'GTX-'+str(geb)
+        amc = 'AMC-'+str(amc)
 
         newState = 0
-        if entries>0: 
+        if entries>0:
             if hist.GetName() == "Warnings": newState = 1
             if hist.GetName() == "Errors": newState = 3
-        print "New State:",newState
-
+        # print "New State:",newState
+            
         #Check if HWStates in DB
-        if not HWstate.objects.filter(HWID=amc,State=newState):
-            print "Adding AMC State to DB"
-            ahws = HWstate(HWID=amc, State=newState)
-            ahws.save()
-        else:
-            print 'AMC state already exists. Adding...'
-            ahws = HWstate.objects.get(HWID=amc,State=newState)
-        newSystemState.amcStates.add(ahws)
-        print 'AMC state added to new system state'
-        if not HWstate.objects.filter(HWID=geb,State=newState):
-            print "Adding GEB State to DB"
-            ghws = HWstate(HWID=geb, State=newState)
-            ghws.save()   
-        else:
-            print 'GEB state already exists. Adding...'
-            ghws = HWstate.objects.get(HWID=geb,State=newState)
-        newSystemState.gebStates.add(ghws)
-        print 'GEB state added to new system state'
 
-        parseVFATs(newSystemState)
-    
-    #Add new state to run in DB
-    print 'Adding new system state to run in DB'
-    runName_start = rootFilename.find('run')
-    runName_end = rootFilename.find('.',runName_start)
-    runName = rootFilename[runName_start:runName_end]
-    print 'runName',runName
-    run = Run.objects.get(Name=runName)
-    if run:
-        print 'Found run, adding new system state'
-        newSystemState.run_set.add(run)
-        #run.State.add(newSystemState,False,False)
-    else:
-        print "Could not locate Run %s in database"%runName
-        
 
-def parseVFATs(system_state):
-    vfat_table = os.getenv('BUILD_HOME')+'/gemdaq-testing/gemreadout/data/slot_table.csv'
-    with open(vfat_table, 'rd') as csvfile:
-        vfat_ids = csv.reader(csvfile, delimiter=',')
-        for line in vfat_ids:
-            for address in line:
-                print address
-                if 'dead' in address or '0x0' in address: newState=2
-                else: newState=0
-                if not HWstate.objects.filter(HWID=address,State=newState):
-                    print "Adding VFAT State to DB"
-                    vhws = HWstate(HWID=address, State=newState)
+
+        # 0 = Good  (Green)
+        # 1 = Warn  (Yellow)
+        # 2 = Dead  (Grey)
+        # 3 = Error (Red)
+        # 9 = Disabled
+
+        if vfatSlot > -1: #VFAT Error/Warning histogram
+            vfatID = parseVFATSlot(run,vfatSlot,geb,amc)
+            # print 'VFAT ID:',vfatID
+            if not systemState.vfatStates.filter(HWID=vfatID):
+                vhws = HWstate(HWID=vfatID,State=newState)
+                print vfatID,'-->',newState
+                vhws.save()
+                systemState.vfatStates.add(vhws)
+            else:
+                vhws = systemState.vfatStates.get(HWID=vfatID)
+                if int(vhws.State) < newState:
+                    print vfatID,vhws.State,'-->',newState
+                    vhws.State = newState
                     vhws.save()
-                else:
-                    print 'VFAT state already exists. Adding...'
-                    vhws = HWstate.objects.get(HWID=address,State=newState)
-                system_state.vfatStates.add(vhws)
-                print 'VFAT state %s added to new system state'%str(address)
+            if not systemState.amcStates.filter(HWID=amc):
+                ahws = HWstate(HWID=amc, State=newState)
+                print amc,'-->',newState
+                ahws.save()
+                systemState.amcStates.add(ahws)
+            else:
+                ahws = systemState.amcStates.get(HWID=amc)
+                if int(ahws.State) < newState:
+                    print amc,ahws.State,'-->',newState
+                    ahws.State = newState
+                    ahws.save()
+            if not systemState.gebStates.filter(HWID=geb):
+                ghws = HWstate(HWID=geb, State=newState)
+                print geb,'-->',newState
+                ghws.save()
+                systemState.gebStates.add(ghws)
+            else:
+                ghws = systemState.gebStates.get(HWID=geb)
+                if int(ghws.State) < newState:
+                    print geb,ghws.State,'-->',newState
+                    ghws.State = newState
+                    ghws.save()
+        else: #GEB/AMC Error/Warning histogram
+            if not systemState.amcStates.filter(HWID=amc):
+                ahws = HWstate(HWID=amc, State=newState)
+                print amc,'-->',newState
+                ahws.save()
+                systemState.amcStates.add(ahws)
+            else:
+                # print 'Getting existing AMC system state:',amc
+                ahws = systemState.amcStates.get(HWID=amc)
+                # print 'ahws.State:',ahws.State
+                # print 'newState:',newState
+                if int(ahws.State) < newState:
+                    # print 'Updating with new state!'
+                    print amc,ahws.State,'-->',newState
+                    ahws.State = newState
+                    ahws.save()
+            if not systemState.gebStates.filter(HWID=geb):
+                ghws = HWstate(HWID=geb, State=newState)
+                print geb,'-->',newState
+                ghws.save()
+                systemState.gebStates.add(ghws)
+            else:
+                ghws = systemState.gebStates.get(HWID=geb)
+                if int(ghws.State) < newState:
+                    print geb,ghws.State,'-->',newState
+                    ghws.State = newState
+                    ghws.save()
 
 
+
+
+# Fill address list with info from database
+def parseVFATSlot(run,slot,geb,amc):
+    thisAMC = run.amcs.get(BoardID=amc)
+    thisGEB = thisAMC.gebs.get(ChamberID=geb)
+    thisVFATID = thisGEB.vfats.get(Slot=slot)
+    return thisVFATID
 
 #Recursively returns histograms with title Errors or Warnings and path
 def getEWHists(source, basepath="/"):
     for key in source.GetListOfKeys():
         kname = key.GetName()
         if key.IsFolder():
-            for i in getEWHists(source.Get(kname), basepath+kname+"/"):
-                yield i
+	        for i in getEWHists(source.Get(kname), basepath+kname+"/"):
+		        yield i 
         else:
-            if kname == "Errors" or kname=="Warnings":
+            if kname == "Errors" or kname == "Warnings":
                 yield basepath+kname, source.Get(kname)
+
+
+# Return VFAT,GEB,AMC numbers (-1 if not present) 
+def parsePath(path,ending):
+    done = False
+    vfat = -1
+    geb = -1
+    amc = -1
+    dividerchar = path[path.find(ending)-1:path.find(ending)]
+    while not done:
+        lastDiv = path.rfind(dividerchar,0,len(path))
+        secondtolastDiv = path.rfind(dividerchar,0,lastDiv)
+        hardware = path[secondtolastDiv+1:lastDiv]
+        path = path[:secondtolastDiv+1]
+        if "AMC13" in hardware:
+            done = True
+        elif "AMC" in hardware:
+            amc = int(hardware[4:])
+        elif "GTX" in hardware or "GEB" in hardware:
+            geb = int(hardware[4:])
+        elif "VFAT" in hardware:
+            vfat = int(hardware[5:])
+    return vfat,geb,amc

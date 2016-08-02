@@ -17,13 +17,30 @@ slot_list = ['00','01','02','03','04','05','06','07',
              '08','09','10','11','12','13','14','15',
              '16','17','18','19','20','21','22','23'];
 
-vfat_address = []; #hex ID
-csvfilename = os.getenv('BUILD_HOME')+'/gemdaq-testing/gemreadout/data/slot_table.csv'
-with open(csvfilename, 'rd') as csvfile:
-  vfat_ids = csv.reader(csvfile, delimiter=',')
-  for num in vfat_ids:
-      vfat_address.extend(num)
+#vfat_address = []; #hex ID
+#csvfilename = os.getenv('BUILD_HOME')+'/cmsgemos/gemreadout/data/slot_table.csv'
+#with open(csvfilename, 'rd') as csvfile:
+#  vfat_ids = csv.reader(csvfile, delimiter=',')
+#  for num in vfat_ids:
+#      vfat_address.extend(num)
 
+vfat_address = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]; #hex ID
+
+def getVFATSlots(run,amc,geb):
+
+    # Find correct GEB, add associated VFATs to vfat_address
+    try:
+        AMC = run.amcs.get(BoardID=amc)
+        #check here
+        GEB = AMC.gebs.get(ChamberID=geb)
+        VFATs = GEB.vfats.all()
+    except:
+        print "Error accessing database for run:",run.Name
+
+    for VFAT in VFATs:
+        vfat_address[VFAT.Slot] = VFAT.ChipID
+
+    return vfat_address
 
 def getChamberStates(run):
     amc_color = []
@@ -64,10 +81,17 @@ def getChamberStates(run):
                 if DEBUG: print "Error locating GEB: ", geb.ChamberID, geb.Type
     return amc_color,geb_color
 
-def getVFATStates(run):
-    vfats = []    
+def getVFATStates(run,amc,geb):
+    vfats = []
+    vfat_address = getVFATSlots(run,amc,geb)
     for s in slot_list: #initialize vfats to work if no states in DB
-        vfats.insert(int(s),[s, vfat_address[int(s)], 0, 'default', False])
+      vfats.insert(int(s),[s, vfat_address[int(s)], 0, 'default', False])
+
+#    for amc in run.amcs.all():
+#      for geb in amc.gebs.all():
+#	vfat_address=getVFATSlots(geb)
+#	for s in slot_list: #initialize vfats to work if no states in DB
+#	  vfats.insert(int(s),[s, vfat_address[int(s)], 0, 'default', False])
 
     try:
         state = run.State
