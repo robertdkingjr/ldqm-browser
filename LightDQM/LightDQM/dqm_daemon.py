@@ -15,7 +15,7 @@ def show_time(tbef):
 def process_chunk(m_filename, chunk, offline_dqm = False):
   global is_first
   tbef = time.time()
-  print 'BEGIN'
+  print '<<<<<<<<BEGIN>>>>>>>>'
   tbef = show_time(tbef)
   print "Process chunk with base filename %s\n" %(m_filename)
   t_filename = m_filename+"_chunk_"+str(chunk)
@@ -29,7 +29,7 @@ def process_chunk(m_filename, chunk, offline_dqm = False):
 #call dqm
   call_command =  os.getenv('BUILD_HOME')+'/gem-light-dqm/dqm-root/bin/'+os.getenv('XDAQ_OS')+'/'+os.getenv('XDAQ_PLATFORM')+'/dqm'
   command_args = "/tmp/"+t_filename+".raw.root"
-  os.system(call_command+' '+command_args)
+  call([call_command+' '+command_args],shell=True)
   print 'DQM'
   tbef = show_time(tbef)
   print 'hadd'
@@ -37,11 +37,11 @@ def process_chunk(m_filename, chunk, offline_dqm = False):
   if (os.path.isfile("/tmp/"+m_filename+".analyzed.root")):
     call_command = "hadd -v 0 " 
     command_args = "/tmp/hadd_tmp.root " + "/tmp/" + m_filename+".analyzed.root" + " " + "/tmp/" + t_filename+".analyzed.root"
-    os.system(call_command+' '+command_args)
+    call([call_command+' '+command_args],shell=True)
     call(["rm "+ "/tmp/" + t_filename+".analyzed.root"],shell=True)
     call(["mv "+ "/tmp/hadd_tmp.root " + "/tmp/" + m_filename+".analyzed.root"],shell=True)
     command_args = "/tmp/hadd_tmp.root " + "/tmp/" + m_filename+".raw.root" + " " + "/tmp/" + t_filename+".raw.root"
-    os.system(call_command+' '+command_args)
+    call([call_command+' '+command_args],shell=True)
     call(["rm "+ "/tmp/" + t_filename+".raw.root"],shell=True)
     call(["mv "+ "/tmp/hadd_tmp.root " + "/tmp/" + m_filename+".raw.root"],shell=True)
     file('/tmp/add_tmp.dat','wb').write(file("/tmp/" + t_filename+".dat",'rb').read()+file("/tmp/" + m_filename+".dat",'rb').read())
@@ -58,7 +58,7 @@ def process_chunk(m_filename, chunk, offline_dqm = False):
     print 'offline printer'
     call_command = os.getenv('BUILD_HOME')+'/gem-light-dqm/dqm-root/bin/'+os.getenv('XDAQ_OS')+'/'+os.getenv('XDAQ_PLATFORM')+'/gtprinter'
     command_args = "/tmp/"+m_filename+".analyzed.root"
-    os.system(call_command+' '+command_args)
+    call([call_command+' '+command_args],shell=True)
     #copy results to DQM display form
     call_command = os.getenv('LDQM_STATIC')+'/'
     call(["mkdir -p "+call_command],shell=True)
@@ -68,7 +68,7 @@ def process_chunk(m_filename, chunk, offline_dqm = False):
     print 'online printer'
     call_command =  os.getenv('BUILD_HOME')+'/gem-light-dqm/dqm-root/bin/'+os.getenv('XDAQ_OS')+'/'+os.getenv('XDAQ_PLATFORM')+'/onlineprinter'
     command_args = "/tmp/"+m_filename+".analyzed.root"
-    os.system(call_command+' '+command_args)
+    call([call_command+' '+command_args],shell=True)
   print 'printer'
   tbef = show_time(tbef)
   print 'updateState'
@@ -77,7 +77,7 @@ def process_chunk(m_filename, chunk, offline_dqm = False):
   updateStates(command_args)
   print 'updateState'
   tbef = show_time(tbef)
-  print 'END'
+  print '>>>>>>>>END<<<<<<<<'
   return
 
 def run_dqm():
@@ -96,7 +96,7 @@ def run_dqm():
       if os.path.isfile('/tmp/'+fname_base+'.analyzed.root'):
         call_command = os.getenv('BUILD_HOME')+'/gem-light-dqm/dqm-root/bin/'+os.getenv('XDAQ_OS')+'/'+os.getenv('XDAQ_PLATFORM')+'/gtprinter'
         command_args = "/tmp/"+fname_base+".analyzed.root"
-        os.system(call_command+' '+command_args)
+        call([call_command+' '+command_args],shell=True)
         call_command = os.getenv('LDQM_STATIC')+'/'
         call(["mkdir -p "+call_command],shell=True)
         call(["cp -r /tmp/"+fname_base+" "+call_command],shell=True)
