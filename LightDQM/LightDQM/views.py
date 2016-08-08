@@ -14,85 +14,90 @@ import csv
 
 lslot_list = ["a","b","c","d"];
 
-hist_list = ["b1010",
-             "b1100",
-             "b1110",
-             "BC",
-             "EC",
-             "SlotN",
-             "Flag",
-             "ChipID",
-             "FiredChannels",
-             "crc",
-             "crc_calc",
-             "Warnings",
-             "Errors",
-             "latencyScan",
-             "thresholdScan"];
+# filename, button name
+hist_list = [["b1010","Control Bit 10"],
+             ["b1100","Control Bit 12"],
+             ["b1110","Control Bit 14"],
+             ["BC","Bunch Crossing Number"],
+             ["EC","Event Count"],
+             ["SlotN","Slot Number"],
+             ["Flag","Flag"],
+             ["ChipID","VFAT Chip ID"],
+             ["FiredChannels","Fired Channels"],
+             ["crc","CRC"],
+             ["crc_calc","Calculated CRC"],
+             ["Warnings","VFAT Warnings"],
+             ["Errors","VFAT Errors"],
+             ["latencyScan","Latency Scan"],
+             ["thresholdScan","Threshold Scans"]];
 
 threshold_channels = range(0,127);
 
-amc13_hist_list = ["Control_Bit5",
-                   "Control_BitA",
-                   "Evt_ty",
-                   "LV1_id",
-                   "Bx_id",
-                   "Source_id",
-                   "CalTyp",
-                   "nAMC",
-                   "OrN",
-                   "CRC_amc13",
-                   "Blk_Not",
-                   "LV1_idT",
-                   "BX_idT",
-                   "EvtLength",
-                   "CRC_cdf"];
-amc_hist_list = ["AMCnum",
-                 "L1A",
-                 "BX",
-                 "Dlength",
-                 "FV",
-                 "Rtype",
-                 "Param1",
-                 "Param2",
-                 "Param3",
-                 "Onum",
-                 "BID",
-                 "GEMDAV",
-                 "Bstatus",
-                 "GDcount",
-                 "Tstate",
-                 "ChamT",
-                 "OOSG",
-                 "CRC",
-                 "L1AT",
-                 "DlengthT"];
+amc13_hist_list = [["Control_Bit5","Control Bit 5"],
+                   ["Control_BitA","Control Bit A"],
+                   ["Evt_ty","Evt_ty"],
+                   ["LV1_id","LV1 ID"],
+                   ["Bx_id","Bunch Crossing ID"],
+                   ["Source_id","Source ID"],
+                   ["CalTyp","CalTyp"],
+                   ["nAMC","Number of AMCs"],
+                   ["OrN","Orbit Number"],
+                   ["CRC_amc13","AMC13 CRC"],
+                   ["Blk_Not","Blk_Not"],
+                   ["LV1_idT","LV1 ID Trailer"],
+                   ["BX_idT","Bunch Crossing ID Trailer"],
+                   ["EvtLength","Event Length"],
+                   ["CRC_cdf","CRC CDF"]];
 
-geb_hist_list = ["Errors",
-                 "InputID",
-                 "OHCRC",
-                 "Vwh",
-                 "Vwt",
-                 "Warnings",
-                 "ZeroSup",
-                 "BeamProfile"];
+amc_hist_list = [["AMCnum","AMC Number"],
+                 ["L1A","L1A"],
+                 ["BX","Bunch Crossing Number"],
+                 ["Dlength","D Length"],
+                 ["FV","FV"],
+                 ["Rtype","Run Type"],
+                 ["Param1","Parameter 1"],
+                 ["Param2","Parameter 2"],
+                 ["Param3","Parameter 3"],
+                 ["Onum","Orbit Number"],
+                 ["BID","B ID"],
+                 ["GEMDAV","GEM DAV"],
+                 ["Bstatus","B Status"],
+                 ["GDcount","GEM DAV Count"],
+                 ["Tstate","T State"],
+                 ["ChamT","Chamber Timeout"],
+                 ["OOSG","GLIB Out of Sync"],
+                 ["CRC","CRC"],
+                 ["L1AT","L1A Trailer"],
+                 ["DlengthT","D Length Trailer"]];
 
-sum_can_list  = ["integrity", "occupancy", "clusterMult", "clusterSize"];
+geb_hist_list = [["Errors","GEB Errors"],
+                 ["InputID","Input ID"],
+                 ["OHCRC","OH CRC"],
+                 ["Vwh","VFAT Word Count Header"],
+                 ["Vwt","VFAT Word Count Trailer"],
+                 ["Warnings","GEB Warnings"],
+                 ["ZeroSup","Zero Suppression"],
+                 ["BeamProfile","Beam Profile"]];
+
+sum_can_list  = [["integrity","Integrity"], 
+                 ["occupancy","Occupancy"],
+                 ["clusterMult","Cluster Multiplicity"], 
+                 ["clusterSize","Cluster Size"]];
 
 
 def dqm_help(request):
   return render(request,'test.html', {'hist_list':hist_list,})
 
 def runs(request):
-  run_list = Run.objects.all()
+  run_list = Run.objects.order_by('Station','-Number')
   return render(request,'runs.html', {'run_list':run_list,})
 
 def main(request):
-  run_list = Run.objects.all()
+  run_list = Run.objects.order_by('Station','-Number')
   return render(request,'main.html', {'run_list':run_list,})
 
 def report(request, runStation, runN):
-  run_list = Run.objects.all()
+  run_list = Run.objects.order_by('Station','-Number')
   run = Run.objects.get(Station=runStation, Number = runN)
   
   amc_color,geb_color = getChamberStates(run)
@@ -106,7 +111,7 @@ def report(request, runStation, runN):
 
 
 def chamber(request, runStation, runN):
-  run_list = Run.objects.all()
+  run_list = Run.objects.order_by('Station','-Number')
   run = Run.objects.get(Station=runStation, Number = runN)
 
   amc_color,geb_color = getChamberStates(run)
@@ -119,7 +124,7 @@ def chamber(request, runStation, runN):
                                           'geb_color':geb_color})
 
 def amc_13(request, runStation, runN):
-  run_list = Run.objects.all()
+  run_list = Run.objects.order_by('Station','-Number')
   run = Run.objects.get(Station=runStation, Number = runN)
   
   amc_color,geb_color = getChamberStates(run)
@@ -135,7 +140,7 @@ def amc_13(request, runStation, runN):
                                         'geb_color':geb_color})
 
 def display_amc_13(request, runStation, runN, hist):
-  run_list = Run.objects.all()
+  run_list = Run.objects.order_by('Station','-Number')
   run = Run.objects.get(Station=runStation, Number = runN)
  
   amc_color,geb_color = getChamberStates(run)
@@ -151,7 +156,7 @@ def display_amc_13(request, runStation, runN, hist):
                                         'geb_color':geb_color})
 
 def amc(request, runStation, runN, amc_boardid):
-  run_list = Run.objects.all()
+  run_list = Run.objects.order_by('Station','-Number')
   run = Run.objects.get(Station=runStation, Number = runN)
   
   amc_color,geb_color = getChamberStates(run)
@@ -168,7 +173,7 @@ def amc(request, runStation, runN, amc_boardid):
                                      'geb_color':geb_color})
 
 def display_amc(request, runStation, runN, amc_boardid, hist):
-  run_list = Run.objects.all()
+  run_list = Run.objects.order_by('Station','-Number')
   run = Run.objects.get(Station=runStation, Number = runN)
   
   amc_color,geb_color = getChamberStates(run)
@@ -187,7 +192,7 @@ def display_amc(request, runStation, runN, amc_boardid, hist):
 
 
 def gebs(request, runStation, runN, amc_boardid, geb_chamberid):
-  run_list = Run.objects.all()
+  run_list = Run.objects.order_by('Station','-Number')
   run = Run.objects.get(Station=runStation, Number = runN)
   
   amc_color,geb_color = getChamberStates(run)
@@ -206,7 +211,7 @@ def gebs(request, runStation, runN, amc_boardid, geb_chamberid):
                                       'vfats':vfats})
 
 def display_geb(request, runStation, runN, amc_boardid, geb_chamberid, hist):
-  run_list = Run.objects.all()
+  run_list = Run.objects.order_by('Station','-Number')
   run = Run.objects.get(Station=runStation, Number = runN)
   amc_color,geb_color = getChamberStates(run)
   vfats = getVFATStates(run,amc_boardid,geb_chamberid)
@@ -226,7 +231,7 @@ def display_geb(request, runStation, runN, amc_boardid, geb_chamberid, hist):
 
 
 def vfats(request, runStation, runN, amc_boardid, geb_chamberid, vfatN):
-  run_list = Run.objects.all()
+  run_list = Run.objects.order_by('Station','-Number')
   run = Run.objects.get(Station=runStation, Number = runN)
   amc_color,geb_color = getChamberStates(run)
   vfats = getVFATStates(run,amc_boardid,geb_chamberid)
@@ -248,7 +253,7 @@ def vfats(request, runStation, runN, amc_boardid, geb_chamberid, vfatN):
                                        'geb_color':geb_color})
 
 def summary(request, runStation, runN, chamber, summaryN):
-  run_list = Run.objects.all()
+  run_list = Run.objects.order_by('Station','-Number')
   run = Run.objects.get(Station=runStation, Number = runN)
   amc_color,geb_color = getChamberStates(run)
 
@@ -264,7 +269,7 @@ def summary(request, runStation, runN, chamber, summaryN):
                                          'geb_color':geb_color})
 
 def display_vfat(request, runStation, runN, amc_boardid, geb_chamberid, vfatN, histN):
-  run_list = Run.objects.all()
+  run_list = Run.objects.order_by('Station','-Number')
   run = Run.objects.get(Station=runStation, Number = runN)  
   
   amc_color,geb_color = getChamberStates(run)
@@ -289,7 +294,7 @@ def display_vfat(request, runStation, runN, amc_boardid, geb_chamberid, vfatN, h
 
 
 def display_canvas(request, runStation, runN, amc_boardid, geb_chamberid, canvas):
-  run_list = Run.objects.all()
+  run_list = Run.objects.order_by('Station','-Number')
   run = Run.objects.get(Station=runStation, Number = runN)
   
   amc_color,geb_color = getChamberStates(run)
