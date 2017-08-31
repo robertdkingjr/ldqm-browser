@@ -35,9 +35,13 @@ class AMC(models.Model):
   def __unicode__(self):
     return self.Type # or better id?
 
+class Crate(models.Model):
+  CrateID = models.CharField(max_length=30)
+  amcs = models.ManyToManyField(AMC)
+
 class Config(models.Model):
   Tag = models.CharField(max_length=50)
-  amcs = models.ManyToManyField(AMC)
+  crates = models.ManyToManyField(Crate)
 
 class Run(models.Model):
   Name = models.CharField(max_length=50)
