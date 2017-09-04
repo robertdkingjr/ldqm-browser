@@ -31,6 +31,7 @@ class GEB(models.Model):
 class AMC(models.Model):
   BoardID = models.CharField(max_length=30)
   Type = models.CharField(max_length=30)
+  Slot = models.PositiveSmallIntegerField(default=255)
   gebs = models.ManyToManyField(GEB)
   def __unicode__(self):
     return self.Type # or better id?
