@@ -32,7 +32,7 @@
 				  class="btn btn-{{amc_color|get_index:forloop.counter0}} btn-sm">{{amc.BoardID}}-{{amc.Type}}</a></td>
 
           {% for geb in amc.gebs.all %}
-	          <td class="col-xs-2"><a href="/main/{{run.Station}}/run/{{run.Number}}/AMC13-1/{{amc.BoardID}}/{{geb.ChamberID}}/" 
+	          <td class="col-xs-2"><a href="/main/{{run.Station}}/run/{{run.Number}}/{{crate}}/{{amc.BoardID}}/{{geb.ChamberID}}/" 
 				    {%if forloop.counter0 == 0 %} class="btn btn-sm btn-{{geb_color|get_first:forloop.parentloop.counter0}}"> {%endif%}
 	          {%if forloop.counter0 == 1 %} class="btn btn-sm btn-{{geb_color|get_second:forloop.parentloop.counter0}}">{%endif%}
 	          GEB-{{geb.ChamberID}}-{{geb.Type}}</a></td>
