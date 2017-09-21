@@ -105,7 +105,7 @@ def report(request, runStation, runN):
                                         'geb_color':geb_color})
 
 
-def chamber(request, runStation, runN):
+def chamber(request, runStation, runN, crate):
   run_list = Run.objects.all()
   run = Run.objects.get(Station=runStation, Number = runN)
 
@@ -115,10 +115,11 @@ def chamber(request, runStation, runN):
                                           'slot_list':slot_list,
                                           'hist_list':hist_list,
                                           'run':run,
+                                          'crate':crate,
                                           'amc_color':amc_color,
                                           'geb_color':geb_color})
 
-def amc_13(request, runStation, runN):
+def amc_13(request, runStation, runN, crate):
   run_list = Run.objects.all()
   run = Run.objects.get(Station=runStation, Number = runN)
   
@@ -134,7 +135,7 @@ def amc_13(request, runStation, runN):
                                         'amc_color':amc_color,
                                         'geb_color':geb_color})
 
-def display_amc_13(request, runStation, runN, hist):
+def display_amc_13(request, runStation, runN, crate, hist):
   run_list = Run.objects.all()
   run = Run.objects.get(Station=runStation, Number = runN)
  
@@ -146,11 +147,12 @@ def display_amc_13(request, runStation, runN, hist):
                                         'amc13_hist_list':amc13_hist_list,
                                         'hist':hist,
                                         'run':run,
+                                        'crate':crate,
                                         'sum_can_list':sum_can_list,
                                         'amc_color':amc_color,
                                         'geb_color':geb_color})
 
-def amc(request, runStation, runN, amc_boardid):
+def amc(request, runStation, runN, crate, amc_boardid):
   run_list = Run.objects.all()
   run = Run.objects.get(Station=runStation, Number = runN)
   
@@ -162,12 +164,13 @@ def amc(request, runStation, runN, amc_boardid):
                                      'hist_list':hist_list,
                                      'amc_hist_list':amc_hist_list,
                                      'run':run,
+                                     'crate':crate,
                                      'amc_boardid':amc_boardid,
                                      'sum_can_list':sum_can_list,
                                      'amc_color':amc_color,
                                      'geb_color':geb_color})
 
-def display_amc(request, runStation, runN, amc_boardid, hist):
+def display_amc(request, runStation, runN, crate, amc_boardid, hist):
   run_list = Run.objects.all()
   run = Run.objects.get(Station=runStation, Number = runN)
   
@@ -178,6 +181,7 @@ def display_amc(request, runStation, runN, amc_boardid, hist):
                                      'hist_list':hist_list,
                                      'amc_hist_list':amc_hist_list,
                                      'run':run,
+                                     'crate':crate,
                                      'hist':hist,
                                      'amc_boardid':amc_boardid,
                                      'sum_can_list':sum_can_list,
@@ -186,18 +190,19 @@ def display_amc(request, runStation, runN, amc_boardid, hist):
 
 
 
-def gebs(request, runStation, runN, amc_boardid, geb_chamberid):
+def gebs(request, runStation, runN, crate, amc_boardid, geb_chamberid):
   run_list = Run.objects.all()
   run = Run.objects.get(Station=runStation, Number = runN)
   
   amc_color,geb_color = getChamberStates(run)
-  vfats = getVFATStates(run,amc_boardid,geb_chamberid)
+  vfats = getVFATStates(run,crate,amc_boardid,geb_chamberid)
   
   return render(request,'gebs.html', {'run_list':run_list,
                                       'slot_list':slot_list,
                                       'hist_list':hist_list,
                                       'geb_hist_list':geb_hist_list,
                                       'run':run,
+                                      'crate':crate,
                                       'amc_boardid':amc_boardid,
                                       'geb_chamberid':geb_chamberid,
                                       'sum_can_list':sum_can_list,
@@ -205,11 +210,11 @@ def gebs(request, runStation, runN, amc_boardid, geb_chamberid):
                                       'geb_color':geb_color,
                                       'vfats':vfats})
 
-def display_geb(request, runStation, runN, amc_boardid, geb_chamberid, hist):
+def display_geb(request, runStation, runN, crate, amc_boardid, geb_chamberid, hist):
   run_list = Run.objects.all()
   run = Run.objects.get(Station=runStation, Number = runN)
   amc_color,geb_color = getChamberStates(run)
-  vfats = getVFATStates(run,amc_boardid,geb_chamberid)
+  vfats = getVFATStates(run,crate,amc_boardid,geb_chamberid)
 
   return render(request,'display_geb.html', {'run_list':run_list,
                                       'slot_list':slot_list,
@@ -217,6 +222,7 @@ def display_geb(request, runStation, runN, amc_boardid, geb_chamberid, hist):
                                       'geb_hist_list':geb_hist_list,
                                       'hist':hist,
                                       'run':run,
+                                      'crate':crate,
                                       'amc_boardid':amc_boardid,
                                       'geb_chamberid':geb_chamberid,
                                       'sum_can_list':sum_can_list,
@@ -225,11 +231,11 @@ def display_geb(request, runStation, runN, amc_boardid, geb_chamberid, hist):
                                       'vfats':vfats})
 
 
-def vfats(request, runStation, runN, amc_boardid, geb_chamberid, vfatN):
+def vfats(request, runStation, runN, crate, amc_boardid, geb_chamberid, vfatN):
   run_list = Run.objects.all()
   run = Run.objects.get(Station=runStation, Number = runN)
   amc_color,geb_color = getChamberStates(run)
-  vfats = getVFATStates(run,amc_boardid,geb_chamberid)
+  vfats = getVFATStates(run,crate,amc_boardid,geb_chamberid)
 
   selected_vfat = vfats[int(vfatN)]
   return render(request,'vfats.html', {'run_list':run_list,
@@ -238,6 +244,7 @@ def vfats(request, runStation, runN, amc_boardid, geb_chamberid, vfatN):
                                        'geb_hist_list':geb_hist_list,
                                        'threshold_channels':threshold_channels,
                                        'run':run,
+                                       'crate':crate,
                                        'amc_boardid':amc_boardid,
                                        'geb_chamberid':geb_chamberid,
                                        'vfat':int(vfatN),
@@ -247,7 +254,7 @@ def vfats(request, runStation, runN, amc_boardid, geb_chamberid, vfatN):
                                        'amc_color':amc_color,
                                        'geb_color':geb_color})
 
-def summary(request, runStation, runN, chamber, summaryN):
+def summary(request, runStation, runN, crate, chamber, summaryN):
   run_list = Run.objects.all()
   run = Run.objects.get(Station=runStation, Number = runN)
   amc_color,geb_color = getChamberStates(run)
@@ -257,18 +264,19 @@ def summary(request, runStation, runN, chamber, summaryN):
                                          'hist_list':hist_list,
                                          'geb_hist_list':geb_hist_list,
                                          'run':run,
+                                         'crate':crate,
                                          'chamber':chamber,
                                          'sum_can_list':sum_can_list,
                                          'sumN':summaryN,
                                          'amc_color':amc_color,
                                          'geb_color':geb_color})
 
-def display_vfat(request, runStation, runN, amc_boardid, geb_chamberid, vfatN, histN):
+def display_vfat(request, runStation, runN, crate, amc_boardid, geb_chamberid, vfatN, histN):
   run_list = Run.objects.all()
   run = Run.objects.get(Station=runStation, Number = runN)  
   
   amc_color,geb_color = getChamberStates(run)
-  vfats = getVFATStates(run,amc_boardid,geb_chamberid)
+  vfats = getVFATStates(run,crate,amc_boardid,geb_chamberid)
   
   selected_vfat = vfats[int(vfatN)]
 
@@ -277,6 +285,7 @@ def display_vfat(request, runStation, runN, amc_boardid, geb_chamberid, vfatN, h
                                               'hist_list':hist_list,
                                               'geb_hist_list':geb_hist_list,
                                               'run':run,
+                                              'crate':crate,
                                               'amc_boardid':amc_boardid,
                                               'geb_chamberid':geb_chamberid,
                                               'sum_can_list':sum_can_list,
@@ -288,18 +297,19 @@ def display_vfat(request, runStation, runN, amc_boardid, geb_chamberid, vfatN, h
                                               'geb_color':geb_color})
 
 
-def display_canvas(request, runStation, runN, amc_boardid, geb_chamberid, canvas):
+def display_canvas(request, runStation, runN, crate, amc_boardid, geb_chamberid, canvas):
   run_list = Run.objects.all()
   run = Run.objects.get(Station=runStation, Number = runN)
   
   amc_color,geb_color = getChamberStates(run)
-  vfats = getVFATStates(run,amc_boardid,geb_chamberid)
+  vfats = getVFATStates(run,crate,amc_boardid,geb_chamberid)
 
   return render(request,'display_canvas.html', {'run_list':run_list,
                                                 'slot_list':slot_list,
                                                 'hist_list':hist_list,
                                                 'geb_hist_list':geb_hist_list,
                                                 'run':run,
+                                                'crate':crate,
                                                 'amc_boardid':amc_boardid,
                                                 'geb_chamberid':geb_chamberid,
                                                 'chamber':chamber,

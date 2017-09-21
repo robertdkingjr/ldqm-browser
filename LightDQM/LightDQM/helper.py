@@ -26,11 +26,11 @@ slot_list = ['00','01','02','03','04','05','06','07',
 
 vfat_address = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]; #hex ID
 
-def getVFATSlots(run,amc,geb):
+def getVFATSlots(crate,amc,geb):
 
     # Find correct GEB, add associated VFATs to vfat_address
     try:
-        AMC = run.amcs.get(BoardID=amc)
+        AMC = crate.amcs.get(BoardID=amc)
         #check here
         GEB = AMC.gebs.get(ChamberID=geb)
         VFATs = GEB.vfats.all()
@@ -45,7 +45,7 @@ def getVFATSlots(run,amc,geb):
 def getChamberStates(run):
     amc_color = []
     geb_color = []
-    for i, amc in enumerate(run.amcs.all()):
+    for i, amc in enumerate(run.ConfigTag.amcs.all()):
         amc_color.insert(i,'default')
         geb_color.insert(i,['default','default']) 
 
@@ -57,7 +57,7 @@ def getChamberStates(run):
         if DEBUG: print "Could not locate AMC/GEB states for",run.Name,"in Database"
         return amc_color,geb_color
     
-    for i, amc in enumerate(run.amcs.all()):
+    for i, amc in enumerate(run.ConfigTag.amcs.all()):
         try:
             code = int(next((x for x in amc_state if x.HWID==amc.BoardID),None).State)
             del amc_color[i]
@@ -81,9 +81,9 @@ def getChamberStates(run):
                 if DEBUG: print "Error locating GEB: ", geb.ChamberID, geb.Type
     return amc_color,geb_color
 
-def getVFATStates(run,amc,geb):
+def getVFATStates(run,crate,amc,geb):
     vfats = []
-    vfat_address = getVFATSlots(run,amc,geb)
+    vfat_address = getVFATSlots(crate,amc,geb)
     for s in slot_list: #initialize vfats to work if no states in DB
       vfats.insert(int(s),[s, vfat_address[int(s)], 0, 'default', False])
 
