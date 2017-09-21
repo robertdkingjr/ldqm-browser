@@ -45,7 +45,10 @@ def getVFATSlots(crate,amc,geb):
 def getChamberStates(run):
     amc_color = []
     geb_color = []
-    for i, amc in enumerate(run.ConfigTag.amcs.all()):
+    amc_list = []
+    for amc13 in run.ConfigTag.crates.all():
+        amc_list += amc13.amcs.all();
+    for i, amc in enumerate(amc_list):
         amc_color.insert(i,'default')
         geb_color.insert(i,['default','default']) 
 
@@ -57,7 +60,7 @@ def getChamberStates(run):
         if DEBUG: print "Could not locate AMC/GEB states for",run.Name,"in Database"
         return amc_color,geb_color
     
-    for i, amc in enumerate(run.ConfigTag.amcs.all()):
+    for i, amc in enumerate(amc_list):
         try:
             code = int(next((x for x in amc_state if x.HWID==amc.BoardID),None).State)
             del amc_color[i]
