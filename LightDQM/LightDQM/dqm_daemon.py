@@ -1,6 +1,6 @@
 import os
 from subprocess import call
-from webdaq.state_helper import updateStates
+# from webdaq.state_helper import updateStates
 from ldqm_db.models import Run
 import time
 import glob

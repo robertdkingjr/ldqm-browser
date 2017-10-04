@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     'LightDQM',
     'ldqm_db',
     'bugtracker',
-    'webdaq',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -78,7 +77,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join(BASE_DIR, 'LightDQM/templates'),
           os.path.join(BASE_DIR, 'bugtracker/templates'),
-          os.path.join(BASE_DIR, 'webdaq/templates'),
+          # os.path.join(BASE_DIR, 'webdaq/templates'),
           #replace('\\','/'),
           ],
         'APP_DIRS': True,
@@ -100,22 +99,22 @@ WSGI_APPLICATION = 'LightDQM.wsgi.application'
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
 DATABASES = {
-    #'default': {
-    #    'ENGINE': 'django.db.backends.sqlite3',
-    #    'NAME': os.path.join(BASE_DIR, 'ldqm_db.sqlite3'),
-    #},
+    'default': {
+       'ENGINE': 'django.db.backends.sqlite3',
+       'NAME': os.path.join(BASE_DIR, 'ldqm_db.sqlite3'),
+    },
     'bugtracker': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'bugtracker/bugtracker_db.sqlite3'),
-    },
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'ldqm_test_db',
-        'PORT': 3306,
-        'HOST': 'gem904daq01',
-        'USER': 'gemdaq',
-        'PASSWORD': 'gemdaq',
-    }
+    }#,
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'ldqm_test_db',
+    #     'PORT': 3306,
+    #     'HOST': 'gem904daq01',
+    #     'USER': 'gemdaq',
+    #     'PASSWORD': 'gemdaq',
+    # }
 
 }
 
