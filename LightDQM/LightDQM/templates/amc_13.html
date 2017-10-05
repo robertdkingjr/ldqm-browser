@@ -9,12 +9,12 @@
       <center><b>AMC13 Histograms</b></center>
       {% for hist in amc13_hist_list %}
       <div class="row">
-	<div class="col-md-12">
-	  <center>
-	    <a href="/main/{{run.Station}}/run/{{run.Number}}/AMC13-1/hist/{{hist}}"
-	     class="btn btn-xs btn-info btn-block">{{hist}}</a>
-	  </center>
-	</div>
+	      <div class="col-md-12">
+	        <center>
+	          <a href="/main/{{run.Station}}/run/{{run.Number}}/{{crate}}/hist/{{hist}}"
+	           class="btn btn-xs btn-info btn-block">{{hist}}</a>
+	        </center>
+	      </div>
       </div>
       {% endfor %}
     </div>

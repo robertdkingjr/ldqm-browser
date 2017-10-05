@@ -23,16 +23,26 @@ class VFAT(models.Model):
 class GEB(models.Model):
   Type = models.CharField(max_length=30)
   ChamberID = models.CharField(max_length=30)
+  Link = models.PositiveSmallIntegerField(default=255)
   vfats = models.ManyToManyField(VFAT)
   def __unicode__(self):
-    return self.Type # or better id?
+    return self.ChamberID
 
 class AMC(models.Model):
   BoardID = models.CharField(max_length=30)
   Type = models.CharField(max_length=30)
+  Slot = models.PositiveSmallIntegerField(default=255)
   gebs = models.ManyToManyField(GEB)
   def __unicode__(self):
     return self.Type # or better id?
+
+class Crate(models.Model):
+  CrateID = models.CharField(max_length=30)
+  amcs = models.ManyToManyField(AMC)
+
+class Config(models.Model):
+  Tag = models.CharField(max_length=50)
+  crates = models.ManyToManyField(Crate)
 
 class Run(models.Model):
   Name = models.CharField(max_length=50)
@@ -41,7 +51,7 @@ class Run(models.Model):
   Date = models.DateField()
   Period = models.CharField(max_length=10)
   Station = models.CharField(max_length=10)
-  amcs = models.ManyToManyField(AMC)
+  ConfigTag = models.ForeignKey(Config, null=True, blank=True, default=None)
   Status = models.BooleanField(default=False) #indicates if the dqm had processed the run
   State = models.ForeignKey(SystemState, null=True, blank=True, default=None)
   def __unicode__(self):

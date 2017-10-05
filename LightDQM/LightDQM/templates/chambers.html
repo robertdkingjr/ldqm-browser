@@ -25,20 +25,20 @@
   </thead>
   <tbody>
       <tr>
-        <td class="col-xs-2" rowspan="{{run.amcs.all|length}}"><a href="/main/{{run.Station}}/run/{{run.Number}}/AMC13-1/{{amc.BoardID}}" 
-				class="btn btn-default btn-sm">AMC13-1</td>
-	{% for amc in run.amcs.all %}
-        <td class="col-xs-2"><a href="/main/{{run.Station}}/run/{{run.Number}}/AMC13-1/{{amc.BoardID}}" 
-				class="btn btn-{{amc_color|get_index:forloop.counter0}} btn-sm">{{amc.BoardID}}-{{amc.Type}}</a></td>
+        <td class="col-xs-2" rowspan="{{run.amcs.all|length}}"><a href="/main/{{run.Station}}/run/{{run.Number}}/{{crate}}/{{amc.BoardID}}" 
+				class="btn btn-default btn-sm">{{crate}}</td>
+	      {% for amc in run.amcs.all %}
+          <td class="col-xs-2"><a href="/main/{{run.Station}}/run/{{run.Number}}/{{crate}}/{{amc.BoardID}}" 
+				  class="btn btn-{{amc_color|get_index:forloop.counter0}} btn-sm">{{amc.BoardID}}-{{amc.Type}}</a></td>
 
-        {% for geb in amc.gebs.all %}
-	<td class="col-xs-2"><a href="/main/{{run.Station}}/run/{{run.Number}}/AMC13-1/{{amc.BoardID}}/{{geb.ChamberID}}/" 
-				{%if forloop.counter0 == 0 %} class="btn btn-sm btn-{{geb_color|get_first:forloop.parentloop.counter0}}"> {%endif%}
-	                        {%if forloop.counter0 == 1 %} class="btn btn-sm btn-{{geb_color|get_second:forloop.parentloop.counter0}}">{%endif%}
-	    GEB-{{geb.ChamberID}}-{{geb.Type}}</a></td>
+          {% for geb in amc.gebs.all %}
+	          <td class="col-xs-2"><a href="/main/{{run.Station}}/run/{{run.Number}}/{{crate}}/{{amc.BoardID}}/{{geb.ChamberID}}/" 
+				    {%if forloop.counter0 == 0 %} class="btn btn-sm btn-{{geb_color|get_first:forloop.parentloop.counter0}}"> {%endif%}
+	          {%if forloop.counter0 == 1 %} class="btn btn-sm btn-{{geb_color|get_second:forloop.parentloop.counter0}}">{%endif%}
+	          GEB-{{geb.ChamberID}}-{{geb.Type}}</a></td>
+          {% endfor %}
         {% endfor %}
       </tr>
-      {% endfor %}
   </tbody>
 </table>
 
