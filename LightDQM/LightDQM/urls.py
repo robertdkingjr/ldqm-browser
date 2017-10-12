@@ -30,7 +30,7 @@ urlpatterns = [
     url(r'^main/chamber/$', chamber),
     url(r'^chamber/chip/$', chamber),
     url(r'^run/chamber/$', chamber),
-    url(r'^main/([a-zA-Z\d]+)/run/(\d+)/$', chamber),
+    # url(r'^main/([a-zA-Z\d]+)/run/(\d+)/$', chamber),
     url(r'^main/([a-zA-Z\d]+)/run/(\d+)/report/$', report),
     #url(r'^main/([a-zA-Z\d]+)/run/(\d+)/amc/([\w\+%_&\- ]+)/$', amc), #runType, runN, amc
     #url(r'^main/([a-zA-Z\d]+)/run/(\d+)/([\w\+%_&\- ]+)/$', gebs), #runType, runN, chamber
@@ -52,6 +52,7 @@ urlpatterns = [
     url(r'^main/([a-zA-Z\d]+)/run/(\d+)/(\d+)/([\w\+%_&\- ]+)/$', amc),
     url(r'^main/([a-zA-Z\d]+)/run/(\d+)/(\d+)/hist/([\w\+%_&\- ]+)/$', display_amc_13),
     url(r'^main/([a-zA-Z\d]+)/run/(\d+)/(\d+)/$', amc_13),
+    url(r'^main/([a-zA-Z\d]+)/run/(\d+)/$', crate),
     url(r'^main/([a-zA-Z\d]+)/run/(\d+)/(\d+)/([\w\+%_&\- ]+)/([\w\+%_&\- ]+)/canvas/([\w\+%_&\- ]+)/$', display_canvas),
 
 

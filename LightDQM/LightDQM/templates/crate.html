@@ -1,0 +1,55 @@
+{%extends "main.html" %}
+{%load staticfiles %}
+{%load extras %}
+  <!-- JSROOT -->
+  <script src="{% static 'js/jsroot/JSRootCore.js' %}"></script>   
+{%block crates %}
+
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <b>
+	{{run.Station}} {{run.Type}}: Run {{run.Number}} 
+	<a href="/main/{{run.Station}}/run/{{run.Number}}/report/" class="btn btn-info btn-xs pull-right">Display Light DQM Report</a>
+      </b>
+    </div>
+  </div>
+<table class="table table-fixed">
+  <thead>
+    <tr>
+      <th class="col-xs-2">Crate</th>
+      <th class="col-xs-2"></th>
+      <th class="col-xs-2"></th>
+          <th class="col-xs-2"></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr>
+              {% for crate in crate_list %}
+              <td class="col-xs-2"><a href="/main/{{run.Station}}/run/{{run.Number}}/{{crate.CrateID}}/{{amc.BoardID}}"
+                                      class="btn btn-default btn-sm">{{crate.CrateID}}</a></td>
+
+              {% endfor %}
+              <!--<td class="col-xs-2" rowspan="{{run.amcs.all|length}}"><a href="/main/{{run.Station}}/run/{{run.Number}}/{{crate}}/{{amc.BoardID}}"-->
+                                                                        <!--class="btn btn-default btn-sm">{{crate}}</a></td>-->
+              <!--{% for amc in run.amcs.all %}-->
+              <!--<td class="col-xs-2"><a href="/main/{{run.Station}}/run/{{run.Number}}/{{crate}}/{{amc.BoardID}}"-->
+                      <!--class="btn btn-{{amc_color|get_index:forloop.counter0}} btn-sm">{{amc.BoardID}}-{{amc.Type}}</a></td>-->
+
+              <!--{% for geb in amc.gebs.all %}-->
+                  <!--<td class="col-xs-2"><a href="/main/{{run.Station}}/run/{{run.Number}}/{{crate}}/{{amc.BoardID}}/{{geb.ChamberID}}/"-->
+                        <!--{%if forloop.counter0 == 0 %} class="btn btn-sm btn-{{geb_color|get_first:forloop.parentloop.counter0}}"> {%endif%}-->
+                  <!--{%if forloop.counter0 == 1 %} class="btn btn-sm btn-{{geb_color|get_second:forloop.parentloop.counter0}}">{%endif%}-->
+                  <!--GEB-{{geb.ChamberID}}-{{geb.Type}}</a></td>-->
+              <!--{% endfor %}-->
+            <!--{% endfor %}-->
+          </tr>
+  </tbody>
+</table>
+
+{%block chambers%}
+{%endblock%}
+
+
+</div>
+{%endblock%}

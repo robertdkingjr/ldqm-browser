@@ -31,6 +31,7 @@ $("#table tr").click(function(){
         $(this).addClass('selected').siblings().removeClass('selected');    
         var runN=$(this).find('td').eq(0).html();
         var runStation=$(this).find('td').eq(1).html();
+        // var shelfN=$(this).find('td').eq(2).html();
         var ref=window.location.protocol;
         ref+="//";
         ref+=window.location.host;
@@ -38,6 +39,7 @@ $("#table tr").click(function(){
         ref+=runStation;
         ref+="/run/";
         ref+=runN;
+        // ref+=shelfN
         window.document.location = ref;
     });
 

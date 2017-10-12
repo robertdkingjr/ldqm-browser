@@ -1,6 +1,6 @@
 from django.http import HttpResponse
 from django.shortcuts import render
-from ldqm_db.models import Run, AMC, GEB, VFAT, HWstate, SystemState
+from ldqm_db.models import Run, Config, Crate, AMC, GEB, VFAT, HWstate, SystemState
 from django.views.generic import ListView, DetailView, CreateView
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth.forms import UserCreationForm
@@ -103,6 +103,23 @@ def report(request, runStation, runN):
                                         'run':run,
                                         'amc_color':amc_color,
                                         'geb_color':geb_color})
+
+
+def crate(request, runStation, runN):
+  run_list = Run.objects.all()
+  run = Run.objects.get(Station=runStation, Number = runN)
+  amc_color,geb_color = getChamberStates(run)
+
+  run_config = run.ConfigTag
+  crate_list = run_config.crates.all()
+  
+  return render(request,'crate.html', {'run_list':run_list,
+                                       'slot_list':slot_list,
+                                       'hist_list':hist_list,
+                                       'crate_list':crate_list,
+                                       'run':run,
+                                       'amc_color':amc_color,
+                                       'geb_color':geb_color})
 
 
 def chamber(request, runStation, runN, crate):
