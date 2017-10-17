@@ -17,7 +17,7 @@
         <th class="col-xs-1"></th>
         <th class="col-xs-1"></th>
         <th class="col-xs-1"></th>
-        <th class="col-xs-1">CHAMBERS</th>
+        <th class="col-xs-1">SELECT_AMC</th>
         <th class="col-xs-1"></th>
         <th class="col-xs-1"></th>
         <th class="col-xs-1"></th>
@@ -51,32 +51,15 @@
 
         </tr>
         <tr>
-            {% for l_amc in crate.amcs.all %}
+            {% for amc in crate.amcs.all %}
 
-            {% if l_amc.BoardID == amc_boardid %}
-            <td class="col-xs-1"><a href="/main/{{run.Station}}/run/{{run.Number}}/{{crate.CrateID}}/{{l_amc.BoardID}}"
-                                    class="btn btn-{{amc_color|get_index:forloop.counter0}} btn-sm active">{{l_amc.BoardID}}-{{l_amc.Type}}</a></td>
-
-            {% else %}
-            <td class="col-xs-1"><a href="/main/{{run.Station}}/run/{{run.Number}}/{{crate.CrateID}}/{{l_amc.BoardID}}"
-                                    class="btn btn-{{amc_color|get_index:forloop.counter0}} btn-sm">{{l_amc.BoardID}}-{{l_amc.Type}}</a></td>
-
-            {% endif %}
-
-
-            {% endfor %}
-        </tr>
-
-        <tr>
-            {% for geb in amc.gebs.all %}
-
-            {% if geb.ChamberID == geb_chamberid %}
-            <td class="col-xs-1"><a href="/main/{{run.Station}}/run/{{run.Number}}/{{crate.CrateID}}/{{amc.BoardID}}/{{geb.ChamberID}}"
-                                    class="btn btn-{{amc_color|get_index:forloop.counter0}} btn-sm active">{{geb.ChamberID}}-{{geb.Type}}</a></td>
+            {% if amc.BoardID == amc_boardid %}
+            <td class="col-xs-1"><a href="/main/{{run.Station}}/run/{{run.Number}}/{{crate.CrateID}}/{{amc.BoardID}}"
+                                    class="btn btn-{{amc_color|get_index:forloop.counter0}} btn-sm active">{{amc.BoardID}}-{{amc.Type}}</a></td>
 
             {% else %}
-            <td class="col-xs-1"><a href="/main/{{run.Station}}/run/{{run.Number}}/{{crate.CrateID}}/{{amc.BoardID}}/{{geb.ChamberID}}"
-                                    class="btn btn-{{amc_color|get_index:forloop.counter0}} btn-sm">{{geb.ChamberID}}-{{geb.Type}}</a></td>
+            <td class="col-xs-1"><a href="/main/{{run.Station}}/run/{{run.Number}}/{{crate.CrateID}}/{{amc.BoardID}}"
+                                    class="btn btn-{{amc_color|get_index:forloop.counter0}} btn-sm">{{amc.BoardID}}-{{amc.Type}}</a></td>
 
             {% endif %}
 
@@ -84,9 +67,6 @@
             {% endfor %}
         </tr>
 </table>
-
-
-
 
 
 {%block gebs%}

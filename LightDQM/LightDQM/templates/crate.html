@@ -23,7 +23,7 @@
     <tbody>
         <tr>
             {% for crate in crate_list %}
-            <td class="col-xs-2"><a href="/main/{{run.Station}}/run/{{run.Number}}/{{crate.CrateID}}/{{amc.BoardID}}"
+            <td class="col-xs-1"><a href="/main/{{run.Station}}/run/{{run.Number}}/{{crate.CrateID}}/{{amc.BoardID}}"
                                     class="btn btn-default btn-sm">{{crate.CrateID}}</a></td>
 
             {% endfor %}
@@ -34,7 +34,8 @@
 </table>
 
 
-
+{%block amc13_report %}
+{% endblock %}
 
 </div>
 {% endblock %}

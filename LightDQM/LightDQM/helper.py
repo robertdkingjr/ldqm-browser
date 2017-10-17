@@ -35,7 +35,8 @@ def getVFATSlots(crate,amc,geb):
         GEB = AMC.gebs.get(ChamberID=geb)
         VFATs = GEB.vfats.all()
     except:
-        print "Error accessing database for run:",run.Name
+        print "Error accessing database"
+        return vfat_address
 
     for VFAT in VFATs:
         vfat_address[VFAT.Slot] = VFAT.ChipID
