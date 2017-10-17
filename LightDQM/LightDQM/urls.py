@@ -44,16 +44,17 @@ urlpatterns = [
     # runType / runN / AMC (BoardID) / GEB (ChamberID) / VFAT (Slot) / hist --> obsolete
     # runType / runN / Shelf number / AMC BoardID / ChamberID / VFAT (Slot) / hist
 
-    url(r'^main/([a-zA-Z\d]+)/run/(\d+)/(\d+)/([\w\+%_&\- ]+)/([\w\+%_&\- ]+)/VFAT-(\d+)/hist/([\w\+%_&\- ]+)/$', display_vfat),
-    url(r'^main/([a-zA-Z\d]+)/run/(\d+)/(\d+)/([\w\+%_&\- ]+)/([\w\+%_&\- ]+)/VFAT-(\d+)/$', vfats),
-    url(r'^main/([a-zA-Z\d]+)/run/(\d+)/(\d+)/([\w\+%_&\- ]+)/([\w\+%_&\- ]+)/hist/([\w\+%_&\- ]+)/$', display_geb),
-    url(r'^main/([a-zA-Z\d]+)/run/(\d+)/(\d+)/([\w\+%_&\- ]+)/([\w\+%_&\- ]+)/$', gebs),
-    url(r'^main/([a-zA-Z\d]+)/run/(\d+)/(\d+)/([\w\+%_&\- ]+)/hist/([\w\+%_&\- ]+)/$', display_amc),
-    url(r'^main/([a-zA-Z\d]+)/run/(\d+)/(\d+)/([\w\+%_&\- ]+)/$', amc),
-    url(r'^main/([a-zA-Z\d]+)/run/(\d+)/(\d+)/hist/([\w\+%_&\- ]+)/$', display_amc_13),
-    url(r'^main/([a-zA-Z\d]+)/run/(\d+)/(\d+)/$', amc_13),
+    url(r'^main/([a-zA-Z\d]+)/run/(\d+)/([a-zA-Z\d]+)/([\w\+%_&\- ]+)/([\w\+%_&\- ]+)/VFAT-(\d+)/hist/([\w\+%_&\- ]+)/$', display_vfat),
+    url(r'^main/([a-zA-Z\d]+)/run/(\d+)/([a-zA-Z\d]+)/([\w\+%_&\- ]+)/([\w\+%_&\- ]+)/VFAT-(\d+)/$', vfats),
+    url(r'^main/([a-zA-Z\d]+)/run/(\d+)/([a-zA-Z\d]+)/([\w\+%_&\- ]+)/([\w\+%_&\- ]+)/hist/([\w\+%_&\- ]+)/$', display_geb),
+    url(r'^main/([a-zA-Z\d]+)/run/(\d+)/([a-zA-Z\d]+)/([\w\+%_&\- ]+)/([\w\+%_&\- ]+)/$', gebs),
+    url(r'^main/([a-zA-Z\d]+)/run/(\d+)/([a-zA-Z\d]+)/([\w\+%_&\- ]+)/hist/([\w\+%_&\- ]+)/$', display_amc),
+    url(r'^main/([a-zA-Z\d]+)/run/(\d+)/([a-zA-Z\d]+)/([\w\+%_&\- ]+)/$', amc),
+    url(r'^main/([a-zA-Z\d]+)/run/(\d+)/([a-zA-Z\d]+)/hist/([\w\+%_&\- ]+)/$', display_amc_13),
+    # url(r'^main/([a-zA-Z\d]+)/run/(\d+)/([a-zA-Z\d]+)/$', amc_13),
+    url(r'^main/([a-zA-Z\d]+)/run/(\d+)/([a-zA-Z\d]+)/$', chamber),
     url(r'^main/([a-zA-Z\d]+)/run/(\d+)/$', crate),
-    url(r'^main/([a-zA-Z\d]+)/run/(\d+)/(\d+)/([\w\+%_&\- ]+)/([\w\+%_&\- ]+)/canvas/([\w\+%_&\- ]+)/$', display_canvas),
+    url(r'^main/([a-zA-Z\d]+)/run/(\d+)/([a-zA-Z\d]+)/([\w\+%_&\- ]+)/([\w\+%_&\- ]+)/canvas/([\w\+%_&\- ]+)/$', display_canvas),
 
 
 

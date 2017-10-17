@@ -8,76 +8,9 @@ from bugtracker.models import Ticket
 from django.template import Template, Context
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from helper import *
+from dqm_literals import *
 import os
 import csv
-
-
-lslot_list = ["a","b","c","d"];
-
-hist_list = ["b1010",
-             "b1100",
-             "b1110",
-             "BC",
-             "EC",
-             "SlotN",
-             "Flag",
-             "ChipID",
-             "FiredChannels",
-             "crc",
-             "crc_calc",
-             "Warnings",
-             "Errors",
-             "latencyScan",
-             "thresholdScan"];
-
-threshold_channels = range(0,127);
-
-amc13_hist_list = ["Control_Bit5",
-                   "Control_BitA",
-                   "Evt_ty",
-                   "LV1_id",
-                   "Bx_id",
-                   "Source_id",
-                   "CalTyp",
-                   "nAMC",
-                   "OrN",
-                   "CRC_amc13",
-                   "Blk_Not",
-                   "LV1_idT",
-                   "BX_idT",
-                   "EvtLength",
-                   "CRC_cdf"];
-amc_hist_list = ["AMCnum",
-                 "L1A",
-                 "BX",
-                 "Dlength",
-                 "FV",
-                 "Rtype",
-                 "Param1",
-                 "Param2",
-                 "Param3",
-                 "Onum",
-                 "BID",
-                 "GEMDAV",
-                 "Bstatus",
-                 "GDcount",
-                 "Tstate",
-                 "ChamT",
-                 "OOSG",
-                 "CRC",
-                 "L1AT",
-                 "DlengthT"];
-
-geb_hist_list = ["Errors",
-                 "InputID",
-                 "OHCRC",
-                 "Vwh",
-                 "Vwt",
-                 "Warnings",
-                 "ZeroSup",
-                 "BeamProfile"];
-
-sum_can_list  = ["integrity", "occupancy", "clusterMult", "clusterSize"];
 
 
 def dqm_help(request):
@@ -94,12 +27,13 @@ def main(request):
 def report(request, runStation, runN):
   run_list = Run.objects.all()
   run = Run.objects.get(Station=runStation, Number = runN)
-  
+  crate_list = run.ConfigTag.crates.all()
   amc_color,geb_color = getChamberStates(run)
 
   
   return render(request,'report.html', {'run_list':run_list,
                                         'hist_list':hist_list,
+                                        'crate_list':crate_list,
                                         'run':run,
                                         'amc_color':amc_color,
                                         'geb_color':geb_color})
@@ -109,9 +43,7 @@ def crate(request, runStation, runN):
   run_list = Run.objects.all()
   run = Run.objects.get(Station=runStation, Number = runN)
   amc_color,geb_color = getChamberStates(run)
-
-  run_config = run.ConfigTag
-  crate_list = run_config.crates.all()
+  crate_list = run.ConfigTag.crates.all()
   
   return render(request,'crate.html', {'run_list':run_list,
                                        'slot_list':slot_list,
@@ -122,104 +54,123 @@ def crate(request, runStation, runN):
                                        'geb_color':geb_color})
 
 
-def chamber(request, runStation, runN, crate):
+def chamber(request, runStation, runN, crate_id):
   run_list = Run.objects.all()
   run = Run.objects.get(Station=runStation, Number = runN)
-
+  crate = Crate.objects.filter(CrateID=crate_id)[0] #pull first (in case there are duplicates in DB)
   amc_color,geb_color = getChamberStates(run)
+  crate_list = run.ConfigTag.crates.all()
   
   return render(request,'chambers.html', {'run_list':run_list,
                                           'slot_list':slot_list,
                                           'hist_list':hist_list,
+                                          'crate_list':crate_list,
                                           'run':run,
                                           'crate':crate,
+                                          'crate_id':crate_id,
                                           'amc_color':amc_color,
                                           'geb_color':geb_color})
 
-def amc_13(request, runStation, runN, crate):
+def amc_13(request, runStation, runN, crate_id):
   run_list = Run.objects.all()
   run = Run.objects.get(Station=runStation, Number = runN)
-  
+  crate = Crate.objects.filter(CrateID=crate_id)[0] 
+  crate_list = run.ConfigTag.crates.all()  
   amc_color,geb_color = getChamberStates(run)
 
 
   return render(request,'amc_13.html', {'run_list':run_list,
                                         'slot_list':slot_list,
                                         'hist_list':hist_list,
+                                        'crate_list':crate_list,
                                         'amc13_hist_list':amc13_hist_list,
                                         'run':run,
+                                        'crate':crate,
+                                        'crate_id':crate_id,
                                         'sum_can_list':sum_can_list,
                                         'amc_color':amc_color,
                                         'geb_color':geb_color})
 
-def display_amc_13(request, runStation, runN, crate, hist):
+def display_amc_13(request, runStation, runN, crate_id, hist):
   run_list = Run.objects.all()
   run = Run.objects.get(Station=runStation, Number = runN)
- 
+  crate = Crate.objects.filter(CrateID=crate_id)[0] 
+  crate_list = run.ConfigTag.crates.all()
   amc_color,geb_color = getChamberStates(run)
 
   return render(request,'display_amc_13.html', {'run_list':run_list,
-                                        'slot_list':slot_list,
-                                        'hist_list':hist_list,
-                                        'amc13_hist_list':amc13_hist_list,
-                                        'hist':hist,
-                                        'run':run,
-                                        'crate':crate,
-                                        'sum_can_list':sum_can_list,
-                                        'amc_color':amc_color,
-                                        'geb_color':geb_color})
+                                                'slot_list':slot_list,
+                                                'hist_list':hist_list,
+                                                'crate_list':crate_list,
+                                                'amc13_hist_list':amc13_hist_list,
+                                                'hist':hist,
+                                                'run':run,
+                                                'crate':crate,
+                                                'crate_id':crate_id,
+                                                'sum_can_list':sum_can_list,
+                                                'amc_color':amc_color,
+                                                'geb_color':geb_color})
 
-def amc(request, runStation, runN, crate, amc_boardid):
+def amc(request, runStation, runN, crate_id, amc_boardid):
   run_list = Run.objects.all()
   run = Run.objects.get(Station=runStation, Number = runN)
-  
+  crate = Crate.objects.filter(CrateID=crate_id)[0] 
+  crate_list = run.ConfigTag.crates.all()
   amc_color,geb_color = getChamberStates(run)
 
 
   return render(request,'amc.html', {'run_list':run_list,
                                      'slot_list':slot_list,
                                      'hist_list':hist_list,
+                                     'crate_list':crate_list,
                                      'amc_hist_list':amc_hist_list,
                                      'run':run,
                                      'crate':crate,
+                                     'crate_id':crate_id,
                                      'amc_boardid':amc_boardid,
                                      'sum_can_list':sum_can_list,
                                      'amc_color':amc_color,
                                      'geb_color':geb_color})
 
-def display_amc(request, runStation, runN, crate, amc_boardid, hist):
+def display_amc(request, runStation, runN, crate_id, amc_boardid, hist):
   run_list = Run.objects.all()
   run = Run.objects.get(Station=runStation, Number = runN)
-  
+  crate = Crate.objects.filter(CrateID=crate_id)[0] 
+  crate_list = run.ConfigTag.crates.all()
   amc_color,geb_color = getChamberStates(run)
  
   return render(request,'display_amc.html', {'run_list':run_list,
-                                     'slot_list':slot_list,
-                                     'hist_list':hist_list,
-                                     'amc_hist_list':amc_hist_list,
-                                     'run':run,
-                                     'crate':crate,
-                                     'hist':hist,
-                                     'amc_boardid':amc_boardid,
-                                     'sum_can_list':sum_can_list,
-                                     'amc_color':amc_color,
-                                     'geb_color':geb_color})
+                                             'slot_list':slot_list,
+                                             'hist_list':hist_list,
+                                             'crate_list':crate_list,
+                                             'amc_hist_list':amc_hist_list,
+                                             'run':run,
+                                             'crate':crate,
+                                             'crate_id':crate_id,
+                                             'hist':hist,
+                                             'amc_boardid':amc_boardid,
+                                             'sum_can_list':sum_can_list,
+                                             'amc_color':amc_color,
+                                             'geb_color':geb_color})
 
 
 
-def gebs(request, runStation, runN, crate, amc_boardid, geb_chamberid):
+def gebs(request, runStation, runN, crate_id, amc_boardid, geb_chamberid):
   run_list = Run.objects.all()
   run = Run.objects.get(Station=runStation, Number = runN)
-  
+  crate = Crate.objects.filter(CrateID=crate_id)[0] 
+  crate_list = run.ConfigTag.crates.all()
   amc_color,geb_color = getChamberStates(run)
-  vfats = getVFATStates(run,crate,amc_boardid,geb_chamberid)
+  vfats = getVFATStates(run,crate_id,amc_boardid,geb_chamberid)
   
   return render(request,'gebs.html', {'run_list':run_list,
                                       'slot_list':slot_list,
                                       'hist_list':hist_list,
+                                      'crate_list':crate_list,
                                       'geb_hist_list':geb_hist_list,
                                       'run':run,
                                       'crate':crate,
+                                      'crate_id':crate_id,
                                       'amc_boardid':amc_boardid,
                                       'geb_chamberid':geb_chamberid,
                                       'sum_can_list':sum_can_list,
@@ -227,41 +178,49 @@ def gebs(request, runStation, runN, crate, amc_boardid, geb_chamberid):
                                       'geb_color':geb_color,
                                       'vfats':vfats})
 
-def display_geb(request, runStation, runN, crate, amc_boardid, geb_chamberid, hist):
+def display_geb(request, runStation, runN, crate_id, amc_boardid, geb_chamberid, hist):
   run_list = Run.objects.all()
   run = Run.objects.get(Station=runStation, Number = runN)
+  crate = Crate.objects.filter(CrateID=crate_id)[0] 
+  crate_list = run.ConfigTag.crates.all()
   amc_color,geb_color = getChamberStates(run)
-  vfats = getVFATStates(run,crate,amc_boardid,geb_chamberid)
+  vfats = getVFATStates(run,crate_id,amc_boardid,geb_chamberid)
 
   return render(request,'display_geb.html', {'run_list':run_list,
-                                      'slot_list':slot_list,
-                                      'hist_list':hist_list,
-                                      'geb_hist_list':geb_hist_list,
-                                      'hist':hist,
-                                      'run':run,
-                                      'crate':crate,
-                                      'amc_boardid':amc_boardid,
-                                      'geb_chamberid':geb_chamberid,
-                                      'sum_can_list':sum_can_list,
-                                      'amc_color':amc_color,
-                                      'geb_color':geb_color,
-                                      'vfats':vfats})
+                                             'slot_list':slot_list,
+                                             'hist_list':hist_list,
+                                             'crate_list':crate_list,
+                                             'geb_hist_list':geb_hist_list,
+                                             'hist':hist,
+                                             'run':run,
+                                             'crate':crate,
+                                             'crate_id':crate_id,
+                                             'amc_boardid':amc_boardid,
+                                             'geb_chamberid':geb_chamberid,
+                                             'sum_can_list':sum_can_list,
+                                             'amc_color':amc_color,
+                                             'geb_color':geb_color,
+                                             'vfats':vfats})
 
 
-def vfats(request, runStation, runN, crate, amc_boardid, geb_chamberid, vfatN):
+def vfats(request, runStation, runN, crate_id, amc_boardid, geb_chamberid, vfatN):
   run_list = Run.objects.all()
   run = Run.objects.get(Station=runStation, Number = runN)
+  crate = Crate.objects.filter(CrateID=crate_id)[0] 
+  crate_list = run.ConfigTag.crates.all()
   amc_color,geb_color = getChamberStates(run)
-  vfats = getVFATStates(run,crate,amc_boardid,geb_chamberid)
+  vfats = getVFATStates(run,crate_id,amc_boardid,geb_chamberid)
 
   selected_vfat = vfats[int(vfatN)]
   return render(request,'vfats.html', {'run_list':run_list,
                                        'slot_list':slot_list,
                                        'hist_list':hist_list,
+                                       'crate_list':crate_list,
                                        'geb_hist_list':geb_hist_list,
                                        'threshold_channels':threshold_channels,
                                        'run':run,
                                        'crate':crate,
+                                       'crate_id':crate_id,
                                        'amc_boardid':amc_boardid,
                                        'geb_chamberid':geb_chamberid,
                                        'vfat':int(vfatN),
@@ -271,38 +230,45 @@ def vfats(request, runStation, runN, crate, amc_boardid, geb_chamberid, vfatN):
                                        'amc_color':amc_color,
                                        'geb_color':geb_color})
 
-def summary(request, runStation, runN, crate, chamber, summaryN):
+def summary(request, runStation, runN, crate_id, chamber, summaryN):
   run_list = Run.objects.all()
   run = Run.objects.get(Station=runStation, Number = runN)
+  crate = Crate.objects.filter(CrateID=crate_id)[0] 
+  crate_list = run.ConfigTag.crates.all()
   amc_color,geb_color = getChamberStates(run)
 
   return render(request,'summary.html', {'run_list':run_list,
                                          'slot_list':slot_list,
                                          'hist_list':hist_list,
+                                         'crate_list':crate_list,
                                          'geb_hist_list':geb_hist_list,
                                          'run':run,
                                          'crate':crate,
+                                         'crate_id':crate_id,
                                          'chamber':chamber,
                                          'sum_can_list':sum_can_list,
                                          'sumN':summaryN,
                                          'amc_color':amc_color,
                                          'geb_color':geb_color})
 
-def display_vfat(request, runStation, runN, crate, amc_boardid, geb_chamberid, vfatN, histN):
+def display_vfat(request, runStation, runN, crate_id, amc_boardid, geb_chamberid, vfatN, histN):
   run_list = Run.objects.all()
   run = Run.objects.get(Station=runStation, Number = runN)  
-  
+  crate = Crate.objects.filter(CrateID=crate_id)[0] 
+  crate_list = run.ConfigTag.crates.all()
   amc_color,geb_color = getChamberStates(run)
-  vfats = getVFATStates(run,crate,amc_boardid,geb_chamberid)
+  vfats = getVFATStates(run,crate_id,amc_boardid,geb_chamberid)
   
   selected_vfat = vfats[int(vfatN)]
 
   return render(request,'display_vfat.html', {'run_list':run_list,
                                               'slot_list':slot_list,
                                               'hist_list':hist_list,
+                                              'crate_list':crate_list,
                                               'geb_hist_list':geb_hist_list,
                                               'run':run,
                                               'crate':crate,
+                                              'crate_id':crate_id,
                                               'amc_boardid':amc_boardid,
                                               'geb_chamberid':geb_chamberid,
                                               'sum_can_list':sum_can_list,
@@ -314,19 +280,22 @@ def display_vfat(request, runStation, runN, crate, amc_boardid, geb_chamberid, v
                                               'geb_color':geb_color})
 
 
-def display_canvas(request, runStation, runN, crate, amc_boardid, geb_chamberid, canvas):
+def display_canvas(request, runStation, runN, crate_id, amc_boardid, geb_chamberid, canvas):
   run_list = Run.objects.all()
   run = Run.objects.get(Station=runStation, Number = runN)
-  
+  crate = Crate.objects.filter(CrateID=crate_id)[0] 
+  crate_list = run.ConfigTag.crates.all()
   amc_color,geb_color = getChamberStates(run)
-  vfats = getVFATStates(run,crate,amc_boardid,geb_chamberid)
+  vfats = getVFATStates(run,crate_id,amc_boardid,geb_chamberid)
 
   return render(request,'display_canvas.html', {'run_list':run_list,
                                                 'slot_list':slot_list,
                                                 'hist_list':hist_list,
+                                                'crate_list':crate_list,
                                                 'geb_hist_list':geb_hist_list,
                                                 'run':run,
                                                 'crate':crate,
+                                                'crate_id':crate_id,
                                                 'amc_boardid':amc_boardid,
                                                 'geb_chamberid':geb_chamberid,
                                                 'chamber':chamber,

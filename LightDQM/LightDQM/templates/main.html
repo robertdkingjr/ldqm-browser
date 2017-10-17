@@ -122,9 +122,13 @@
     </div>
     <div class="col-lg-12">
       <div class="row">      
-	<!--{% block chambers %}-->
-	<!--{% endblock %}-->
+
         {% block crates %}
+        {% endblock %}
+
+        <!-- crates to chambers upon crate selection -->
+
+        {% block chambers %}
         {% endblock %}
 
       </div>

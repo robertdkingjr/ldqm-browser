@@ -11,7 +11,7 @@
   function updateGUI() {
     console.log("UpdateGUI called")
     var frame ="{{hist}}";
-    var request_addr = "{% static '' %}{{run.Name}}/{{crate}}/{{amc_boardid}}/{{hist}}.json?dummy="+cnt;
+    var request_addr = "{% static '' %}{{run.Name}}/{{crate_id}}/{{amc_boardid}}/{{hist}}.json?dummy="+cnt;
     var req = JSROOT.NewHttpRequest(request_addr, 'object', function(histo) {
                    JSROOT.redraw( frame, histo, "colz");
                    });

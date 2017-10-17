@@ -10,7 +10,7 @@
 <!--       {% for hist in hist_list %} -->
 <!--       <\!-- <td><a href="/main/{{run.Station}}/run/{{run.Number}}/{{chamber}}/vfat/{{vfat}}/{{hist}}{{vfat}}" id="b{{slot}}"  -\-> -->
 <!--       <\!-- 	     class="btn btn-{{selected_vfat.3}} btn-xs">{{hist}}{{vfat}}</a></td> -\-> -->
-<!--       <td><a href="/main/{{run.Station}}/run/{{run.Number}}/{{crate}}/{{amc_boardid}}/{{geb_chamberid}}/VFAT-{{vfat}}/hist/{{hist}}"  -->
+<!--       <td><a href="/main/{{run.Station}}/run/{{run.Number}}/{{crate_id}}/{{amc_boardid}}/{{geb_chamberid}}/VFAT-{{vfat}}/hist/{{hist}}"  -->
 <!-- 	     id="b{{slot}}" class="btn btn-{{selected_vfat.3}} btn-xs">{{hist}}</a></td> -->
 <!--       {% endfor %} -->
 <!--     </tr> -->
@@ -22,7 +22,7 @@
 <div class="row-fluid">
   <div class="col-md-12">
     <center>
-      <a href="/main/{{run.Station}}/run/{{run.Number}}/{{crate}}/{{amc_boardid}}/{{geb_chamberid}}/VFAT-{{vfat}}/hist/{{hist}}"
+      <a href="/main/{{run.Station}}/run/{{run.Number}}/{{crate_id}}/{{amc_boardid}}/{{geb_chamberid}}/VFAT-{{vfat}}/hist/{{hist}}"
 	 class="btn btn-sm btn-info btn-block">{{hist}}</a>
     </center>
   </div>
@@ -49,10 +49,10 @@
 	<div class="row-fluid">
         {% for channel in threshold_channels %}
 	  <div class="col-md-3">
-	    <center><img width="100%" src="{% static '' %}{{run.Name}}/{{crate}}/{{amc_boardid}}/{{geb_chamberid}}/VFAT-{{vfat}}/Threshold_Scans/thresholdScan{{channel}}.png"></center> 
+	    <center><img width="100%" src="{% static '' %}{{run.Name}}/{{crate_id}}/{{amc_boardid}}/{{geb_chamberid}}/VFAT-{{vfat}}/Threshold_Scans/thresholdScan{{channel}}.png"></center>
 
 	    <!-- <center> -->
-	    <!--   <a href="/main/{{run.Station}}/run/{{run.Number}}/{{crate}}/{{amc_boardid}}/{{geb_chamberid}}/VFAT-{{vfat}}/hist/{{hist}}" -->
+	    <!--   <a href="/main/{{run.Station}}/run/{{run.Number}}/{{crate_id}}/{{amc_boardid}}/{{geb_chamberid}}/VFAT-{{vfat}}/hist/{{hist}}" -->
 	    <!-- 	 class="btn btn-sm btn-info btn-block">{{hist}}</a> -->
 	    <!-- </center> -->
 	  </div>
