@@ -3,21 +3,22 @@
 {% load extras %}
   <!-- JSROOT -->
   <script src="{% static 'js/jsroot/JSRootCore.js' %}"></script>   
-{% block chambers %}
+{% block select_amc %}
 
 
 <table class="table table-fixed">
     <thead>
     <tr>
         <th class="col-xs-1">
-            {{run.Station}} {{run.Type}}: Run {{run.Number}}
+            {{run.Station}} {{run.Type}}:
         </th>
-
+        <th class="col-xs-1">
+            Run {{run.Number}}
+        </th>
         <th class="col-xs-1"></th>
         <th class="col-xs-1"></th>
         <th class="col-xs-1"></th>
         <th class="col-xs-1"></th>
-        <th class="col-xs-1">SELECT_AMC</th>
         <th class="col-xs-1"></th>
         <th class="col-xs-1"></th>
         <th class="col-xs-1"></th>
